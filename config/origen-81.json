@@ -1,6 +1,6 @@
 {
   "activo": true,
-  "direccion": "Lomas de Zamora",
+  "direccion": "San Pedro 4623",
   "envio": {
     "costoFijo": 1500,
     "mensaje": "Envío $1500",
