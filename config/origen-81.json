@@ -1,0 +1,40 @@
+{
+  "activo": true,
+  "direccion": "Lomas de Zamora",
+  "envio": {
+    "costoFijo": 1500,
+    "mensaje": "Envío $1500",
+    "retiro": "Retiro por Lomas",
+    "tipo": "fijo"
+  },
+  "estado": "activo",
+  "horarios": "Elaboración artesanal",
+  "introduccion": {
+    "bajada": "Paciencia, dedicación y pasión. Así hacemos cada producto.",
+    "titulo": "Donde todo comienza"
+  },
+  "nombre": "ORIGEN 81",
+  "secciones": [
+    {
+      "emoji": "🍺",
+      "id": "cerveza",
+      "titulo": "ORIGEN 81",
+      "texto": "Todo empieza con buena malta, agua, lúpulo y levadura. Y, sobre todo, con tiempo.\n\nMolemos la malta, la maceramos para extraer sus azúcares y obtenemos el mosto. Después llega el lúpulo, el hervor y la fermentación, donde la magia empieza a suceder.\n\nLa dejamos madurar lentamente en frío para que los sabores se integren y alcancen su equilibrio.\n\nFinalmente, la embotellamos sin filtrar y sin pasteurizar, conservando todo su carácter artesanal.\n\nUna cerveza viva, hecha con paciencia y pasión."
+    },
+    {
+      "emoji": "🍖",
+      "id": "fiambres",
+      "titulo": "FABRICACIÓN DE FIAMBRES",
+      "texto": "Todo comienza con una excelente pieza de carne, ingredientes cuidadosamente seleccionados y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.\n\nElegimos una bondiola de primera calidad, la preparamos y condimentamos artesanalmente para realzar su sabor natural. Luego inicia el proceso de curado, donde la sal y las especias penetran lentamente en la carne, desarrollando aromas intensos, una textura delicada y un sabor profundo e irresistible.\n\nDespués, la dejamos madurar en condiciones controladas, respetando cada etapa para que los sabores se integren y alcance su punto justo. El resultado es una bondiola tierna, sabrosa y equilibrada, con todo el carácter de una elaboración artesanal.\n\nFinalmente, la cortamos y envasamos cuidadosamente para conservar su frescura, aroma y calidad hasta el momento de disfrutarla.\n\nUna bondiola premium, elaborada artesanalmente con dedicación, tiempo y pasión."
+    },
+    {
+      "emoji": "🫙",
+      "id": "conservas",
+      "titulo": "ELABORACIÓN DE CONSERVAS",
+      "texto": "Todo comienza con ingredientes frescos, seleccionados cuidadosamente y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.\n\nElegimos frutas y vegetales de primera calidad, los preparamos y combinamos artesanalmente para realzar sus sabores naturales. Luego inicia el proceso de elaboración, donde cada ingrediente se cocina lentamente con especias y condimentos cuidadosamente seleccionados, desarrollando aromas intensos, texturas delicadas y un sabor profundo e irresistible.\n\nDespués, envasamos cada conserva respetando rigurosos procesos de higiene y seguridad, para preservar sus propiedades, frescura y calidad. El resultado es una conserva sabrosa, equilibrada y llena de carácter, elaborada con ingredientes nobles y el cuidado de siempre.\n\nFinalmente, sellamos y etiquetamos cada frasco cuidadosamente para conservar todo su sabor y calidad hasta el momento de disfrutarlo.\n\nConservas premium, elaboradas artesanalmente con dedicación, tiempo y pasión."
+    }
+  ],
+  "subtitulo": "Donde todo comienza",
+  "telefono": "",
+  "whatsapp": "5491134890644"
+}
