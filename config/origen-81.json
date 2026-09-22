@@ -4,7 +4,7 @@
   "envio": {
     "costoFijo": 1500,
     "mensaje": "Envío $1500",
-    "retiro": "Retiro por Lomas",
+    "retiro": "Retiro por Caba",
     "tipo": "fijo"
   },
   "estado": "activo",
