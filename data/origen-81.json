@@ -22,7 +22,7 @@
     "nombre": "Bondiola Premium Curada",
     "descripcion": "Curada artesanal, especias naturales, maduración controlada",
     "precio": 8500,
-    "img": "https://images.unsplash.com/photo-1544025162-d76694265947?w=600",
+    "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-3-1790116965106.jpg",
     "destacado": true
   },
   {
@@ -39,7 +39,7 @@
     "nombre": "Conserva de Berenjenas",
     "descripcion": "Frasco 360cc, receta artesanal",
     "precio": 4500,
-    "img": "https://images.unsplash.com/photo-1587049352851-8d4e89133924?w=600"
+    "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-5-1790116985595.jpg"
   },
   {
     "id": 6,
