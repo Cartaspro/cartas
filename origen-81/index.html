@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ORIGEN 81 - Carta</title>
@@ -31,42 +30,15 @@ body{background:#080808;color:#fff;overflow-x:hidden}
 <div class="form"><div class="card" style="background:#111"><b>Tus datos</b><div id="formFields"></div></div></div>
 <div style="height:160px"></div>
 <div class="cart"><div class="cart-inner"><div class="cart-list" id="cartList"></div><div style="min-width:160px"><div class="cart-total" id="total"></div><button class="send" id="btnPedir">Pedir por WhatsApp</button></div></div></div>
-
 <script>
-const CONFIG_DEFAULT = {"activo": true, "direccion": "San Pedro 4623", "envio": {"costoFijo": 1500, "mensaje": "Envío $1500", "retiro": "Retiro por Caba", "tipo": "fijo"}, "estado": "activo", "horarios": "Elaboración artesanal", "introduccion": {"bajada": "Paciencia, dedicación y pasión. Así hacemos cada producto.", "titulo": "Donde todo comienza"}, "nombre": "ORIGEN 81", "secciones": [{"emoji": "🍺", "id": "cerveza", "titulo": "ORIGEN 81", "texto": "Todo empieza con buena malta, agua, lúpulo y levadura. Y, sobre todo, con tiempo.
-
-Molemos la malta, la maceramos para extraer sus azúcares y obtenemos el mosto. Después llega el lúpulo, el hervor y la fermentación, donde la magia empieza a suceder.
-
-La dejamos madurar lentamente en frío para que los sabores se integren y alcancen su equilibrio.
-
-Finalmente, la embotellamos sin filtrar y sin pasteurizar, conservando todo su carácter artesanal.
-
-Una cerveza viva, hecha con paciencia y pasión."}, {"emoji": "🍖", "id": "fiambres", "titulo": "FABRICACIÓN DE FIAMBRES", "texto": "Todo comienza con una excelente pieza de carne, ingredientes cuidadosamente seleccionados y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.
-
-Elegimos una bondiola de primera calidad, la preparamos y condimentamos artesanalmente para realzar su sabor natural. Luego inicia el proceso de curado, donde la sal y las especias penetran lentamente en la carne, desarrollando aromas intensos, una textura delicada y un sabor profundo e irresistible.
-
-Después, la dejamos madurar en condiciones controladas, respetando cada etapa para que los sabores se integren y alcance su punto justo. El resultado es una bondiola tierna, sabrosa y equilibrada, con todo el carácter de una elaboración artesanal.
-
-Finalmente, la cortamos y envasamos cuidadosamente para conservar su frescura, aroma y calidad hasta el momento de disfrutarla.
-
-Una bondiola premium, elaborada artesanalmente con dedicación, tiempo y pasión."}, {"emoji": "🫙", "id": "conservas", "titulo": "ELABORACIÓN DE CONSERVAS", "texto": "Todo comienza con ingredientes frescos, seleccionados cuidadosamente y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.
-
-Elegimos frutas y vegetales de primera calidad, los preparamos y combinamos artesanalmente para realzar sus sabores naturales. Luego inicia el proceso de elaboración, donde cada ingrediente se cocina lentamente con especias y condimentos cuidadosamente seleccionados, desarrollando aromas intensos, texturas delicadas y un sabor profundo e irresistible.
-
-Después, envasamos cada conserva respetando rigurosos procesos de higiene y seguridad, para preservar sus propiedades, frescura y calidad. El resultado es una conserva sabrosa, equilibrada y llena de carácter, elaborada con ingredientes nobles y el cuidado de siempre.
-
-Finalmente, sellamos y etiquetamos cada frasco cuidadosamente para conservar todo su sabor y calidad hasta el momento de disfrutarlo.
-
-Conservas premium, elaboradas artesanalmente con dedicación, tiempo y pasión."}], "subtitulo": "Donde todo comienza", "telefono": "", "whatsapp": "5491134890644", "logo": "logo-origen81.jpg", "portada": "logo-origen81.jpg"};
+const CONFIG_DEFAULT = {"activo": true, "direccion": "San Pedro 4623", "envio": {"costoFijo": 1500, "mensaje": "Envío $1500", "retiro": "Retiro por Caba", "tipo": "fijo"}, "estado": "activo", "horarios": "Elaboración artesanal", "introduccion": {"bajada": "Paciencia, dedicación y pasión. Así hacemos cada producto.", "titulo": "Donde todo comienza"}, "nombre": "ORIGEN 81", "secciones": [{"emoji": "🍺", "id": "cerveza", "titulo": "ORIGEN 81", "texto": "Todo empieza con buena malta, agua, lúpulo y levadura. Y, sobre todo, con tiempo.\n\nMolemos la malta, la maceramos para extraer sus azúcares y obtenemos el mosto. Después llega el lúpulo, el hervor y la fermentación, donde la magia empieza a suceder.\n\nLa dejamos madurar lentamente en frío para que los sabores se integren y alcancen su equilibrio.\n\nFinalmente, la embotellamos sin filtrar y sin pasteurizar, conservando todo su carácter artesanal.\n\nUna cerveza viva, hecha con paciencia y pasión."}, {"emoji": "🍖", "id": "fiambres", "titulo": "FABRICACIÓN DE FIAMBRES", "texto": "Todo comienza con una excelente pieza de carne, ingredientes cuidadosamente seleccionados y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.\n\nElegimos una bondiola de primera calidad, la preparamos y condimentamos artesanalmente para realzar su sabor natural. Luego inicia el proceso de curado, donde la sal y las especias penetran lentamente en la carne, desarrollando aromas intensos, una textura delicada y un sabor profundo e irresistible.\n\nDespués, la dejamos madurar en condiciones controladas, respetando cada etapa para que los sabores se integren y alcance su punto justo. El resultado es una bondiola tierna, sabrosa y equilibrada, con todo el carácter de una elaboración artesanal.\n\nFinalmente, la cortamos y envasamos cuidadosamente para conservar su frescura, aroma y calidad hasta el momento de disfrutarla.\n\nUna bondiola premium, elaborada artesanalmente con dedicación, tiempo y pasión."}, {"emoji": "🫙", "id": "conservas", "titulo": "ELABORACIÓN DE CONSERVAS", "texto": "Todo comienza con ingredientes frescos, seleccionados cuidadosamente y el tiempo necesario para hacer las cosas bien. Porque la calidad no se apura: se construye con paciencia, dedicación y pasión.\n\nElegimos frutas y vegetales de primera calidad, los preparamos y combinamos artesanalmente para realzar sus sabores naturales. Luego inicia el proceso de elaboración, donde cada ingrediente se cocina lentamente con especias y condimentos cuidadosamente seleccionados, desarrollando aromas intensos, texturas delicadas y un sabor profundo e irresistible.\n\nDespués, envasamos cada conserva respetando rigurosos procesos de higiene y seguridad, para preservar sus propiedades, frescura y calidad. El resultado es una conserva sabrosa, equilibrada y llena de carácter, elaborada con ingredientes nobles y el cuidado de siempre.\n\nFinalmente, sellamos y etiquetamos cada frasco cuidadosamente para conservar todo su sabor y calidad hasta el momento de disfrutarlo.\n\nConservas premium, elaboradas artesanalmente con dedicación, tiempo y pasión."}], "subtitulo": "Donde todo comienza", "telefono": "", "whatsapp": "5491134890644", "logo": "logo-origen81.jpg", "portada": "logo-origen81.jpg"};
 const DATA_DEFAULT = [{"id": 1, "categoria": "Cervezas", "nombre": "Cerveza ORIGEN 81 - Rubia", "descripcion": "Sin filtrar, sin pasteurizar. Viva, artesanal.", "precio": 2800, "img": "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=600", "destacado": true}, {"id": 2, "categoria": "Cervezas", "nombre": "Cerveza ORIGEN 81 - IPA", "descripcion": "Lúpulo intenso, equilibrio perfecto", "precio": 3200, "img": "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600"}, {"id": 3, "categoria": "Fiambres", "nombre": "Bondiola Premium Curada", "descripcion": "Curada artesanal, especias naturales, maduración controlada", "precio": 8500, "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-3-1790116965106.jpg", "destacado": true}, {"id": 4, "categoria": "Fiambres", "nombre": "Picada ORIGEN 81 p/2", "descripcion": "Bondiola, jamón, queso, conservas de la casa", "precio": 18900, "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-4-1790160915868.jpg"}, {"id": 5, "categoria": "Conservas", "nombre": "Conserva de Berenjenas", "descripcion": "Frasco 360cc, receta artesanal", "precio": 4500, "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-5-1790116985595.jpg"}];
-
 let CONFIG = CONFIG_DEFAULT;
 let DATA = DATA_DEFAULT;
 let modo = 'retiro';
 let catActiva = 'Todos';
 let CARRITO = [];
 let clientData = {nombre:'', telefono:'', direccion:''};
-
 async function init(){
   try{
     const slug = location.pathname.split('/').filter(Boolean).pop() || 'origen-81';
@@ -84,7 +56,7 @@ async function init(){
 function renderHero(){
   const h=document.getElementById('hero');
   const logo = CONFIG.logo || 'logo-origen81.jpg';
-  h.innerHTML='<img class="logo" src="'+logo+'"><div class="hero-overlay"></div><div class="hero-content"><h1>ORIGEN <span>81</span></h1><p>'+(CONFIG.direccion||'')+' - '+(CONFIG.subtitulo||'')+'</p></div>';
+  h.innerHTML='<img class="logo" src="'+logo+'" onerror="this.style.display=\'none\'"><div class="hero-overlay"></div><div class="hero-content"><h1>ORIGEN <span>81</span></h1><p>'+(CONFIG.direccion||'')+' - '+(CONFIG.subtitulo||'')+'</p></div>';
 }
 function renderTopInfo(){
   const el=document.getElementById('topinfo');
@@ -105,7 +77,7 @@ function renderCats(){
 }
 function renderGrid(){
   const grid=document.getElementById('grid'); const filtrados = catActiva==='Todos' ? DATA : DATA.filter(function(d){return d.categoria===catActiva}); grid.innerHTML='';
-  filtrados.forEach(function(p){ const div=document.createElement('div'); div.className='item'+(p.destacado?' destacado':''); div.innerHTML='<img src="'+p.img+'" onerror="this.style.display='none'"><div class="info"><div class="name">'+p.nombre+'</div><div class="desc">'+(p.descripcion||'')+'</div><div class="priceRow"><div class="price">$<span>'+Number(p.precio).toLocaleString('es-AR')+'</span></div><button class="add" data-id="'+p.id+'">+ Agregar</button></div></div>'; grid.appendChild(div); });
+  filtrados.forEach(function(p){ const div=document.createElement('div'); div.className='item'+(p.destacado?' destacado':''); div.innerHTML='<img src="'+p.img+'" onerror="this.style.display=\'none\'"><div class="info"><div class="name">'+p.nombre+'</div><div class="desc">'+(p.descripcion||'')+'</div><div class="priceRow"><div class="price">$<span>'+Number(p.precio).toLocaleString('es-AR')+'</span></div><button class="add" data-id="'+p.id+'">+ Agregar</button></div></div>'; grid.appendChild(div); });
   grid.querySelectorAll('.add').forEach(function(btn){ btn.addEventListener('click', function(){ add(Number(btn.dataset.id)); }); });
 }
 function renderForm(){
