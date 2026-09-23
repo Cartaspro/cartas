@@ -40,13 +40,5 @@
     "descripcion": "Frasco 360cc, receta artesanal",
     "precio": 4500,
     "img": "https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-5-1790116985595.jpg"
-  },
-  {
-    "id": 6,
-    "categoria": "Conservas",
-    "nombre": "Tomates Confitados",
-    "descripcion": "Frasco 360cc, aceite de oliva y especias",
-    "precio": 5200,
-    "img": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?w=600"
   }
 ]
