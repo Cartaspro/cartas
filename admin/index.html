@@ -1,228 +1,34 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin V3 - Preserva Imagenes + Export para IA</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
-body{background:#0f0f0f;color:#fff}
-.top{padding:14px 18px;border-bottom:1px solid #1c1c1c;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#0f0f0f;z-index:20}
-.main{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:330px 1fr;min-height:100vh}
-@media(max-width:1100px){.main{grid-template-columns:1fr}}
-.left{border-right:1px solid #1c1c1c;padding:14px} .right{padding:14px;display:flex;flex-direction:column;gap:14px}
-.card{background:#1c1c1c;border:1px solid #262626;border-radius:18px;padding:16px}
-input,textarea,select{background:#0f0f0f;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;width:100%;font-size:14px}
-.btn{padding:10px 16px;border-radius:100px;border:0;font-weight:800;cursor:pointer;font-size:12px}
-.btn-w{background:#fff;color:#000} .btn-r{background:#E11D48;color:#fff} .btn-g{background:#262626;color:#fff} .btn-y{background:#FFD60A;color:#000} .btn-del{background:#ff0033;color:#fff} .btn-green{background:#00ff88;color:#000}
-.client{padding:11px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;background:#0f0f0f;border:1px solid #1c1c1c;font-size:13px;cursor:pointer}
-.client.active{border-color:#fff;background:#fff;color:#000}
-.status{font-size:10px;padding:4px 8px;border-radius:100px;font-weight:800} .ok{background:#00ff88;color:#000} .baja{background:#ff0033;color:#fff}
-.preview{width:100%;height:460px;border-radius:16px;border:1px solid #262626;background:#000}
-.kv{margin-bottom:12px} .kv label{display:block;font-size:11px;color:#FFD60A;font-weight:800;margin-bottom:6px;text-transform:uppercase}
-.prod-card{background:#101010;border:1px solid #262626;border-radius:16px;padding:14px;display:grid;grid-template-columns:90px 1fr;gap:14px;margin-bottom:14px;position:relative}
-.prod-card.locked{border-color:#FFD60A}
-.prod-card img{width:90px;height:90px;border-radius:12px;object-fit:cover;background:#1c1c1c}
-.field{display:flex;flex-direction:column;margin-bottom:8px} .field label{font-size:10px;color:#888;font-weight:700;margin-bottom:4px;text-transform:uppercase}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.small{font-size:11px;color:#777;margin-top:6px;line-height:1.4}
-.uploadBox{border:1px dashed #444;border-radius:10px;padding:8px;text-align:center;cursor:pointer;background:#0f0f0f}
-.badge{font-size:10px;background:#0f0f0f;border:1px solid #262626;padding:5px 9px;border-radius:100px;color:#888}
-.lock-badge{position:absolute;top:8px;right:8px;background:#FFD60A;color:#000;font-size:9px;padding:4px 8px;border-radius:100px;font-weight:900}
-.exportZone{background:#101010;border:2px dashed #FFD60A;border-radius:18px;padding:18px}
-.exportZone textarea{height:180px;font-family:monospace;font-size:11px}
+<html lang="en">
+<head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
 </style>
-</head><body>
-<div class="top">
-<div style="font-weight:900;display:flex;gap:10px;align-items:center"><div style="width:28px;height:28px;background:#FFD60A;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#000">V3</div> Admin V3 - Preserva cambios + Export para IA</div>
-<div style="display:flex;gap:8px"><input id="token" type="password" placeholder="ghp_..." style="width:220px"><button class="btn btn-w" onclick="saveTok()">Guardar token</button></div>
-</div>
-
-<div class="main">
-<div class="left">
-<div class="card"><b>Clientes</b><div id="list" style="margin-top:10px">Cargando...</div></div>
-<div class="card"><b style="font-size:12px">Subir 3 archivos cliente nuevo</b><input id="slugNew" placeholder="slug: queseria-don-pablo" style="margin-top:8px"><div id="drop" style="margin-top:8px;border:1px dashed #444;border-radius:12px;padding:14px;text-align:center;font-size:12px;color:#888;cursor:pointer">Arrastrá acá<input id="fileIn" type="file" multiple hidden></div><button class="btn btn-w" style="width:100%;margin-top:8px" onclick="subir()">Subir</button><div id="upOut" class="small"></div></div>
-</div>
-
-<div class="right">
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center"><b id="title">Elegí cliente</b><div><button class="btn btn-g" onclick="reload()">↻ Vista</button> <button class="btn btn-g" onclick="openReal()">Abrir real</button></div></div>
-<iframe id="prev" class="preview" style="margin-top:10px"></iframe>
-<div id="estadoZone" style="margin-top:12px"></div>
-</div>
-
-<!-- NUEVO BLOQUE EXPORT PARA IA -->
-<div class="card exportZone">
-<b style="color:#FFD60A">🔒 EXPORTAR PARA IA - PRESERVA TODO LO QUE CAMBIASTE</b>
-<div class="small" style="color:#fff;margin-top:8px">Este es el nuevo flujo que me pediste: cuando subas fotos reales, cambies descripciones, precios, etc., y luego quieras que yo agregue una función nueva, NO me pases 3 archivos sueltos. Usá este botón y pasame UN solo archivo que ya incluye todas tus modificaciones con imágenes reales.</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
-<button class="btn btn-y" style="width:100%" onclick="generarPaqueteIA()">📦 Generar paquete completo para IA</button>
-<button class="btn btn-g" style="width:100%" onclick="descargarPaqueteIA()">⬇️ Descargar JSON</button>
-</div>
-<div style="margin-top:12px"><label style="font-size:10px;color:#FFD60A;font-weight:800">ESTE TEXTO ES LO QUE ME TENES QUE PASAR A MI (copialo o subí el archivo)</label><textarea id="exportTxt" placeholder="Acá va a aparecer el paquete completo con config + data + imágenes reales..."></textarea></div>
-<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-w" onclick="copiarExport()">📋 Copiar</button><button class="btn btn-green" onclick="importarPaquete()">📥 Importar paquete (si te lo paso yo)</button></div>
-<div id="exportInfo" class="small"></div>
-</div>
-
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center"><b>CONFIG - Dirección, Maps, Envío FIJO</b><button class="btn btn-w" onclick="guardarConfig()">💾 Guardar config</button></div>
-<div id="configEditor" style="margin-top:14px"></div>
-<div id="outC" class="small"></div>
-</div>
-
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center"><b>PRODUCTOS - Con candado de imagen real</b><div><span style="font-size:10px;color:#FFD60A">🔒 = imagen real preservada</span> <button class="btn btn-w" onclick="guardarData()">💾 Guardar productos</button></div></div>
-<div class="small">Si subiste una foto real, queda con candado amarillo y YO NO LA VOY A REEMPLAZAR cuando me pidas cambios. Así no tenés que reconfigurar.</div>
-<div id="prods" style="margin-top:14px"></div>
-<div style="margin-top:10px;display:flex;gap:8px"><button class="btn btn-g" onclick="addProd()">+ Producto</button></div>
-<div id="out" class="small"></div>
-</div>
-</div>
-</div>
-
-<script>
-let TOKEN=localStorage.getItem('cp_token')||''; let REPO=localStorage.getItem('cp_repo')||'Cartaspro/cartas';
-document.getElementById('token').value=TOKEN;
-let DATA=[]; let CONFIG={}; let CURRENT=''; let FILES=[]; let ULTIMO_PAQUETE=null;
-
-function saveTok(){ TOKEN=document.getElementById('token').value.trim(); localStorage.setItem('cp_token',TOKEN); listar(); }
-function gh(path,method='GET',body=null){ const url=`https://api.github.com/repos/${REPO}/contents/${path}`; const h={Authorization:`token ${TOKEN}`,Accept:'application/vnd.github.v3+json'}; const o={method,headers:h}; if(body) o.body=JSON.stringify(body); return fetch(url,o); }
-
-async function listar(){
- const out=document.getElementById('list'); out.innerHTML='Cargando...';
- try{
-  const r=await gh('config'); if(!r.ok){ out.innerHTML='Poné token'; return; }
-  const files=await r.json(); const slugs=files.filter(f=>f.name.endsWith('.json')).map(f=>f.name.replace('.json',''));
-  out.innerHTML='';
-  for(const slug of slugs){
-    const rc=await gh(`config/${slug}.json`); let estado='ok'; let cfg={}; if(rc.ok){ const j=await rc.json(); cfg=JSON.parse(decodeURIComponent(escape(atob(j.content)))); estado=(cfg.activo===false||cfg.estado==='baja')?'baja':'ok'; }
-    const div=document.createElement('div'); div.className='client'+(slug===CURRENT?' active':''); div.innerHTML=`<span>${slug}</span><span class="status ${estado}">${estado.toUpperCase()}</span>`;
-    div.onclick=()=>cargar(slug); out.appendChild(div);
-  }
- }catch(e){ out.innerHTML='Error '+e; }
-}
-
-async function cargar(slug){
- CURRENT=slug; document.getElementById('title').innerText=slug; listar();
- const rc=await gh(`config/${slug}.json`); if(rc.ok){ const j=await rc.json(); CONFIG=JSON.parse(decodeURIComponent(escape(atob(j.content)))); } else CONFIG={};
- const rd=await gh(`data/${slug}.json`); if(rd.ok){ const j=await rd.json(); DATA=JSON.parse(decodeURIComponent(escape(atob(j.content)))); } else DATA=[];
- renderConfig(); renderData(); renderEstado(); reload();
-}
-
-function renderEstado(){
- const z=document.getElementById('estadoZone');
- const esBaja=(CONFIG.activo===false||CONFIG.estado==='baja');
- z.innerHTML=`<div style="display:flex;gap:8px;align-items:center;background:#101010;border-radius:12px;padding:12px"><span>Estado: <b>${esBaja?'BAJA':'ACTIVA'}</b></span><button class="btn ${esBaja?'btn-w':'btn-r'}" onclick="toggleBaja()">${esBaja?'Activar':'Dar de baja'}</button></div>`;
-}
-async function toggleBaja(){
- const esBaja=(CONFIG.activo===false||CONFIG.estado==='baja');
- if(esBaja){ CONFIG.activo=true; CONFIG.estado='activo'; await guardarConfig(true); const rb=await gh(`${CURRENT}/index.html`); if(rb.ok){ const jb=await rb.json(); await gh(`backup-baja/${CURRENT}-${Date.now()}.html`,'PUT',{message:`backup baja ${CURRENT}`,content:jb.content,sha:undefined}); } const resIdx=await fetch(`https://raw.githubusercontent.com/${REPO}/main/backup-baja/last-${CURRENT}.html`).then(r=>r.ok?r.text():null).catch(()=>null); } else { CONFIG.activo=false; CONFIG.estado='baja'; }
- await guardarConfig(true); listar(); reload();
-}
-
-function renderConfig(){
- const c=document.getElementById('configEditor'); c.innerHTML='';
- const show=['nombre','subtitulo','direccion','telefono','whatsapp','horarios','googleMaps','envio','activo','estado'];
- for(const k of show){ if(CONFIG[k]===undefined) continue; const v=CONFIG[k];
-   if(v!==null && typeof v==='object' && !Array.isArray(v)){
-     let html=`<div class="kv" style="border:1px solid #2a2a2a;border-radius:12px;padding:10px;margin-bottom:10px"><b style="font-size:11px">${k}</b>`;
-     for(const [sk,sv] of Object.entries(v)){ html+=`<div class="kv"><label>${k}.${sk}</label><input value="${String(sv).replace(/"/g,'&quot;')}" oninput="setNested('${k}','${sk}',this.value)"></div>`; }
-     html+=`</div>`; c.innerHTML+=html;
-   } else {
-     c.innerHTML+=`<div class="kv"><label>${k}</label><input value="${String(v).replace(/"/g,'&quot;')}" oninput="setFlat('${k}',this.value)"></div>`;
-   }
- }
-}
-function setFlat(k,val){ CONFIG[k]=coerce(val); }
-function setNested(pk,sk,val){ if(!CONFIG[pk]) CONFIG[pk]={}; CONFIG[pk][sk]=coerce(val); }
-function coerce(val){ if(val==='true') return true; if(val==='false') return false; if(val!=='' && !isNaN(val) && String(Number(val))===val) return Number(val); return val; }
-
-function renderData(){
- const container=document.getElementById('prods'); container.innerHTML='';
- DATA.forEach((p,i)=>{
-   const esReal = p.img && !p.img.includes('unsplash.com') && !p.img.includes('placeholder');
-   container.innerHTML+=`
-   <div class="prod-card ${esReal?'locked':''}">
-    ${esReal?'<div class="lock-badge">🔒 IMAGEN REAL</div>':''}
-    <div><img id="img_${i}" src="${p.img||''}" onerror="this.style.opacity=.2"><div class="uploadBox" style="margin-top:8px" onclick="document.getElementById('file_${i}').click()">📷 Cambiar foto<br><span style="font-size:10px">WhatsApp / PC</span></div><input id="file_${i}" type="file" accept="image/*" hidden onchange="subirFoto(this,${i})"><div id="up_${i}" class="small"></div></div>
-    <div>
-     <div class="field"><label>Nombre</label><input value="${esc(p.nombre||'')}" oninput="DATA[${i}].nombre=this.value"></div>
-     <div class="row2"><div class="field"><label>Precio $</label><input type="number" value="${p.precio||0}" oninput="DATA[${i}].precio=Number(this.value)"></div><div class="field"><label>Categoria</label><input value="${esc(p.categoria||'')}" oninput="DATA[${i}].categoria=this.value"></div></div>
-     <div class="field"><label>Descripcion</label><textarea oninput="DATA[${i}].descripcion=this.value">${esc(p.descripcion||'')}</textarea></div>
-     <div class="field"><label>IMG URL - si es real queda con candado y no se borra</label><input id="url_${i}" value="${esc(p.img||'')}" oninput="DATA[${i}].img=this.value;document.getElementById('img_${i}').src=this.value"></div>
-     <div style="display:flex;justify-content:space-between;margin-top:8px"><span class="badge">ID ${p.id}</span><button class="btn btn-g" onclick="DATA.splice(${i},1);renderData()">Borrar</button></div>
-    </div>
-   </div>`;
- });
-}
-function esc(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-function addProd(){ const nid=DATA.length?Math.max(...DATA.map(p=>p.id||0))+1:1; DATA.push({id:nid,nombre:'Nuevo',precio:0,categoria:'',descripcion:'',img:''}); renderData(); }
-
-async function subirFoto(input, idx){
- const file=input.files[0]; if(!file) return;
- const out=document.getElementById('up_'+idx); out.innerText='Subiendo...';
- const reader=new FileReader();
- reader.onload=async function(){
-   const base64=reader.result.split(',')[1];
-   const ext=file.name.split('.').pop()||'jpg';
-   const path=`img/${CURRENT}/${CURRENT}-${DATA[idx].id}-${Date.now()}.${ext}`;
-   try{
-     const ex=await gh(path); let sha=null; if(ex.ok){ const ej=await ex.json(); sha=ej.sha; }
-     const res=await gh(path,'PUT',{message:`foto ${DATA[idx].nombre}`,content:base64,sha:sha||undefined});
-     if(res.ok){
-       const url=`https://raw.githubusercontent.com/${REPO}/main/${path}`;
-       DATA[idx].img=url; document.getElementById('img_'+idx).src=url; document.getElementById('url_'+idx).value=url; out.innerText='✓ Foto real guardada - quedará con candado'; renderData();
-     } else { out.innerText='Error '+(await res.json()).message; }
-   }catch(e){ out.innerText='Error '+e; }
- };
- reader.readAsDataURL(file);
-}
-
-async function guardarConfig(silent=false){ if(!CURRENT) return; const r1=await gh(`config/${CURRENT}.json`); const j1=await r1.json(); const res=await gh(`config/${CURRENT}.json`,'PUT',{message:`config ${CURRENT}`,sha:j1.sha,content:btoa(unescape(encodeURIComponent(JSON.stringify(CONFIG,null,2))))}); if(!silent) document.getElementById('outC').innerText=res.ok?'✓ Config guardada':'Error'; reload(); listar(); }
-async function guardarData(silent=false){ if(!CURRENT) return; const r1=await gh(`data/${CURRENT}.json`); const j1=await r1.json(); const res=await gh(`data/${CURRENT}.json`,'PUT',{message:`data ${CURRENT}`,sha:j1.sha,content:btoa(unescape(encodeURIComponent(JSON.stringify(DATA,null,2))))}); if(!silent) document.getElementById('out').innerText=res.ok?'✓ Productos guardados - imágenes reales preservadas':'Error'; reload(); }
-
-function generarPaqueteIA(){
- if(!CURRENT){ alert('Elegí un cliente primero'); return; }
- const paquete={
-   _version:'v3-preserva',
-   _instruccion:'ESTE JSON YA TIENE TODAS TUS MODIFICACIONES REALES - NO REEMPLACES LAS IMAGENES',
-   slug:CURRENT,
-   timestamp:new Date().toISOString(),
-   config:CONFIG,
-   data:DATA,
-   stats:{
-     totalProductos:DATA.length,
-     imagenesReales:DATA.filter(p=>p.img && !p.img.includes('unsplash')).length,
-     imagenesUnsplash:DATA.filter(p=>p.img && p.img.includes('unsplash')).length
-   }
- };
- ULTIMO_PAQUETE=paquete;
- document.getElementById('exportTxt').value=JSON.stringify(paquete,null,2);
- document.getElementById('exportInfo').innerHTML=`✓ Paquete generado: ${DATA.length} productos, ${paquete.stats.imagenesReales} con imagen real preservada. Pasame este archivo o copiá el texto y pegámelo en el chat. Yo voy a respetar esas imágenes.`;
-}
-
-function descargarPaqueteIA(){
- if(!ULTIMO_PAQUETE) generarPaqueteIA();
- if(!ULTIMO_PAQUETE) return;
- const blob=new Blob([JSON.stringify(ULTIMO_PAQUETE,null,2)],{type:'application/json'});
- const url=URL.createObjectURL(blob);
- const a=document.createElement('a'); a.href=url; a.download=`${CURRENT}-COMPLETO-PARA-IA.json`; a.click(); URL.revokeObjectURL(url);
-}
-
-function copiarExport(){ const t=document.getElementById('exportTxt'); t.select(); document.execCommand('copy'); document.getElementById('exportInfo').innerText='✓ Copiado al portapapeles'; }
-
-function importarPaquete(){
- try{
-   const txt=document.getElementById('exportTxt').value; if(!txt) return alert('Pegá un paquete primero');
-   const p=JSON.parse(txt); if(p.config) CONFIG=p.config; if(p.data) DATA=p.data; if(p.slug) CURRENT=p.slug;
-   renderConfig(); renderData(); renderEstado(); document.getElementById('exportInfo').innerText='✓ Paquete importado - ahora podés guardar a GitHub';
- }catch(e){ alert('JSON inválido: '+e); }
-}
-
-function reload(){ if(CURRENT) document.getElementById('prev').src=`https://cartaspro.github.io/cartas/${CURRENT}/?v=${Date.now()}`; }
-function openReal(){ if(CURRENT) window.open(`https://cartaspro.github.io/cartas/${CURRENT}/`,'_blank'); }
-const drop=document.getElementById('drop'); const fileIn=document.getElementById('fileIn');
-if(drop){ drop.addEventListener('click',()=>fileIn.click()); drop.addEventListener('dragover',e=>e.preventDefault()); drop.addEventListener('drop',e=>{e.preventDefault(); FILES=[...e.dataTransfer.files]; document.getElementById('upOut').innerText=FILES.map(f=>f.name).join('\n');}); fileIn.addEventListener('change',()=>{ FILES=[...fileIn.files]; document.getElementById('upOut').innerText=FILES.map(f=>f.name).join('\n');}); }
-async function subir(){ const slug=document.getElementById('slugNew').value.trim().toLowerCase().replace(/\s+/g,'-'); if(!slug||!FILES.length) return alert('Falta slug o archivos'); for(let file of FILES){ const text=await file.text(); let path=''; if(file.name.toLowerCase().endsWith('.html')) path=`${slug}/index.html`; else { try{ const j=JSON.parse(text); if(Array.isArray(j)) path=`data/${slug}.json`; else path=`config/${slug}.json`; }catch{ path=`config/${slug}.json`; } } const ex=await gh(path); let sha=null; if(ex.ok){ const ej=await ex.json(); sha=ej.sha; } await gh(path,'PUT',{message:`upload ${path}`,content:btoa(unescape(encodeURIComponent(text))),...(sha?{sha}:{})}); } document.getElementById('upOut').innerText+='\n✓ Subido'; listar(); }
-
-listar();
-</script>
-</body></html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>React Artifact</title>
+  <style>*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.18 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.flex{display:flex}.table{display:table}.hidden{display:none}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.border{border-width:1px}.outline{outline-style:solid}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}#root,body,html{min-height:100%}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif}[role=button]:not([aria-disabled=true]),button:not(:disabled),label[for],select:not(:disabled),summary{cursor:pointer}</style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="module">var Wc=Object.create;var{getPrototypeOf:Hc,defineProperty:Tl,getOwnPropertyNames:Qc}=Object;var Kc=Object.prototype.hasOwnProperty;var mn=(e,n,t)=>{t=e!=null?Wc(Hc(e)):{};let r=n||!e||!e.__esModule?Tl(t,"default",{value:e,enumerable:!0}):t;for(let l of Qc(e))if(!Kc.call(r,l))Tl(r,l,{get:()=>e[l],enumerable:!0});return r};var ir=(e,n)=>()=>(n||e((n={exports:{}}).exports,n),n.exports);var Yc=(e,n)=>{for(var t in n)Tl(e,t,{get:n[t],enumerable:!0,configurable:!0,set:(r)=>n[t]=()=>r})};var Xc=(e,n)=>()=>(e&&(n=e(e=0)),n);var ct=ir((ff)=>{var at=Symbol.for("react.element"),Gc=Symbol.for("react.portal"),Zc=Symbol.for("react.fragment"),Jc=Symbol.for("react.strict_mode"),qc=Symbol.for("react.profiler"),bc=Symbol.for("react.provider"),ef=Symbol.for("react.context"),nf=Symbol.for("react.forward_ref"),tf=Symbol.for("react.suspense"),rf=Symbol.for("react.memo"),lf=Symbol.for("react.lazy"),bi=Symbol.iterator;function of(e){if(e===null||typeof e!=="object")return null;return e=bi&&e[bi]||e["@@iterator"],typeof e==="function"?e:null}var tu={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},ru=Object.assign,lu={};function Rn(e,n,t){this.props=e,this.context=n,this.refs=lu,this.updater=t||tu}Rn.prototype.isReactComponent={};Rn.prototype.setState=function(e,n){if(typeof e!=="object"&&typeof e!=="function"&&e!=null)throw Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");this.updater.enqueueSetState(this,e,n,"setState")};Rn.prototype.forceUpdate=function(e){this.updater.enqueueForceUpdate(this,e,"forceUpdate")};function ou(){}ou.prototype=Rn.prototype;function Rl(e,n,t){this.props=e,this.context=n,this.refs=lu,this.updater=t||tu}var Il=Rl.prototype=new ou;Il.constructor=Rl;ru(Il,Rn.prototype);Il.isPureReactComponent=!0;var eu=Array.isArray,iu=Object.prototype.hasOwnProperty,Ml={current:null},uu={key:!0,ref:!0,__self:!0,__source:!0};function su(e,n,t){var r,l={},o=null,i=null;if(n!=null)for(r in n.ref!==void 0&&(i=n.ref),n.key!==void 0&&(o=""+n.key),n)iu.call(n,r)&&!uu.hasOwnProperty(r)&&(l[r]=n[r]);var u=arguments.length-2;if(u===1)l.children=t;else if(1<u){for(var s=Array(u),f=0;f<u;f++)s[f]=arguments[f+2];l.children=s}if(e&&e.defaultProps)for(r in u=e.defaultProps,u)l[r]===void 0&&(l[r]=u[r]);return{$$typeof:at,type:e,key:o,ref:i,props:l,_owner:Ml.current}}function uf(e,n){return{$$typeof:at,type:e.type,key:n,ref:e.ref,props:e.props,_owner:e._owner}}function Fl(e){return typeof e==="object"&&e!==null&&e.$$typeof===at}function sf(e){var n={"=":"=0",":":"=2"};return"$"+e.replace(/[=:]/g,function(t){return n[t]})}var nu=/\/+/g;function Ll(e,n){return typeof e==="object"&&e!==null&&e.key!=null?sf(""+e.key):n.toString(36)}function sr(e,n,t,r,l){var o=typeof e;if(o==="undefined"||o==="boolean")e=null;var i=!1;if(e===null)i=!0;else switch(o){case"string":case"number":i=!0;break;case"object":switch(e.$$typeof){case at:case Gc:i=!0}}if(i)return i=e,l=l(i),e=r===""?"."+Ll(i,0):r,eu(l)?(t="",e!=null&&(t=e.replace(nu,"$&/")+"/"),sr(l,n,t,"",function(f){return f})):l!=null&&(Fl(l)&&(l=uf(l,t+(!l.key||i&&i.key===l.key?"":(""+l.key).replace(nu,"$&/")+"/")+e)),n.push(l)),1;if(i=0,r=r===""?".":r+":",eu(e))for(var u=0;u<e.length;u++){o=e[u];var s=r+Ll(o,u);i+=sr(o,n,t,s,l)}else if(s=of(e),typeof s==="function")for(e=s.call(e),u=0;!(o=e.next()).done;)o=o.value,s=r+Ll(o,u++),i+=sr(o,n,t,s,l);else if(o==="object")throw n=String(e),Error("Objects are not valid as a React child (found: "+(n==="[object Object]"?"object with keys {"+Object.keys(e).join(", ")+"}":n)+"). If you meant to render a collection of children, use an array instead.");return i}function ur(e,n,t){if(e==null)return e;var r=[],l=0;return sr(e,r,"","",function(o){return n.call(t,o,l++)}),r}function af(e){if(e._status===-1){var n=e._result;n=n(),n.then(function(t){if(e._status===0||e._status===-1)e._status=1,e._result=t},function(t){if(e._status===0||e._status===-1)e._status=2,e._result=t}),e._status===-1&&(e._status=0,e._result=n)}if(e._status===1)return e._result.default;throw e._result}var ee={current:null},ar={transition:null},cf={ReactCurrentDispatcher:ee,ReactCurrentBatchConfig:ar,ReactCurrentOwner:Ml};function au(){throw Error("act(...) is not supported in production builds of React.")}ff.Children={map:ur,forEach:function(e,n,t){ur(e,function(){n.apply(this,arguments)},t)},count:function(e){var n=0;return ur(e,function(){n++}),n},toArray:function(e){return ur(e,function(n){return n})||[]},only:function(e){if(!Fl(e))throw Error("React.Children.only expected to receive a single React element child.");return e}};ff.Component=Rn;ff.Fragment=Zc;ff.Profiler=qc;ff.PureComponent=Rl;ff.StrictMode=Jc;ff.Suspense=tf;ff.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED=cf;ff.act=au;ff.cloneElement=function(e,n,t){if(e===null||e===void 0)throw Error("React.cloneElement(...): The argument must be a React element, but you passed "+e+".");var r=ru({},e.props),l=e.key,o=e.ref,i=e._owner;if(n!=null){if(n.ref!==void 0&&(o=n.ref,i=Ml.current),n.key!==void 0&&(l=""+n.key),e.type&&e.type.defaultProps)var u=e.type.defaultProps;for(s in n)iu.call(n,s)&&!uu.hasOwnProperty(s)&&(r[s]=n[s]===void 0&&u!==void 0?u[s]:n[s])}var s=arguments.length-2;if(s===1)r.children=t;else if(1<s){u=Array(s);for(var f=0;f<s;f++)u[f]=arguments[f+2];r.children=u}return{$$typeof:at,type:e.type,key:l,ref:o,props:r,_owner:i}};ff.createContext=function(e){return e={$$typeof:ef,_currentValue:e,_currentValue2:e,_threadCount:0,Provider:null,Consumer:null,_defaultValue:null,_globalName:null},e.Provider={$$typeof:bc,_context:e},e.Consumer=e};ff.createElement=su;ff.createFactory=function(e){var n=su.bind(null,e);return n.type=e,n};ff.createRef=function(){return{current:null}};ff.forwardRef=function(e){return{$$typeof:nf,render:e}};ff.isValidElement=Fl;ff.lazy=function(e){return{$$typeof:lf,_payload:{_status:-1,_result:e},_init:af}};ff.memo=function(e,n){return{$$typeof:rf,type:e,compare:n===void 0?null:n}};ff.startTransition=function(e){var n=ar.transition;ar.transition={};try{e()}finally{ar.transition=n}};ff.unstable_act=au;ff.useCallback=function(e,n){return ee.current.useCallback(e,n)};ff.useContext=function(e){return ee.current.useContext(e)};ff.useDebugValue=function(){};ff.useDeferredValue=function(e){return ee.current.useDeferredValue(e)};ff.useEffect=function(e,n){return ee.current.useEffect(e,n)};ff.useId=function(){return ee.current.useId()};ff.useImperativeHandle=function(e,n,t){return ee.current.useImperativeHandle(e,n,t)};ff.useInsertionEffect=function(e,n){return ee.current.useInsertionEffect(e,n)};ff.useLayoutEffect=function(e,n){return ee.current.useLayoutEffect(e,n)};ff.useMemo=function(e,n){return ee.current.useMemo(e,n)};ff.useReducer=function(e,n,t){return ee.current.useReducer(e,n,t)};ff.useRef=function(e){return ee.current.useRef(e)};ff.useState=function(e){return ee.current.useState(e)};ff.useSyncExternalStore=function(e,n,t){return ee.current.useSyncExternalStore(e,n,t)};ff.useTransition=function(){return ee.current.useTransition()};ff.version="18.3.1"});var vu=ir((Gf)=>{function Dl(e,n){var t=e.length;e.push(n);e:for(;0<t;){var r=t-1>>>1,l=e[r];if(0<cr(l,n))e[r]=n,e[t]=l,t=r;else break e}}function Se(e){return e.length===0?null:e[0]}function mr(e){if(e.length===0)return null;var n=e[0],t=e.pop();if(t!==n){e[0]=t;e:for(var r=0,l=e.length,o=l>>>1;r<o;){var i=2*(r+1)-1,u=e[i],s=i+1,f=e[s];if(0>cr(u,t))s<l&&0>cr(f,u)?(e[r]=f,e[s]=t,r=s):(e[r]=u,e[i]=t,r=i);else if(s<l&&0>cr(f,t))e[r]=f,e[s]=t,r=s;else break e}}return n}function cr(e,n){var t=e.sortIndex-n.sortIndex;return t!==0?t:e.id-n.id}if(typeof performance==="object"&&typeof performance.now==="function")jl=performance,Gf.unstable_now=function(){return jl.now()};else fr=Date,Ul=fr.now(),Gf.unstable_now=function(){return fr.now()-Ul};var jl,fr,Ul,ze=[],Ke=[],Xf=1,pe=null,G=3,hr=!1,hn=!1,dt=!1,fu=typeof setTimeout==="function"?setTimeout:null,du=typeof clearTimeout==="function"?clearTimeout:null,cu=typeof setImmediate<"u"?setImmediate:null;typeof navigator<"u"&&navigator.scheduling!==void 0&&navigator.scheduling.isInputPending!==void 0&&navigator.scheduling.isInputPending.bind(navigator.scheduling);function Al(e){for(var n=Se(Ke);n!==null;){if(n.callback===null)mr(Ke);else if(n.startTime<=e)mr(Ke),n.sortIndex=n.expirationTime,Dl(ze,n);else break;n=Se(Ke)}}function Bl(e){if(dt=!1,Al(e),!hn)if(Se(ze)!==null)hn=!0,Wl($l);else{var n=Se(Ke);n!==null&&Hl(Bl,n.startTime-e)}}function $l(e,n){hn=!1,dt&&(dt=!1,du(pt),pt=-1),hr=!0;var t=G;try{Al(n);for(pe=Se(ze);pe!==null&&(!(pe.expirationTime>n)||e&&!hu());){var r=pe.callback;if(typeof r==="function"){pe.callback=null,G=pe.priorityLevel;var l=r(pe.expirationTime<=n);n=Gf.unstable_now(),typeof l==="function"?pe.callback=l:pe===Se(ze)&&mr(ze),Al(n)}else mr(ze);pe=Se(ze)}if(pe!==null)var o=!0;else{var i=Se(Ke);i!==null&&Hl(Bl,i.startTime-n),o=!1}return o}finally{pe=null,G=t,hr=!1}}var vr=!1,dr=null,pt=-1,pu=5,mu=-1;function hu(){return Gf.unstable_now()-mu<pu?!1:!0}function Ol(){if(dr!==null){var e=Gf.unstable_now();mu=e;var n=!0;try{n=dr(!0,e)}finally{n?ft():(vr=!1,dr=null)}}else vr=!1}var ft;if(typeof cu==="function")ft=function(){cu(Ol)};else if(typeof MessageChannel<"u")pr=new MessageChannel,Vl=pr.port2,pr.port1.onmessage=Ol,ft=function(){Vl.postMessage(null)};else ft=function(){fu(Ol,0)};var pr,Vl;function Wl(e){dr=e,vr||(vr=!0,ft())}function Hl(e,n){pt=fu(function(){e(Gf.unstable_now())},n)}Gf.unstable_IdlePriority=5;Gf.unstable_ImmediatePriority=1;Gf.unstable_LowPriority=4;Gf.unstable_NormalPriority=3;Gf.unstable_Profiling=null;Gf.unstable_UserBlockingPriority=2;Gf.unstable_cancelCallback=function(e){e.callback=null};Gf.unstable_continueExecution=function(){hn||hr||(hn=!0,Wl($l))};Gf.unstable_forceFrameRate=function(e){0>e||125<e?console.error("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"):pu=0<e?Math.floor(1000/e):5};Gf.unstable_getCurrentPriorityLevel=function(){return G};Gf.unstable_getFirstCallbackNode=function(){return Se(ze)};Gf.unstable_next=function(e){switch(G){case 1:case 2:case 3:var n=3;break;default:n=G}var t=G;G=n;try{return e()}finally{G=t}};Gf.unstable_pauseExecution=function(){};Gf.unstable_requestPaint=function(){};Gf.unstable_runWithPriority=function(e,n){switch(e){case 1:case 2:case 3:case 4:case 5:break;default:e=3}var t=G;G=e;try{return n()}finally{G=t}};Gf.unstable_scheduleCallback=function(e,n,t){var r=Gf.unstable_now();switch(typeof t==="object"&&t!==null?(t=t.delay,t=typeof t==="number"&&0<t?r+t:r):t=r,e){case 1:var l=-1;break;case 2:l=250;break;case 5:l=1073741823;break;case 4:l=1e4;break;default:l=5000}return l=t+l,e={id:Xf++,callback:n,priorityLevel:e,startTime:t,expirationTime:l,sortIndex:-1},t>r?(e.sortIndex=t,Dl(Ke,e),Se(ze)===null&&e===Se(Ke)&&(dt?(du(pt),pt=-1):dt=!0,Hl(Bl,t-r))):(e.sortIndex=l,Dl(ze,e),hn||hr||(hn=!0,Wl($l))),e};Gf.unstable_shouldYield=hu;Gf.unstable_wrapCallback=function(e){var n=G;return function(){var t=G;G=n;try{return e.apply(this,arguments)}finally{G=t}}}});var Ji={};Yc(Ji,{version:()=>Lc,unstable_renderSubtreeIntoContainer:()=>Tc,unstable_batchedUpdates:()=>zc,unmountComponentAtNode:()=>Pc,render:()=>Nc,hydrateRoot:()=>_c,hydrate:()=>Cc,flushSync:()=>xc,findDOMNode:()=>Ec,createRoot:()=>kc,createPortal:()=>Sc,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:()=>wc});function v(e){for(var n="https://reactjs.org/docs/error-decoder.html?invariant="+e,t=1;t<arguments.length;t++)n+="&args[]="+encodeURIComponent(arguments[t]);return"Minified React error #"+e+"; visit "+n+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings."}function Tn(e,n){bn(e,n),bn(e+"Capture",n)}function bn(e,n){Ut[e]=n;for(e=0;e<n.length;e++)Es.add(n[e])}function hd(e){if(po.call(gu,e))return!0;if(po.call(yu,e))return!1;if(md.test(e))return gu[e]=!0;return yu[e]=!0,!1}function vd(e,n,t,r){if(t!==null&&t.type===0)return!1;switch(typeof n){case"function":case"symbol":return!0;case"boolean":if(r)return!1;if(t!==null)return!t.acceptsBooleans;return e=e.toLowerCase().slice(0,5),e!=="data-"&&e!=="aria-";default:return!1}}function yd(e,n,t,r){if(n===null||typeof n>"u"||vd(e,n,t,r))return!0;if(r)return!1;if(t!==null)switch(t.type){case 3:return!n;case 4:return n===!1;case 5:return isNaN(n);case 6:return isNaN(n)||1>n}return!1}function re(e,n,t,r,l,o,i){this.acceptsBooleans=n===2||n===3||n===4,this.attributeName=r,this.attributeNamespace=l,this.mustUseProperty=t,this.propertyName=e,this.type=n,this.sanitizeURL=o,this.removeEmptyString=i}function si(e){return e[1].toUpperCase()}function ai(e,n,t,r){var l=X.hasOwnProperty(n)?X[n]:null;if(l!==null?l.type!==0:r||!(2<n.length)||n[0]!=="o"&&n[0]!=="O"||n[1]!=="n"&&n[1]!=="N")yd(n,t,l,r)&&(t=null),r||l===null?hd(n)&&(t===null?e.removeAttribute(n):e.setAttribute(n,""+t)):l.mustUseProperty?e[l.propertyName]=t===null?l.type===3?!1:"":t:(n=l.attributeName,r=l.attributeNamespace,t===null?e.removeAttribute(n):(l=l.type,t=l===3||l===4&&t===!0?"":""+t,r?e.setAttributeNS(r,n,t):e.setAttribute(n,t)))}function mt(e){if(e===null||typeof e!=="object")return null;return e=wu&&e[wu]||e["@@iterator"],typeof e==="function"?e:null}function kt(e){if(Ql===void 0)try{throw Error()}catch(t){var n=t.stack.trim().match(/\n( *(at )?)/);Ql=n&&n[1]||""}return`
+`+Ql+e}function Yl(e,n){if(!e||Kl)return"";Kl=!0;var t=Error.prepareStackTrace;Error.prepareStackTrace=void 0;try{if(n)if(n=function(){throw Error()},Object.defineProperty(n.prototype,"props",{set:function(){throw Error()}}),typeof Reflect==="object"&&Reflect.construct){try{Refl
