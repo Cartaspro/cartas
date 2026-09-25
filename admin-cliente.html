@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mi Carta - Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#080808;color:#fff;padding:16px}
+.header{max-width:700px;margin:0 auto;background:#111;border:1px solid #222;border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card{max-width:700px;margin:0 auto;background:#1c1c1c;border:1px solid #262626;border-radius:16px;padding:14px;margin-bottom:12px}
+.card b{color:#FFD60A;font-size:11px;text-transform:uppercase;display:block;margin-bottom:6px}
+.input{background:#0f0f0f;border:1px solid #333;border-radius:10px;padding:10px;color:#fff;width:100%;margin-top:6px}
+.label{font-size:10px;color:#888;text-transform:uppercase;margin-top:8px;display:block}
+.btn{background:#FFD60A;color:#000;border:0;padding:12px;border-radius:12px;font-weight:900;cursor:pointer;width:100%;margin-top:12px}
+.btn:disabled{background:#333;color:#666}
+.alert{max-width:700px;margin:0 auto;border-radius:12px;padding:12px;margin-bottom:12px;font-size:12px}
+.alert-ok{background:#0a2a15;border:1px solid #1a5a2a;color:#8f8}
+.alert-err{background:#1a1a1a;border:1px solid #333;color:#aaa}
+.product{background:#121212;border:1px solid #242424;border-radius:14px;padding:12px;margin-bottom:10px}
+.product img{width:100%;height:130px;object-fit:cover;border-radius:10px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="header"><div><b id="cname">MI CARTA</b><div id="cid" style="font-size:11px;color:#666"></div></div><div id="status" style="font-size:11px;color:#888"></div></div>
+<div id="alert"></div>
+<div class="card">
+<b>Editar mi carta</b>
+<div style="font-size:11px;color:#aaa;line-height:1.4">Podes cambiar precios, fotos, nombres y descripciones.<br><br>Para agregar o quitar productos, comunicate con nosotros.</div>
+</div>
+<div id="products"></div>
+<div class="card"><button id="btnSave" class="btn" onclick="save()">Guardar cambios</button><div style="font-size:11px;color:#666;margin-top:8px;text-align:center">Al guardar, tu carta se actualiza de forma real.</div></div>
+<script>
+const qs=new URLSearchParams(location.search);
+const cid=qs.get('c');
+const key=qs.get('key')||'';
+let CLIENTS=JSON.parse(localStorage.getItem('cp_v4')||'null');
+let curClient=null;
+function show(type,msg){document.getElementById('alert').innerHTML='<div class="alert '+(type==='ok'?'alert-ok':'alert-err')+'">'+msg+'</div>'; setTimeout(()=>document.getElementById('alert').innerHTML='',6000);}
+function load(){
+  if(!cid){
+    document.getElementById('products').innerHTML='<div class="card">Link sin cliente. Pedi un nuevo link a tu admin.</div>';
+    document.getElementById('btnSave').disabled=true;
+    return;
+  }
+  document.getElementById('cid').textContent=cid;
+  if(!CLIENTS||!CLIENTS[cid]){
+    document.getElementById('products').innerHTML='<div class="card">Cliente "'+cid+'" no encontrado. Abri este link en el mismo navegador donde se genero.</div>';
+    document.getElementById('btnSave').disabled=true;
+    return;
+  }
+  curClient=CLIENTS[cid];
+  if(!curClient.config.clientTokens||!curClient.config.clientTokens[key]){
+    document.getElementById('products').innerHTML='<div class="card">Link invalido. Pedi nuevo link.</div>';
+    document.getElementById('btnSave').disabled=true;
+    return;
+  }
+  const displayName = curClient.nombre || curClient.config.nombre || cid;
+  document.getElementById('cname').textContent = displayName;
+  document.title = displayName + ' - Panel';
+  const estado=curClient.config.estado;
+  const hasta=curClient.config.suscripcionHasta;
+  let msg='';
+  if(estado!=='activo'){msg='Pagina inactiva - contacta a tu admin';}
+  else if(hasta && new Date()>new Date(hasta)){msg='Suscripcion vencida '+hasta;}
+  else msg='Activa hasta '+(hasta||'sin fecha');
+  document.getElementById('status').textContent=msg;
+  if(estado!=='activo' || (hasta && new Date()>new Date(hasta))){
+    document.getElementById('btnSave').disabled=true;
+    show('err',msg);
+    return;
+  }
+  const cont=document.getElementById('products');cont.innerHTML='';
+  curClient.data.forEach(p=>{
+    const d=document.createElement('div');d.className='product';
+    d.innerHTML='<img src="'+p.img+'"><span class="label">Nombre</span><input class="input" value="'+p.nombre.replace(/"/g,'&quot;')+'" onchange="upd('+p.id+',\'nombre\',this.value)"><span class="label">Descripcion</span><input class="input" value="'+p.descripcion.replace(/"/g,'&quot;')+'" onchange="upd('+p.id+',\'descripcion\',this.value)"><span class="label">Precio $</span><input type="number" class="input" value="'+p.precio+'" onchange="upd('+p.id+',\'precio\',Number(this.value))"><span class="label">Foto URL</span><input class="input" value="'+p.img+'" onchange="upd('+p.id+',\'img\',this.value)">';
+    cont.appendChild(d);
+  });
+}
+function upd(id,f,v){
+  const allowed=['nombre','descripcion','precio','img'];
+  if(!allowed.includes(f)) return;
+  if(f==='img' && !v.startsWith('https://') && !v.startsWith('/img/') && !v.startsWith('data:')){alert('Foto debe ser https://');return}
+  const p=curClient.data.find(x=>x.id===id);p[f]=v;
+}
+function save(){
+  if(!curClient) return;
+  if(curClient.config.estado!=='activo'){show('err','Pagina inactiva');return}
+  if(curClient.config.suscripcionHasta && new Date()>new Date(curClient.config.suscripcionHasta)){show('err','Vencida');return}
+  curClient.data=curClient.data.map(p=>({id:p.id,categoria:p.categoria,nombre:String(p.nombre).slice(0,80),descripcion:String(p.descripcion).slice(0,200),precio:Number(p.precio)||0,img:String(p.img),destacado:!!p.destacado}));
+  CLIENTS[cid]=curClient;
+  localStorage.setItem('cp_v4',JSON.stringify(CLIENTS));
+  localStorage.setItem('cp_live_'+cid,JSON.stringify(curClient));
+  show('ok','Cambios guardados en "'+(curClient.nombre||cid)+'". Para agregar o quitar productos, comunicate con nosotros.');
+}
+load();
+</script>
+</body>
+</html>
