@@ -95,7 +95,15 @@ function up(id,f,v){const p=CLIENTS[cur].data.find(x=>x.id===id);p[f]=v;save();b
 function tog(id){const p=CLIENTS[cur].data.find(x=>x.id===id);p.destacado=!p.destacado;save();renderProducts();build();}
 function delP(id){if(!confirm('Borrar?'))return;CLIENTS[cur].data=CLIENTS[cur].data.filter(x=>x.id!==id);save();renderProducts();build();}
 function addProduct(){const nid=Math.max(0,...CLIENTS[cur].data.map(x=>x.id))+1;CLIENTS[cur].data.push({id:nid,categoria:'General',nombre:'Nuevo',descripcion:'Desc',precio:1000,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=600'});save();renderProducts();build();}
-function saveConfig(){CLIENTS[cur].config.whatsapp=document.getElementById('f_whatsapp').value;CLIENTS[cur].config.direccion=document.getElementById('f_direccion').value;CLIENTS[cur].config.envio.costoFijo=Number(document.getElementById('f_envio').value);save();build();alert('Guardado con impacto real');}
+function saveConfig(){
+  CLIENTS[cur].config.whatsapp=document.getElementById('f_whatsapp').value;
+  CLIENTS[cur].config.direccion=document.getElementById('f_direccion').value;
+  CLIENTS[cur].config.envio.costoFijo=Number(document.getElementById('f_envio').value);
+  save();
+  build();
+  document.getElementById('exportLog').innerHTML='<span style="color:#FFD60A">✅ Guardado local. Cambios en dirección/envío/WhatsApp guardados en preview. Ahora dale a <b>Guardar en GitHub</b> para publicar en la página real https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/</span>';
+  alert('Guardado local OK. Ahora dale a Guardar en GitHub para que se vea en la página real');
+}
 function saveEstado(){CLIENTS[cur].config.estado=document.getElementById('estadoSelect').value;CLIENTS[cur].config.activo=CLIENTS[cur].config.estado==='activo';save();renderClients();build();}
 function saveSusc(){CLIENTS[cur].config.suscripcionHasta=document.getElementById('suscHasta').value;save();load();}
 function build(){
@@ -176,37 +184,63 @@ function parsePasted(){
 }
 function saveRealFiles(){
   const c=CLIENTS[cur];
-  document.getElementById('exportLog').textContent='Index va en: '+cur+'/index.html (URL final: '+cur+'/ )';
-  if(GH.token && GH.repo){
-    const path=cur+'/index.html';
-    const content=btoa(unescape(encodeURIComponent(last)));
-    fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+path,{
+  if(!last) build();
+  document.getElementById('exportLog').textContent='Preparando push de '+cur+'/index.html...';
+  if(!GH.token || !GH.repo){
+    document.getElementById('exportLog').textContent='Guardado local (cp_live). Carga token para subir a '+cur+'/index.html';
+    return;
+  }
+  const repoPath=cur+'/index.html';
+  const content=btoa(unescape(encodeURIComponent(last)));
+  const apiUrl='https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath+'?ref='+GH.branch;
+  // Primero GET para obtener SHA si existe
+  fetch(apiUrl, {headers:{'Authorization':'token '+GH.token}}).then(r=>{
+    if(r.status===404) return null;
+    if(!r.ok) throw 'GET error '+r.status;
+    return r.json();
+  }).then(existing=>{
+    const sha=existing?.sha||null;
+    const body={message:'update '+cur+' desde admin V4 - '+new Date().toISOString(), content:content, branch:GH.branch};
+    if(sha) body.sha=sha;
+    return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath,{
       method:'PUT',
       headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},
-      body:JSON.stringify({message:'update '+cur+' desde admin V4',content:content,branch:GH.branch})
-    }).then(r=>r.json()).then(j=>{
-      if(j.content) document.getElementById('exportLog').textContent='Push OK: '+j.content.path+' | Se publica en https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/';
-      else document.getElementById('exportLog').textContent='GitHub error: '+(j.message||'ver consola');
+      body:JSON.stringify(body)
+    });
+  }).then(r=>r.json()).then(j=>{
+    if(j.content){
+      document.getElementById('exportLog').innerHTML='Push OK: '+j.content.path+'<br><div class="linkbox">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/</div><span style="color:#888">Espera 1-2 min y recarga con Ctrl+F5</span>';
+    } else {
+      document.getElementById('exportLog').textContent='GitHub error: '+(j.message||JSON.stringify(j).slice(0,200))+' | Revisa token (repo) y que branch '+GH.branch+' exista';
       console.log(j);
-    }).catch(e=>{document.getElementById('exportLog').textContent='Error GitHub: '+e});
-  }else{
-    document.getElementById('exportLog').textContent='Guardado local (cp_live). Con token, se sube a '+cur+'/index.html (https://.../'+cur+'/)';
-  }
+    }
+  }).catch(e=>{
+    document.getElementById('exportLog').textContent='Error GitHub: '+e+' | Ver consola (F12)';
+    console.error(e);
+  });
 }
 function uploadAdminCliente(){
   if(!GH.token || !GH.repo){alert('Carga tu token GH primero');return;}
-  fetch('admin-cliente.html').then(r=>r.text()).then(html=>{
-    const content=btoa(unescape(encodeURIComponent(html)));
-    const path='admin-cliente.html';
-    return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+path,{
-      method:'PUT',
-      headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},
-      body:JSON.stringify({message:'add admin-cliente.html',content:content,branch:GH.branch})
+  const path='admin-cliente.html';
+  fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+path+'?ref='+GH.branch, {headers:{'Authorization':'token '+GH.token}}).then(r=>{
+    if(r.status===404) return null;
+    return r.json();
+  }).then(existing=>{
+    const sha=existing?.sha||null;
+    return fetch('admin-cliente.html').then(r=>r.text()).then(html=>{
+      const content=btoa(unescape(encodeURIComponent(html)));
+      const body={message:'update admin-cliente.html '+new Date().toISOString(), content:content, branch:GH.branch};
+      if(sha) body.sha=sha;
+      return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+path,{
+        method:'PUT',
+        headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
     });
   }).then(r=>r.json()).then(j=>{
-    if(j.content) alert('admin-cliente.html subido a GitHub: '+j.content.path);
-    else alert('Error o ya existe: '+(j.message||''));
-  });
+    if(j.content) alert('admin-cliente.html subido: '+j.content.path+' -> https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/admin-cliente.html');
+    else alert('GitHub error: '+(j.message||JSON.stringify(j).slice(0,300)));
+  }).catch(e=>alert('Error: '+e));
 }
 function generateClientLink(){
   const c=CLIENTS[cur];c.config.clientTokens=c.config.clientTokens||{};
