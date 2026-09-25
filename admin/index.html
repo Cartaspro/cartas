@@ -99,6 +99,9 @@ function saveConfig(){CLIENTS[cur].config.whatsapp=document.getElementById('f_wh
 function saveEstado(){CLIENTS[cur].config.estado=document.getElementById('estadoSelect').value;CLIENTS[cur].config.activo=CLIENTS[cur].config.estado==='activo';save();renderClients();build();}
 function saveSusc(){CLIENTS[cur].config.suscripcionHasta=document.getElementById('suscHasta').value;save();load();}
 function build(){
+  // Si hay cp_live del cliente, usarlo (cambios del panel cliente)
+  const liveStr=localStorage.getItem('cp_live_'+cur);
+  if(liveStr){ try{ const live=JSON.parse(liveStr); if(live && live.data){ CLIENTS[cur]=live; localStorage.setItem('cp_v4', JSON.stringify(CLIENTS)); } }catch(e){} }
   const c=CLIENTS[cur];
   const cfg=JSON.stringify(c.config);
   const dat=JSON.stringify(c.data);
@@ -219,6 +222,17 @@ function renderLinks(){const c=CLIENTS[cur];const d=document.getElementById('lin
 function rev(k){delete CLIENTS[cur].config.clientTokens[k];save();renderLinks();document.getElementById('clientLinkBox').innerHTML='';}
 function addClient(){const id=prompt('ID cliente ej: pizzeria'); if(!id) return; const nid=id.toLowerCase().replace(/\s+/g,'-'); if(CLIENTS[nid]){alert('Existe');return} CLIENTS[nid]=JSON.parse(JSON.stringify(CLIENTS['origen-81'])); CLIENTS[nid].id=nid; CLIENTS[nid].nombre=nid.toUpperCase(); CLIENTS[nid].config.nombre=nid.toUpperCase(); CLIENTS[nid].config.clientTokens={}; cur=nid; save(); renderClients(); load();}
 renderClients();load();loadGH();
+
+function checkPending(){
+  const pending=JSON.parse(localStorage.getItem('cp_pending')||'{}');
+  const box=document.getElementById('exportLog');
+  if(pending[cur] && pending[cur].length){
+    const lastPending=pending[cur][pending[cur].length-1];
+    box.innerHTML='<span style="color:#FFD60A">⚠️ Hay cambios del cliente ('+pending[cur].length+') del '+new Date(lastPending.date).toLocaleString()+' - Dale a Guardar en GitHub para publicar en la página real</span>';
+  }
+}
+setInterval(checkPending,2000);
+
 </script>
 </body>
 </html>
