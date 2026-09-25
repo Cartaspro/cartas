@@ -112,10 +112,10 @@ function openPreview(){
   const fr = document.getElementById('previewFrame');
   fr.src = url;
   fr.style.display='block';
-  document.getElementById('realLinkBox').innerHTML = '<span style="color:#888">Preview local cargado. Este es el index unico que vera el publico en <b>cartas/'+cur+'/index.html</b></span>';
+  document.getElementById('realLinkBox').innerHTML = '<span style="color:#888">Preview local cargado. Este es el index unico que vera el publico en <b>'+cur+'/index.html</b> -> https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/'+'</span>';
 }
 function openRealLink(){
-  const base = GH.repo ? 'https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/cartas/'+cur+'/' : 'cartas/'+cur+'/';
+  const base = GH.repo ? 'https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/' : cur+'/'
   window.open(base, '_blank');
   document.getElementById('realLinkBox').innerHTML = '<div class="linkbox">'+base+'</div>';
 }
@@ -123,21 +123,30 @@ function downloadSingle(){if(!last)build();const b=new Blob([last],{type:'text/h
 function copySingle(){if(!last)build();navigator.clipboard.writeText(last).then(()=>alert('Copiado'));}
 function exportPackage(){const c=CLIENTS[cur];const pkg={clientId:cur,config:c.config,data:c.data,singleIndex:last};const b=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='paquete-'+cur+'.json';a.click();}
 function parseIndexContent(html){
-  try{
-    const cfgMatch=html.match(/const CONFIG\s*=\s*(\{[\s\S]*?\});/);
-    const dataMatch=html.match(/const DATA\s*=\s*(\[[\s\S]*?\]);/);
-    if(!cfgMatch||!dataMatch) throw 'No se encontro CONFIG o DATA';
-    const cfg=JSON.parse(cfgMatch[1]);
-    const dat=JSON.parse(dataMatch[1]);
-    return {config:cfg,data:dat};
-  }catch(e){
-    try{
-      const cfgM2=html.match(/CONFIG\s*=\s*(\{[\s\S]*?\});/);
-      const dataM2=html.match(/DATA\s*=\s*(\[[\s\S]*?\]);/);
-      if(cfgM2&&dataM2) return {config:JSON.parse(cfgM2[1]),data:JSON.parse(dataM2[1])};
-    }catch(e2){}
-    throw e;
+  function tryParse(str){
+    // remove trailing semicolon and fix possible single quotes issues
+    try { return JSON.parse(str); } catch(e) { return null; }
   }
+  // Try all variants: CONFIG, CONFIG_DEFAULT, window.CONFIG
+  const patterns = [
+    /const\s+CONFIG_DEFAULT\s*=\s*(\{[\s\S]*?\});/,
+    /const\s+CONFIG\s*=\s*(\{[\s\S]*?\});/,
+    /let\s+CONFIG\s*=\s*(\{[\s\S]*?\});/,
+    /var\s+CONFIG\s*=\s*(\{[\s\S]*?\});/,
+    /CONFIG\s*=\s*(\{[\s\S]*?\});/
+  ];
+  const dataPatterns = [
+    /const\s+DATA_DEFAULT\s*=\s*(\[[\s\S]*?\]);/,
+    /const\s+DATA\s*=\s*(\[[\s\S]*?\]);/,
+    /let\s+DATA\s*=\s*(\[[\s\S]*?\]);/,
+    /var\s+DATA\s*=\s*(\[[\s\S]*?\]);/,
+    /DATA\s*=\s*(\[[\s\S]*?\]);/
+  ];
+  let cfg=null, dat=null;
+  for(let re of patterns){ const m=html.match(re); if(m){ cfg=tryParse(m[1]); if(cfg) break; } }
+  for(let re of dataPatterns){ const m=html.match(re); if(m){ dat=tryParse(m[1]); if(dat) break; } }
+  if(cfg && dat) return {config:cfg, data:dat};
+  throw 'No se encontro CONFIG o DATA (busque CONFIG_DEFAULT/DATA_DEFAULT y CONFIG/DATA)';
 }
 function handleFile(ev){
   const file=ev.target.files[0]; if(!file) return;
@@ -164,21 +173,21 @@ function parsePasted(){
 }
 function saveRealFiles(){
   const c=CLIENTS[cur];
-  document.getElementById('exportLog').textContent='Index va en: cartas/'+cur+'/index.html';
+  document.getElementById('exportLog').textContent='Index va en: '+cur+'/index.html (URL final: '+cur+'/ )';
   if(GH.token && GH.repo){
-    const path='cartas/'+cur+'/index.html';
+    const path=cur+'/index.html';
     const content=btoa(unescape(encodeURIComponent(last)));
     fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+path,{
       method:'PUT',
       headers:{'Authorization':'token '+GH.token,'Content-Type':'application/json'},
       body:JSON.stringify({message:'update '+cur+' desde admin V4',content:content,branch:GH.branch})
     }).then(r=>r.json()).then(j=>{
-      if(j.content) document.getElementById('exportLog').textContent='Push OK: '+j.content.path+' | Se publica en https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/cartas/'+cur+'/';
+      if(j.content) document.getElementById('exportLog').textContent='Push OK: '+j.content.path+' | Se publica en https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/';
       else document.getElementById('exportLog').textContent='GitHub error: '+(j.message||'ver consola');
       console.log(j);
     }).catch(e=>{document.getElementById('exportLog').textContent='Error GitHub: '+e});
   }else{
-    document.getElementById('exportLog').textContent='Guardado local (cp_live). Con token, se sube a cartas/'+cur+'/index.html';
+    document.getElementById('exportLog').textContent='Guardado local (cp_live). Con token, se sube a '+cur+'/index.html (https://.../'+cur+'/)';
   }
 }
 function uploadAdminCliente(){
