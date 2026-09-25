@@ -33,7 +33,7 @@ textarea.input{height:90px;resize:vertical}
 <div class="wrap">
 <div class="sidebar">
 <div class="card"><b>GitHub Token (solo tu admin)</b><span class="label">Token PAT con repo</span><input id="gh_token" type="password" class="input" placeholder="ghp_xxxxxxxx"><span class="label">Owner / Repo</span><input id="gh_repo" class="input" placeholder="Cartaspro/cartas"><span class="label">Branch</span><input id="gh_branch" class="input" value="main"><button class="btn-ghost" style="width:100%;margin-top:8px" onclick="saveGH()">Guardar token</button><div id="gh_status" style="font-size:10px;color:#888;margin-top:6px"></div></div>
-<div class="card"><b>Clientes (1 real + 2 demos full index)</b><div id="clientList"></div><button class="btn-ghost" style="width:100%;margin-top:10px" onclick="addClient()">+ Nuevo cliente</button></div>
+<div class="card"><b>Clientes (GitHub)</b><div id="clientList"></div><button class="btn-ghost" style="width:100%;margin-top:10px" onclick="addClient()">+ Nuevo cliente</button><button class="btn-ghost" style="width:100%;margin-top:6px;background:#331111;border-color:#552222" onclick="deleteClient()">Borrar cliente</button></div>
 <div class="card"><b>Estado / Suscripcion</b><span class="label">Estado</span><select id="estadoSelect" class="input" onchange="saveEstado()"><option value="activo">Activa</option><option value="inactivo">Inactiva</option></select><span class="label">Hasta</span><input id="suscHasta" type="date" class="input" onchange="saveSusc()"><div id="suscInfo" style="margin-top:8px;font-size:11px;color:#888"></div></div>
 <div class="card"><b>Link para el dueno</b><div style="font-size:11px;color:#aaa;line-height:1.4">Edita precios, fotos, nombres y descripciones. Para agregar o quitar productos, comunicate con nosotros.</div><button class="btn" style="width:100%;margin-top:10px" onclick="generateClientLink()">Generar link</button><div id="clientLinkBox"></div><div id="linksList" style="margin-top:10px;font-size:11px;color:#666"></div></div>
 </div>
@@ -49,23 +49,44 @@ textarea.input{height:90px;resize:vertical}
 <script>
 const DEF_CFG={"activo":true,"direccion":"San Pedro 4623","envio":{"costoFijo":1500,"mensaje":"Envío $1500","retiro":"Retiro por Caba","tipo":"fijo"},"estado":"activo","nombre":"ORIGEN 81","whatsapp":"5491134890644","logo":"logo-origen81.jpg","suscripcionHasta":"2026-12-31","clientTokens":{}};
 const DEF_DATA=[{"id":1,"categoria":"Cervezas","nombre":"Cerveza ORIGEN 81 - Rubia","descripcion":"Sin filtrar.","precio":2800,"img":"https://images.unsplash.com/photo-1608270586620-248524c67de9?w=600","destacado":true},{"id":2,"categoria":"Cervezas","nombre":"Cerveza ORIGEN 81 - IPA","descripcion":"Lupulo intenso","precio":3200,"img":"https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600"},{"id":3,"categoria":"Fiambres","nombre":"Bondiola Premium Curada","descripcion":"Curada artesanal","precio":8500,"img":"https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-3-1790116965106.jpg","destacado":true},{"id":5,"categoria":"Conservas","nombre":"Conserva de Berenjenas","descripcion":"Frasco 360cc","precio":4500,"img":"https://raw.githubusercontent.com/Cartaspro/cartas/main/img/origen-81/origen-81-5-1790116985595.jpg"}];
-const DEMO_PIZZA={"activo":true,"direccion":"Av Corrientes 1234","envio":{"costoFijo":1200,"mensaje":"Envio $1200","tipo":"fijo"},"estado":"activo","nombre":"PIZZERIA DEMO","whatsapp":"5491100000001","logo":"","suscripcionHasta":"2026-12-31","clientTokens":{}};
-const DEMO_PIZZA_DATA=[{"id":1,"categoria":"Pizzas","nombre":"Muzzarella","descripcion":"Clasica","precio":8500,"img":"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600"},{"id":2,"categoria":"Pizzas","nombre":"Napolitana","descripcion":"Tomate y ajo","precio":9500,"img":"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600"}];
-const DEMO_BAR={"activo":true,"direccion":"Palermo","envio":{"costoFijo":0,"mensaje":"Solo retiro","tipo":"fijo"},"estado":"activo","nombre":"BAR DEMO","whatsapp":"5491100000002","logo":"","suscripcionHasta":"2026-12-31","clientTokens":{}};
-const DEMO_BAR_DATA=[{"id":1,"categoria":"Tragos","nombre":"Fernet con Cola","descripcion":"Clasico","precio":4500,"img":"https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"}];
 
-let CLIENTS=JSON.parse(localStorage.getItem('cp_v4')||'null')||{
-'origen-81':{id:'origen-81',nombre:'ORIGEN 81',config:JSON.parse(JSON.stringify(DEF_CFG)),data:JSON.parse(JSON.stringify(DEF_DATA))},
-'demo-pizzeria':{id:'demo-pizzeria',nombre:'PIZZERIA DEMO (full index)',config:JSON.parse(JSON.stringify(DEMO_PIZZA)),data:JSON.parse(JSON.stringify(DEMO_PIZZA_DATA))},
-'demo-bar':{id:'demo-bar',nombre:'BAR DEMO (full index)',config:JSON.parse(JSON.stringify(DEMO_BAR)),data:JSON.parse(JSON.stringify(DEMO_BAR_DATA))}
-};
+let stored = JSON.parse(localStorage.getItem('cp_v4')||'null');
+// Filtrar solo lo que esta en GitHub - si hay demos, las quitamos
+if(stored){
+  Object.keys(stored).forEach(k=>{
+    if(k!=='origen-81' && !k.startsWith('origen')){ /* keep only origen for now, user wants only github */ }
+  });
+  // Si solo quiere github, dejamos solo origen-81
+  if(Object.keys(stored).length>1 && confirm('Borrar demos locales y dejar solo GitHub (origen-81)?')){
+    stored={'origen-81': stored['origen-81'] || {id:'origen-81',nombre:'ORIGEN 81',config:DEF_CFG,data:DEF_DATA}};
+    localStorage.setItem('cp_v4', JSON.stringify(stored));
+  }
+}
+
+let CLIENTS=JSON.parse(localStorage.getItem('cp_v4')||'null')||{'origen-81':{id:'origen-81',nombre:'ORIGEN 81',config:JSON.parse(JSON.stringify(DEF_CFG)),data:JSON.parse(JSON.stringify(DEF_DATA))}};
+// Forzar solo origen-81 si el usuario quiere solo github
+if(Object.keys(CLIENTS).some(k=>k!=='origen-81')){
+  // dejamos solo origen-81 por defecto, pero no borramos automaticamente para no perder trabajo, usamos boton
+}
 let cur=localStorage.getItem('cp_cur')||'origen-81';
+if(!CLIENTS[cur]) cur='origen-81';
 let last='';
 let GH={token:localStorage.getItem('gh_token')||'', repo:localStorage.getItem('gh_repo')||'Cartaspro/cartas', branch:localStorage.getItem('gh_branch')||'main'};
 
-function save(){localStorage.setItem('cp_v4',JSON.stringify(CLIENTS));localStorage.setItem('cp_cur',cur);localStorage.setItem('cp_live_'+cur,JSON.stringify(CLIENTS[cur])); if(typeof saveRealFilesAuto==='function') saveRealFilesAuto();}
-function saveGH(){GH.token=document.getElementById('gh_token').value.trim();GH.repo=document.getElementById('gh_repo').value.trim();GH.branch=document.getElementById('gh_branch').value.trim()||'main';localStorage.setItem('gh_token',GH.token);localStorage.setItem('gh_repo',GH.repo);localStorage.setItem('gh_branch',GH.branch);document.getElementById('gh_status').textContent=GH.token?'Token guardado local (no se envia a cliente). Listo para push real.':'Sin token';}
-function loadGH(){document.getElementById('gh_token').value=GH.token;document.getElementById('gh_repo').value=GH.repo;document.getElementById('gh_branch').value=GH.branch;document.getElementById('gh_status').textContent=GH.token?'Token cargado':'Ingresa tu PAT ghp_...';}
+function save(){localStorage.setItem('cp_v4',JSON.stringify(CLIENTS));localStorage.setItem('cp_cur',cur);localStorage.setItem('cp_live_'+cur,JSON.stringify(CLIENTS[cur]));}
+function saveGH(){GH.token=document.getElementById('gh_token').value.trim();GH.repo=document.getElementById('gh_repo').value.trim();GH.branch=document.getElementById('gh_branch').value.trim()||'main';localStorage.setItem('gh_token',GH.token);localStorage.setItem('gh_repo',GH.repo);localStorage.setItem('gh_branch',GH.branch);document.getElementById('gh_status').textContent=GH.token?'Token guardado local. Listo para push real.':'Sin token';}
+function loadGH(){document.getElementById('gh_token').value=GH.token;document.getElementById('gh_repo').value=GH.repo;document.getElementById('gh_branch').value=GH.branch;document.getElementById('gh_status').textContent=GH.token?'Token cargado':'Ingresa tu PAT';}
+function deleteClient(){
+  if(Object.keys(CLIENTS).length<=1){alert('No podes borrar el ultimo cliente');return;}
+  if(!confirm('Borrar cliente "'+cur+'"? Esta accion no se puede deshacer.')) return;
+  delete CLIENTS[cur];
+  localStorage.removeItem('cp_live_'+cur);
+  cur=Object.keys(CLIENTS)[0];
+  localStorage.setItem('cp_v4', JSON.stringify(CLIENTS));
+  localStorage.setItem('cp_cur', cur);
+  renderClients();load();
+  alert('Cliente borrado');
+}
 
 function renderClients(){const el=document.getElementById('clientList');el.innerHTML='';Object.values(CLIENTS).forEach(c=>{const d=document.createElement('div');d.className='client'+(c.id===cur?' on':'');d.innerHTML='<b>'+c.nombre+'</b><br><small>'+c.id+' • '+c.config.estado+'</small>';d.onclick=()=>{cur=c.id;save();load();renderClients();};el.appendChild(d);});}
 function load(){const c=CLIENTS[cur];if(!c)return;document.getElementById('clientTitle').textContent=c.nombre;document.getElementById('f_whatsapp').value=c.config.whatsapp||'';document.getElementById('f_direccion').value=c.config.direccion||'';document.getElementById('f_envio').value=c.config.envio?.costoFijo||0;document.getElementById('estadoSelect').value=c.config.estado||'activo';document.getElementById('suscHasta').value=c.config.suscripcionHasta||'';const diff=c.config.suscripcionHasta?Math.ceil((new Date(c.config.suscripcionHasta)-new Date())/86400000):0;const info=document.getElementById('suscInfo');info.textContent=diff<0?'VENCIDA':'Activa '+diff+' dias';info.style.color=diff<0?'#f44':'#4f8';renderProducts();renderLinks();build();}
@@ -77,7 +98,6 @@ function addProduct(){const nid=Math.max(0,...CLIENTS[cur].data.map(x=>x.id))+1;
 function saveConfig(){CLIENTS[cur].config.whatsapp=document.getElementById('f_whatsapp').value;CLIENTS[cur].config.direccion=document.getElementById('f_direccion').value;CLIENTS[cur].config.envio.costoFijo=Number(document.getElementById('f_envio').value);save();build();alert('Guardado con impacto real');}
 function saveEstado(){CLIENTS[cur].config.estado=document.getElementById('estadoSelect').value;CLIENTS[cur].config.activo=CLIENTS[cur].config.estado==='activo';save();renderClients();build();}
 function saveSusc(){CLIENTS[cur].config.suscripcionHasta=document.getElementById('suscHasta').value;save();load();}
-
 function build(){
   const c=CLIENTS[cur];
   const cfg=JSON.stringify(c.config);
@@ -85,11 +105,9 @@ function build(){
   last='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+c.config.nombre+'</title><style>body{background:#080808;color:#fff;font-family:sans-serif} .grid{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px} .item{background:#1e1e1e;border-radius:24px;overflow:hidden} .item img{width:100%;height:190px;object-fit:cover} .info{padding:14px} .price{color:#FFD60A;font-weight:900}</style></head><body><div id="content"></div><script>const CONFIG='+cfg+';let DATA='+dat+';const live=localStorage.getItem("cp_live_'+cur+'");if(live){try{const j=JSON.parse(live);DATA=j.data;}catch(e){}}function render(){let h="<div class=\\"grid\\">";DATA.forEach(p=>{h+="<div class=\\"item\\"><img src=\\""+p.img+"\\"><div class=\\"info\\"><b>"+p.nombre+"</b><div style=\\"color:#888;font-size:12px\\">"+p.descripcion+"</div><div class=\\"price\\">$"+p.precio+"</div></div></div>"});h+="</div>";document.getElementById("content").innerHTML=h}render();<\/script></body></html>';
   document.getElementById('exportLog').textContent='Index listo '+last.length+' bytes - cp_live_'+cur;
 }
-
 function downloadSingle(){if(!last)build();const b=new Blob([last],{type:'text/html'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='index.html';a.click();}
 function copySingle(){if(!last)build();navigator.clipboard.writeText(last).then(()=>alert('Copiado'));}
 function exportPackage(){const c=CLIENTS[cur];const pkg={clientId:cur,config:c.config,data:c.data,singleIndex:last};const b=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='paquete-'+cur+'.json';a.click();}
-
 function parseIndexContent(html){
   try{
     const cfgMatch=html.match(/const CONFIG\s*=\s*(\{[\s\S]*?\});/);
@@ -99,7 +117,6 @@ function parseIndexContent(html){
     const dat=JSON.parse(dataMatch[1]);
     return {config:cfg,data:dat};
   }catch(e){
-    // fallback para single file viejo que usa const CONFIG=
     try{
       const cfgM2=html.match(/CONFIG\s*=\s*(\{[\s\S]*?\});/);
       const dataM2=html.match(/DATA\s*=\s*(\[[\s\S]*?\]);/);
@@ -108,7 +125,6 @@ function parseIndexContent(html){
     throw e;
   }
 }
-
 function handleFile(ev){
   const file=ev.target.files[0]; if(!file) return;
   const reader=new FileReader();
@@ -132,11 +148,8 @@ function parsePasted(){
     save(); load(); document.getElementById('uploadLog').textContent='Index pegado OK: '+res.data.length+' productos';
   }catch(err){document.getElementById('uploadLog').textContent='Error: '+err}
 }
-
 function saveRealFiles(){
-  // En esta demo guarda en localStorage para que el export lo vea, en produccion haria fetch a Worker con token
   const c=CLIENTS[cur];
-  // Si hay token, intenta push real a GitHub (opcional)
   if(GH.token && GH.repo){
     const path='cartas/'+cur+'/index.html';
     const content=btoa(unescape(encodeURIComponent(last)));
@@ -153,8 +166,6 @@ function saveRealFiles(){
     document.getElementById('exportLog').textContent='Guardado local real (cp_live). Para push real configura token GH.';
   }
 }
-function saveRealFilesAuto(){/* auto save for live preview */}
-
 function generateClientLink(){
   const c=CLIENTS[cur];c.config.clientTokens=c.config.clientTokens||{};
   const tok=Math.random().toString(36).slice(2,8)+Math.random().toString(36).slice(2,8);
