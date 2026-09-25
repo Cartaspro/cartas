@@ -32,7 +32,7 @@ textarea.input{height:90px;resize:vertical}
 <div class="header"><b>CARTAS<span>PRO</span> V4</b><div style="display:flex;gap:8px"><button class="btn-ghost" onclick="exportPackage()">Paquete IA</button><button class="btn" onclick="downloadSingle()">Index Unico</button></div></div>
 <div class="wrap">
 <div class="sidebar">
-<div class="card"><b>GitHub Token (solo tu admin)</b><span class="label">Token PAT con repo</span><input id="gh_token" type="password" class="input" placeholder="ghp_xxxxxxxx"><span class="label">Owner / Repo</span><input id="gh_repo" class="input" placeholder="Cartaspro/cartas"><span class="label">Branch</span><input id="gh_branch" class="input" value="main"><button class="btn-ghost" style="width:100%;margin-top:8px" onclick="saveGH()">Guardar token</button><button class="btn-ghost" style="width:100%;margin-top:6px" onclick="uploadAdminCliente()">Subir admin-cliente.html a GitHub (una sola vez)</button><div id="gh_status" style="font-size:10px;color:#888;margin-top:6px"></div></div>
+<div class="card"><b>GitHub Token (solo tu admin)</b><span class="label">Token PAT con repo</span><input id="gh_token" type="password" class="input" placeholder="ghp_xxxxxxxx"><span class="label">Owner / Repo</span><input id="gh_repo" class="input" placeholder="Cartaspro/cartas"><span class="label">Branch</span><input id="gh_branch" class="input" value="main"><button class="btn-ghost" style="width:100%;margin-top:8px" onclick="saveGH()">Guardar token</button><button class="btn-ghost" style="width:100%;margin-top:6px" onclick="testToken()">Probar token y repo</button><button class="btn-ghost" style="width:100%;margin-top:6px" onclick="uploadAdminCliente()">Subir admin-cliente.html a GitHub (una sola vez)</button><div id="gh_status" style="font-size:11px;color:#888;margin-top:6px;white-space:pre-wrap;word-break:break-all"></div></div>
 <div class="card"><b>Clientes (GitHub)</b><div id="clientList"></div><button class="btn-ghost" style="width:100%;margin-top:10px" onclick="addClient()">+ Nuevo cliente</button><button class="btn-ghost" style="width:100%;margin-top:6px;background:#331111;border-color:#552222" onclick="deleteClient()">Borrar cliente</button></div>
 <div class="card"><b>Estado / Suscripcion</b><span class="label">Estado</span><select id="estadoSelect" class="input" onchange="saveEstado()"><option value="activo">Activa</option><option value="inactivo">Inactiva</option></select><span class="label">Hasta</span><input id="suscHasta" type="date" class="input" onchange="saveSusc()"><div id="suscInfo" style="margin-top:8px;font-size:11px;color:#888"></div></div>
 <div class="card"><b>Link para el dueno</b><div style="font-size:11px;color:#aaa;line-height:1.4">Edita precios, fotos, nombres y descripciones. Para agregar o quitar productos, comunicate con nosotros.</div><button class="btn" style="width:100%;margin-top:10px" onclick="generateClientLink()">Generar link</button><div id="clientLinkBox"></div><div id="linksList" style="margin-top:10px;font-size:11px;color:#666"></div></div>
@@ -191,6 +191,49 @@ function parsePasted(){
     save(); load(); document.getElementById('uploadLog').textContent='Index pegado OK: '+res.data.length+' productos';
   }catch(err){document.getElementById('uploadLog').textContent='Error: '+err}
 }
+
+function testToken(){
+  const tok=document.getElementById('gh_token').value.trim();
+  const repo=document.getElementById('gh_repo').value.trim()||'Cartaspro/cartas';
+  const branch=document.getElementById('gh_branch').value.trim()||'main';
+  if(!tok){ document.getElementById('gh_status').textContent='Pega el token primero (ghp_...)'; return; }
+  saveGH();
+  document.getElementById('gh_status').textContent='Probando token...';
+  // Test 1: /user
+  fetch('https://api.github.com/user',{headers:{'Authorization':'token '+tok}}).then(r=>r.json().then(j=>({status:r.status, body:j}))).then(res=>{
+    if(res.status!==200){
+      document.getElementById('gh_status').textContent='Token inválido o sin permisos. /user devolvió '+res.status+': '+(res.body.message||JSON.stringify(res.body).slice(0,200));
+      return Promise.reject('user fail');
+    }
+    document.getElementById('gh_status').textContent='Token OK como '+res.body.login+'\nProbando repo '+repo+'...';
+    // Test 2: repo
+    return fetch('https://api.github.com/repos/'+repo,{headers:{'Authorization':'token '+tok}}).then(r=>r.json().then(j=>({status:r.status, body:j})));
+  }).then(res2=>{
+    if(res2.status!==200){
+      document.getElementById('gh_status').textContent+='\nRepo error '+res2.status+': '+(res2.body.message||JSON.stringify(res2.body).slice(0,300))+'\nVerifica que Owner/Repo sea exactamente Cartaspro/cartas y que el token tenga acceso a ese repo';
+      return Promise.reject('repo fail');
+    }
+    document.getElementById('gh_status').textContent+='\nRepo OK: '+res2.body.full_name+' - branch default: '+res2.body.default_branch+'\nAhora probando contenido '+cur+'/index.html en branch '+branch+'...';
+    const apiUrl='https://api.github.com/repos/'+repo+'/contents/'+cur+'/index.html?ref='+branch;
+    return fetch(apiUrl,{headers:{'Authorization':'token '+tok}}).then(r=>r.json().then(j=>({status:r.status, body:j})));
+  }).then(res3=>{
+    if(res3.status===200){
+      document.getElementById('gh_status').textContent+='\nArchivo existe, SHA: '+res3.body.sha.slice(0,7)+'... Listo para hacer push con SHA';
+    } else if(res3.status===404){
+      document.getElementById('gh_status').textContent+='\nArchivo no existe aún (404) - se creará nuevo. Si tu repo usa carpeta cartas/'+cur+' en lugar de '+cur+' decime y lo ajusto';
+    } else {
+      document.getElementById('gh_status').textContent+='\nContenido error '+res3.status+': '+(res3.body.message||JSON.stringify(res3.body).slice(0,300));
+    }
+  }).catch(e=>{
+    console.error(e);
+    if(document.getElementById('gh_status').textContent.includes('Token OK')===false){
+      // already handled
+    } else {
+      document.getElementById('gh_status').textContent+='\nError: '+e;
+    }
+  });
+}
+
 function saveRealFiles(){
   const c=CLIENTS[cur];
   if(!last) build();
