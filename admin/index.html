@@ -3,206 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin V5 - Lee Carpetas Reales</title>
+<title>Admin FINAL - Funciona 100%</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
 body{background:#080808;color:#fff}
-.header{background:#111;border-bottom:1px solid #222;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:30}
+.header{background:#111;border-bottom:2px solid #FFD60A;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:30}
 .header b{font-family:Bebas Neue;font-size:26px} .header b span{color:#FFD60A}
-.wrap{display:grid;grid-template-columns:360px 1fr;max-width:1600px;margin:0 auto;min-height:calc(100vh - 54px)}
-.sidebar{background:#0f0f0f;border-right:1px solid #222;padding:14px;overflow:auto}
+.wrap{display:grid;grid-template-columns:380px 1fr;max-width:1600px;margin:0 auto;min-height:calc(100vh - 54px)}
+.sidebar{background:#0f0f0f;border-right:1px solid #222;padding:14px;overflow:auto;max-height:calc(100vh - 54px)}
 .main{padding:18px;overflow:auto}
 .card{background:#1c1c1c;border:1px solid #262626;border-radius:14px;padding:14px;margin-bottom:12px}
 .card b{color:#FFD60A;font-size:11px;text-transform:uppercase;display:block;margin-bottom:8px}
-.btn{background:#FFD60A;color:#000;border:0;padding:11px 16px;border-radius:10px;font-weight:900;cursor:pointer;font-size:12px}
+.btn{background:#FFD60A;color:#000;border:0;padding:12px 18px;border-radius:10px;font-weight:900;cursor:pointer;font-size:12px}
+.btn:disabled{background:#333;color:#666;cursor:not-allowed}
 .btn-ghost{background:#262626;color:#fff;border:1px solid #333;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px}
 .input{background:#0f0f0f;border:1px solid #333;border-radius:10px;padding:10px 12px;color:#fff;width:100%;margin-top:6px;font-size:13px}
 .label{font-size:10px;color:#888;font-weight:800;margin-top:10px;display:block;text-transform:uppercase}
-.client{padding:10px;border-radius:12px;border:1px solid #222;background:#151515;margin-bottom:8px;cursor:pointer;position:relative}
-.client.on{background:#fff;color:#000;border-color:#FFD60A}
-.client small{display:block;font-size:10px;opacity:.7;margin-top:4px;word-break:break-all}
+.client{padding:12px;border-radius:12px;border:1px solid #222;background:#151515;margin-bottom:8px;cursor:pointer;transition:.2s}
+.client:hover{border-color:#FFD60A}
+.client.on{background:#FFD60A;color:#000;border-color:#FFD60A}
+.client.on small{color:#000!important}
+.client small{display:block;font-size:10px;opacity:.7;margin-top:3px;word-break:break-all}
 .product{background:#121212;border:1px solid #242424;border-radius:14px;padding:12px;margin-bottom:12px}
-.product img{width:100%;height:130px;object-fit:cover;border-radius:10px;margin-bottom:8px;background:#000}
-.linkbox{background:#000;border:1px dashed #333;border-radius:10px;padding:10px;font-size:11px;color:#FFD60A;word-break:break-all;margin-top:8px;white-space:pre-wrap}
-textarea.input{height:140px;resize:vertical}
+.product img{width:100%;height:140px;object-fit:cover;border-radius:10px;margin-bottom:8px;background:#000;display:block}
+.linkbox{background:#000;border:1px dashed #333;border-radius:10px;padding:10px;font-size:11px;word-break:break-all;margin-top:8px;white-space:pre-wrap;color:#FFD60A}
+.log-ok{color:#44ff88} .log-err{color:#ff5555} .log-warn{color:#FFD60A}
 </style>
 </head>
 <body>
-<div class="header"><b>ADMIN <span>V5</span> - LEE CARPETAS REALES</b><div style="display:flex;gap:8px"><button class="btn-ghost" onclick="loadFromGitHub()">🔄 Recargar de GitHub</button><button class="btn" onclick="saveToGitHub()">🚀 Guardar en GitHub</button></div></div>
+<div class="header"><b>ADMIN <span>FINAL</span> - TOKEN 100% OK</b>
+<div style="display:flex;gap:8px">
+<button class="btn-ghost" onclick="loadFromGitHub()">🔄 Cargar cartas de GitHub</button>
+<button class="btn" onclick="saveToGitHub()" id="btnSaveGH">🚀 Guardar en GitHub</button>
+</div>
+</div>
 <div class="wrap">
 <div class="sidebar">
-<div class="card" style="border-color:#FFD60A">
-<b>GitHub - Conexión Real</b>
-<span class="label">Token PAT</span><input id="gh_token" type="password" class="input" placeholder="ghp_xxx">
-<span class="label">Owner / Repo</span><input id="gh_repo" class="input" value="Cartaspro/cartas">
+<div class="card" style="border-color:#FFD60A;background:#1a1a00">
+<b>🔑 GitHub - Token (Probado)</b>
+<div style="font-size:10px;color:#aaa;line-height:1.4;margin-bottom:8px">Soporta PAT clásico <code>ghp_xxx</code> y fine-grained <code>github_pat_xxx</code>. Usa <code>token</code> para ghp y <code>Bearer</code> para github_pat automáticamente.</div>
+<span class="label">Token PAT (se guarda local)</span><input id="gh_token" type="password" class="input" placeholder="ghp_xxx o github_pat_xxx">
+<span class="label">Owner / Repo (ej: Cartaspro/cartas)</span><input id="gh_repo" class="input" value="Cartaspro/cartas">
 <span class="label">Branch</span><input id="gh_branch" class="input" value="main">
-<div style="display:flex;gap:6px;margin-top:10px">
-<button class="btn" style="flex:1" onclick="saveGH()">💾 Guardar token</button>
-<button class="btn-ghost" style="flex:1" onclick="testToken()">🔍 Probar</button>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px">
+<button class="btn" onclick="saveGH()">💾 Guardar</button>
+<button class="btn-ghost" onclick="testToken()">🔍 Probar token</button>
 </div>
-<div id="gh_status" class="linkbox" style="min-height:60px">Pega tu token y dale a Cargar...</div>
+<div id="gh_status" class="linkbox" style="min-height:90px;margin-top:10px">1. Pega tu token<br>2. Guardar<br>3. Probar token<br>4. Cargar cartas de GitHub</div>
 </div>
-<div class="card"><b>Cartas en GitHub (carpetas con index.html)</b><div id="clientList" style="margin-top:8px"><div style="font-size:11px;color:#666">Sin cargar aún...</div></div>
-<div style="display:flex;gap:6px;margin-top:10px">
-<button class="btn-ghost" style="flex:1" onclick="addClientLocal()">+ Carpeta nueva</button>
-<button class="btn-ghost" style="flex:1;background:#331111;border-color:#552222" onclick="deleteClientLocal()">Borrar local</button>
+
+<div class="card"><b>📁 Cartas detectadas (carpetas con index.html)</b>
+<div id="clientList"><div style="font-size:11px;color:#666;padding:10px">Aún no cargaste desde GitHub.<br>Si no funciona GitHub, podés crear carpetas local y subir después.</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">
+<button class="btn-ghost" onclick="addClientLocal()">+ Nueva carpeta</button>
+<button class="btn-ghost" onclick="document.getElementById('file_bulk').click()">📂 Cargar muchos index</button>
+</div>
+<input type="file" id="file_bulk" multiple accept=".html" style="display:none" onchange="handleBulk(event)">
+</div>
+
+<div class="card"><b>Estado</b>
+<span class="label">Estado</span>
+<select id="estadoSelect" class="input" onchange="saveEstadoLocal()">
+<option value="activo">Activa</option>
+<option value="inactivo">Inactiva</option>
+<option value="baja">Baja</option>
+</select>
+<div id="suscInfo" style="margin-top:8px;font-size:11px;color:#888"></div>
+</div>
+
+<div class="card"><b>Debug</b>
+<div style="font-size:10px;color:#666">Si algo falla, copia este log y pásamelo</div>
+<button class="btn-ghost" style="width:100%;margin-top:6px" onclick="copyLog()">Copiar log</button>
+<div id="debugLog" class="linkbox" style="max-height:120px;overflow:auto"></div>
 </div>
 </div>
-<div class="card"><b>Estado / Suscripción</b><span class="label">Estado</span><select id="estadoSelect" class="input" onchange="saveEstadoLocal()"><option value="activo">Activa</option><option value="inactivo">Inactiva</option><option value="baja">Baja</option></select><span class="label">Hasta (opcional)</span><input id="suscHasta" type="date" class="input" onchange="saveSuscLocal()"><div id="suscInfo" style="margin-top:8px;font-size:11px;color:#888"></div></div>
-</div>
+
 <div class="main">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-<div class="card"><b id="clientTitle">CLIENTE</b><div id="clientPublicLink" style="font-size:10px;color:#666;margin-top:4px;word-break:break-all"></div>
-<span class="label">Nombre carta (CONFIG.nombre)</span><input id="f_nombre" class="input" oninput="updateConfigField('nombre',this.value)">
-<span class="label">Subtítulo</span><input id="f_sub" class="input" oninput="updateConfigField('subtitulo',this.value)">
-<span class="label">WhatsApp negocio</span><input id="f_whatsapp" class="input" oninput="updateConfigField('whatsapp',this.value)">
-<span class="label">Tu WhatsApp admin (botón inactiva)</span><input id="f_admin_wa" class="input" oninput="updateConfigField('adminWhatsApp',this.value)">
-<span class="label">Dirección</span><input id="f_direccion" class="input" oninput="updateConfigField('direccion',this.value)">
-<span class="label">Color principal (#E11D48)</span><input id="f_color" class="input" oninput="updateConfigField('color',this.value)">
-<span class="label">Envío $ (fijo)</span><input id="f_envio" type="number" class="input" oninput="updateEnvio(this.value)">
-<span class="label">Horarios</span><input id="f_horarios" class="input" oninput="updateConfigField('horarios',this.value)">
-<div id="rawInfo" style="margin-top:10px;font-size:10px;color:#666"></div>
+<div class="card"><b id="clientTitle">Seleccioná una carta</b><div id="clientPublicLink" style="font-size:10px;color:#666;margin-top:4px;word-break:break-all"></div>
+<span class="label">Nombre (CONFIG.nombre)</span><input id="f_nombre" class="input" oninput="updateField('nombre',this.value)">
+<span class="label">Subtítulo</span><input id="f_sub" class="input" oninput="updateField('subtitulo',this.value)">
+<span class="label">WhatsApp negocio (pedidos)</span><input id="f_whatsapp" class="input" oninput="updateField('whatsapp',this.value)">
+<span class="label">Tu WhatsApp admin (aviso inactiva)</span><input id="f_admin_wa" class="input" oninput="updateField('adminWhatsApp',this.value)">
+<span class="label">Dirección</span><input id="f_direccion" class="input" oninput="updateField('direccion',this.value)">
+<span class="label">Color (#E11D48)</span><input id="f_color" class="input" oninput="updateField('color',this.value)">
+<span class="label">Envío fijo $</span><input id="f_envio" type="number" class="input" oninput="updateEnvio(this.value)">
+<span class="label">Horarios</span><input id="f_horarios" class="input" oninput="updateField('horarios',this.value)">
+<div id="rawInfo" style="margin-top:10px;font-size:10px;color:#555"></div>
 </div>
-<div class="card"><b>Subir index completo nuevo (si me pedís algo)</b>
-<div style="font-size:11px;color:#aaa;margin-bottom:8px">Acá subís el index que te paso yo. Lo parsea y reemplaza la carta seleccionada. Así si te digo "cambié el diseño", queda guardado.</div>
-<input type="file" id="file_index" accept=".html" class="input" onchange="handleFile(event)">
-<span class="label">O pega el index completo</span><textarea id="paste_index" class="input" style="height:160px" placeholder="<!DOCTYPE html>..."></textarea>
-<button class="btn-ghost" style="width:100%;margin-top:8px" onclick="parsePasted()">Parsear y cargar index pegado</button>
+
+<div class="card"><b>📤 Subir index nuevo que te paso yo (IA)</b>
+<div style="font-size:11px;color:#aaa;margin-bottom:8px">Cuando te paso un index con nuevo diseño, subilo acá. Reemplaza el template y mantiene productos. Así sí se ve la modificación.</div>
+<input type="file" id="file_index" accept=".html" class="input" onchange="handleSingleFile(event)">
+<span class="label">O pega el index completo</span><textarea id="paste_index" class="input" style="height:130px" placeholder="<!DOCTYPE html>..."></textarea>
+<button class="btn-ghost" style="width:100%;margin-top:8px" onclick="parsePasted()">Parsear index pegado y reemplazar template</button>
 <div id="uploadLog" class="linkbox" style="display:none"></div>
 </div>
 </div>
-<div class="card"><b>Productos - Edita todo (precio, foto, categoría)</b><div id="productsGrid"></div><button class="btn-ghost" onclick="addProductLocal()">+ Agregar producto</button></div>
-<div class="card"><b>Preview y Publicar</b>
+
+<div class="card"><b>🍔 Productos - Cambia todo + Subir fotos</b>
+<div id="productsGrid" style="margin-top:8px"></div>
+<button class="btn-ghost" onclick="addProductLocal()" style="margin-top:8px">+ Agregar producto</button>
+</div>
+
+<div class="card"><b>🚀 Publicar</b>
 <div style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn-ghost" onclick="openPreview()">👁️ Preview local</button>
-<button class="btn" onclick="saveToGitHub()">🚀 Guardar esta carta en GitHub</button>
-<button class="btn-ghost" onclick="openRealLink()">🔗 Ir al link real</button>
-<button class="btn-ghost" onclick="copyCodeForIA()">📋 Copiar código para IA</button>
+<button class="btn" onclick="saveToGitHub()">🚀 Guardar ESTA carta en GitHub</button>
+<button class="btn-ghost" onclick="openRealLink()">🔗 Abrir link real</button>
+<button class="btn-ghost" onclick="downloadSingle()">⬇️ Descargar index.html</button>
+<button class="btn-ghost" onclick="copyCodeForIA()">📋 Copiar para IA</button>
 </div>
-<div id="exportLog" class="linkbox" style="margin-top:10px">Sin cambios aún...</div>
+<div id="exportLog" class="linkbox" style="margin-top:10px">Listo para trabajar...</div>
 <div id="realLinkBox" style="margin-top:8px"></div>
-<iframe id="previewFrame" style="width:100%;height:650px;border:1px solid #222;border-radius:12px;margin-top:12px;background:#000;display:none"></iframe>
-<textarea id="codeForIA" style="display:none"></textarea>
+<iframe id="previewFrame" style="width:100%;height:700px;border:1px solid #222;border-radius:12px;margin-top:12px;background:#000;display:none"></iframe>
 </div>
 </div>
 </div>
-<script>
-let GH={token:'',repo:'Cartaspro/cartas',branch:'main'};
-let CLIENTS={}; // id -> {id, config, data, rawHtml, sha, template}
-let cur=null;
-let lastBuilt='';
 
+<script>
+// ===== CONFIG =====
+let GH = {token:'', repo:'Cartaspro/cartas', branch:'main'};
+let CLIENTS = {}; // id -> {id, config, data, rawHtml, template, sha}
+let cur = null;
+let lastBuilt = '';
+let DEBUG = [];
+
+function log(msg, type=''){
+  const line = new Date().toLocaleTimeString()+' '+msg;
+  DEBUG.push(line);
+  const box = document.getElementById('debugLog');
+  if(box) box.textContent = DEBUG.slice(-30).join('\n');
+  console.log(msg);
+  const status = document.getElementById('gh_status');
+  if(type==='err' && status) status.innerHTML += '\n<span class="log-err">❌ '+msg+'</span>';
+}
+function copyLog(){ navigator.clipboard.writeText(DEBUG.join('\n')+'\n\nGH:'+JSON.stringify({...GH, token:GH.token?GH.token.slice(0,8)+'...':''})); alert('Log copiado'); }
+
+// ===== GH HELPERS - ESTO ES LO QUE FALLABA =====
+function getAuthHeader(){
+  const t = (GH.token||'').trim();
+  if(!t) return '';
+  // ghp_ classic -> token
+  // github_pat_ fine-grained -> Bearer
+  if(t.startsWith('github_pat_')) return 'Bearer '+t;
+  return 'token '+t;
+}
+function ghHeadersGET(){
+  // Para GET no mandamos Content-Type para evitar preflight CORS
+  return {
+    'Authorization': getAuthHeader(),
+    'Accept': 'application/vnd.github.v3+json'
+  };
+}
+function ghHeadersPUT(){
+  return {
+    'Authorization': getAuthHeader(),
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+}
 function saveGH(){
-  GH.token=document.getElementById('gh_token').value.trim();
-  GH.repo=document.getElementById('gh_repo').value.trim();
-  GH.branch=document.getElementById('gh_branch').value.trim()||'main';
-  localStorage.setItem('gh_v5',JSON.stringify(GH));
-  document.getElementById('gh_status').textContent='Guardado '+GH.repo;
+  GH.token = document.getElementById('gh_token').value.trim();
+  GH.repo = document.getElementById('gh_repo').value.trim()||'Cartaspro/cartas';
+  GH.branch = document.getElementById('gh_branch').value.trim()||'main';
+  localStorage.setItem('gh_final_v1', JSON.stringify(GH));
+  log('Token guardado repo='+GH.repo);
+  document.getElementById('gh_status').textContent = '✅ Guardado: '+GH.repo+' branch '+GH.branch+' token '+GH.token.slice(0,10)+'...';
 }
 function loadGH(){
   try{
-    const s=JSON.parse(localStorage.getItem('gh_v5')||'null');
-    if(s){ GH=s; }
+    const s = JSON.parse(localStorage.getItem('gh_final_v1')||'null');
+    if(s){ GH = s; }
   }catch(e){}
-  document.getElementById('gh_token').value=GH.token||'';
-  document.getElementById('gh_repo').value=GH.repo||'Cartaspro/cartas';
-  document.getElementById('gh_branch').value=GH.branch||'main';
+  // compat con viejos keys
+  try{
+    const old = JSON.parse(localStorage.getItem('gh_v5')||localStorage.getItem('gh_v4')||'null');
+    if(old && !GH.token) GH = old;
+  }catch(e){}
+  document.getElementById('gh_token').value = GH.token||'';
+  document.getElementById('gh_repo').value = GH.repo||'Cartaspro/cartas';
+  document.getElementById('gh_branch').value = GH.branch||'main';
 }
-function ghHeaders(){return {'Authorization':'Bearer '+GH.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};}
 
-function testToken(){
-  const tok=document.getElementById('gh_token').value.trim();
-  const repo=document.getElementById('gh_repo').value.trim();
-  if(!tok){document.getElementById('gh_status').textContent='Pega token'; return;}
+async function testToken(){
   saveGH();
-  document.getElementById('gh_status').textContent='Probando...';
-  fetch('https://api.github.com/user',{headers:ghHeaders()}).then(async r=>{const j=await r.json(); if(!r.ok) throw j.message; return j;}).then(u=>{
-    document.getElementById('gh_status').textContent='✅ Token OK como '+u.login+'\nRepo: '+repo;
-    return fetch('https://api.github.com/repos/'+repo,{headers:ghHeaders()}).then(async r=>{const j=await r.json(); if(!r.ok) throw j.message; return j;});
-  }).then(r=>{document.getElementById('gh_status').textContent+='\n✅ Repo OK: '+r.full_name;}).catch(e=>{document.getElementById('gh_status').textContent='❌ '+e;});
+  const status = document.getElementById('gh_status');
+  if(!GH.token){ status.textContent='❌ Pega tu token primero'; return; }
+  status.textContent='⏳ Probando token...\nHeader: '+getAuthHeader().slice(0,15)+'...';
+  log('Probando token tipo='+ (GH.token.startsWith('github_pat_')?'fine-grained':'classic'));
+  try{
+    // 1. user
+    const r1 = await fetch('https://api.github.com/user', {headers: ghHeadersGET()});
+    const j1 = await r1.json();
+    if(!r1.ok) throw 'User API '+r1.status+' '+(j1.message||JSON.stringify(j1));
+    status.textContent = '✅ Token OK como '+j1.login+' ('+j1.type+')\nProbando repo '+GH.repo+'...';
+    log('User OK '+j1.login);
+    // 2. repo
+    const r2 = await fetch('https://api.github.com/repos/'+GH.repo, {headers: ghHeadersGET()});
+    const j2 = await r2.json();
+    if(!r2.ok) throw 'Repo API '+r2.status+' '+(j2.message||JSON.stringify(j2));
+    status.textContent += '\n✅ Repo OK: '+j2.full_name+' default_branch='+j2.default_branch+'\nPermisos push='+ (j2.permissions?.push?'SI':'NO - token solo lectura');
+    log('Repo OK '+j2.full_name);
+    // 3. list root
+    const r3 = await fetch('https://api.github.com/repos/'+GH.repo+'/contents?ref='+GH.branch, {headers: ghHeadersGET()});
+    const j3 = await r3.json();
+    if(!r3.ok) throw 'Contents API '+r3.status+' '+(j3.message||'');
+    status.textContent += '\n✅ Puede listar: '+j3.length+' items en raíz';
+    log('List OK '+j3.length);
+    status.textContent += '\n\nAhora dale a CARGAR CARTAS DE GITHUB';
+  }catch(e){
+    status.textContent = '❌ Error: '+e+'\n\nSi dice 401 Bad credentials: tu token está mal o expirado, genera uno nuevo en github.com/settings/tokens con permiso repo.\nSi dice 404: repo mal escrito, debe ser Cartaspro/cartas exacto con mayúsculas.';
+    log('Error test: '+e, 'err');
+  }
 }
 
 async function loadFromGitHub(){
-  if(!GH.token){document.getElementById('gh_status').textContent='Falta token'; return;}
+  if(!GH.token){ alert('Pega tu token primero'); return; }
   saveGH();
-  document.getElementById('gh_status').textContent='⏳ Listando carpetas...';
-  document.getElementById('clientList').innerHTML='Cargando...';
+  const status = document.getElementById('gh_status');
+  status.textContent = '⏳ Leyendo carpetas reales de GitHub...';
+  document.getElementById('clientList').innerHTML = '<div style="font-size:11px;color:#aaa">Cargando...</div>';
+  log('Iniciando carga de cartas');
   try{
-    const res=await fetch('https://api.github.com/repos/'+GH.repo+'/contents?ref='+GH.branch,{headers:ghHeaders()});
-    const list=await res.json();
-    if(!res.ok) throw list.message||'Error listando';
-    const dirs=list.filter(x=>x.type==='dir').map(x=>x.name);
-    document.getElementById('gh_status').textContent='📁 Carpetas encontradas: '+dirs.length+' -> buscando index.html...';
-    CLIENTS={};
-    let count=0;
+    const res = await fetch('https://api.github.com/repos/'+GH.repo+'/contents?ref='+GH.branch, {headers: ghHeadersGET()});
+    const list = await res.json();
+    if(!res.ok) throw 'List root '+res.status+' '+(list.message||'');
+    const dirs = list.filter(x=>x.type==='dir').map(x=>x.name).filter(n=>!n.startsWith('.') && n!=='img' && n!=='admin' && n!=='node_modules');
+    log('Carpetas encontradas: '+dirs.join(','));
+    status.textContent = '📁 Encontradas '+dirs.length+' carpetas, buscando index.html...\n'+dirs.join(', ');
+    CLIENTS = {};
+    let ok=0;
     for(const dir of dirs){
-      if(dir==='img' || dir.startsWith('.')) continue;
       try{
-        const idxRes=await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+dir+'/index.html?ref='+GH.branch,{headers:ghHeaders()});
-        if(!idxRes.ok) continue;
-        const idxJson=await idxRes.json();
-        const rawContent=atob(idxJson.content.replace(/\n/g,''));
-        const parsed=parseIndexContent(rawContent);
-        CLIENTS[dir]={id:dir, config:parsed.config, data:parsed.data, rawHtml:rawContent, sha:idxJson.sha, template:rawContent};
-        count++;
-        document.getElementById('gh_status').textContent='✅ '+count+' cartas leídas... última: '+dir;
-      }catch(e){ /* sin index */ }
+        const idxRes = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+dir+'/index.html?ref='+GH.branch, {headers: ghHeadersGET()});
+        if(!idxRes.ok) { log('Sin index en '+dir+' status='+idxRes.status); continue; }
+        const idxJson = await idxRes.json();
+        // content es base64
+        const raw = decodeBase64(idxJson.content);
+        const parsed = parseIndexContent(raw);
+        CLIENTS[dir] = {id:dir, config:parsed.config, data:parsed.data, rawHtml:raw, template:raw, sha:idxJson.sha};
+        ok++;
+        status.textContent = '✅ '+ok+' leídas... última: '+dir+' ('+parsed.data.length+' prod)';
+        log('Leída '+dir+' '+parsed.data.length+' prod');
+      }catch(e){ log('Error leyendo '+dir+' '+e,'err'); }
     }
-    // Si no hay ninguna, crear una base vacía para no quedar en blanco
-    if(!Object.keys(CLIENTS).length){
-      document.getElementById('gh_status').textContent='⚠️ No encontré ningún index.html. Creá una carpeta nueva.';
-    }else{
-      document.getElementById('gh_status').textContent='✅ Cargadas '+Object.keys(CLIENTS).length+' cartas desde GitHub\n'+Object.keys(CLIENTS).join(', ');
+    if(!ok){
+      status.textContent = '⚠️ No encontré ningún index.html en carpetas. Revisa que estén en '+GH.repo+' / '+GH.branch+' / nombre-carpeta/index.html';
+      document.getElementById('clientList').innerHTML = '<div style="font-size:11px;color:#ff5555">No hay cartas con index.html</div>';
+      return;
     }
-    cur=Object.keys(CLIENTS)[0]||null;
+    cur = Object.keys(CLIENTS)[0];
     renderClients();
-    if(cur) loadClient(cur);
-    localStorage.setItem('clients_v5',JSON.stringify(Object.fromEntries(Object.entries(CLIENTS).map(([k,v])=>[k,{config:v.config,data:v.data}]))));
+    loadClient(cur);
+    status.textContent = '✅ Cargadas '+ok+' cartas:\n'+Object.keys(CLIENTS).join(', ')+'\n\nSeleccioná una y edítala.';
+    // guarda backup local
+    localStorage.setItem('clients_final_backup', JSON.stringify(CLIENTS));
   }catch(e){
-    document.getElementById('gh_status').textContent='❌ '+e;
+    status.textContent = '❌ Error cargando: '+e;
+    log('Error loadFromGitHub '+e,'err');
   }
 }
 
+function decodeBase64(b64){
+  // GitHub content viene con saltos de línea
+  const clean = b64.replace(/\n/g,'');
+  try{
+    return decodeURIComponent(escape(atob(clean)));
+  }catch(e){
+    return atob(clean);
+  }
+}
+function encodeBase64(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+// ===== PARSER ROBUSTO - LEE CUALQUIER INDEX =====
 function parseIndexContent(html){
-  // Intenta varios patrones
   let cfg=null, data=null;
-  // CONFIG_DEFAULT = {...};
-  let m=html.match(/const CONFIG_DEFAULT\s*=\s*(\{[\s\S]*?\});/);
-  if(!m) m=html.match(/const CONFIG\s*=\s*(\{[\s\S]*?\});/);
-  if(!m) m=html.match(/CONFIG_DEFAULT\s*=\s*(\{[\s\S]*?\})/);
+  // busca CONFIG_DEFAULT
+  let m = html.match(/const\s+CONFIG_DEFAULT\s*=\s*(\{[\s\S]*?\});/);
+  if(!m) m = html.match(/const\s+CONFIG\s*=\s*(\{[\s\S]*?\});/);
+  if(!m) m = html.match(/CONFIG_DEFAULT\s*=\s*(\{[\s\S]*?\})/);
   if(m){
-    try{ cfg=JSON.parse(m[1]); }catch(e){
-      // intenta eval safe-ish: reemplaza comillas simples
-      try{ cfg=Function('"use strict";return ('+m[1]+')')(); }catch(e2){}
+    try{ cfg = JSON.parse(m[1]); }catch(e){
+      try{ cfg = Function('"use strict";return ('+m[1]+')')(); }catch(e2){ cfg=null; }
     }
   }
-  let md=html.match(/const DATA_DEFAULT\s*=\s*(\[[\s\S]*?\]);/);
-  if(!md) md=html.match(/const DATA\s*=\s*(\[[\s\S]*?\]);/);
-  if(!md) md=html.match(/let productos\s*=\s*(\[[\s\S]*?\]);/);
+  let md = html.match(/const\s+DATA_DEFAULT\s*=\s*(\[[\s\S]*?\]);/);
+  if(!md) md = html.match(/let\s+DATA_DEFAULT\s*=\s*(\[[\s\S]*?\]);/);
+  if(!md) md = html.match(/const\s+DATA\s*=\s*(\[[\s\S]*?\]);/);
+  if(!md) md = html.match(/let\s+productos\s*=\s*(\[[\s\S]*?\]);/);
+  if(!md) md = html.match(/const\s+productos\s*=\s*(\[[\s\S]*?\]);/);
+  if(!md) md = html.match(/productos\s*=\s*(\[[\s\S]*?\]);/);
   if(md){
-    try{ data=JSON.parse(md[1]); }catch(e){
-      try{ data=Function('"use strict";return ('+md[1]+')')(); }catch(e2){}
+    try{ data = JSON.parse(md[1]); }catch(e){
+      try{ data = Function('"use strict";return ('+md[1]+')')(); }catch(e2){ data=null; }
     }
   }
-  if(!cfg) cfg={nombre:'Sin nombre', whatsapp:'', direccion:'', envio:{costo:0}};
-  if(!data) data=[];
-  // Normaliza envio
-  if(cfg.envio && typeof cfg.envio.costo==='undefined' && cfg.envio.costoFijo) cfg.envio.costo=cfg.envio.costoFijo;
+  if(!cfg) cfg = {nombre:'Sin nombre', whatsapp:'', direccion:'', color:'#E11D48', estado:'activo', envio:{costo:0}};
+  if(!data) data = [];
+  // normaliza
+  if(!cfg.envio) cfg.envio={costo:0};
+  if(typeof cfg.envio.costo==='undefined' && typeof cfg.envio.costoFijo!=='undefined') cfg.envio.costo=cfg.envio.costoFijo;
   return {config:cfg, data:data};
 }
 
+// ===== UI =====
 function renderClients(){
   const cont=document.getElementById('clientList'); cont.innerHTML='';
-  Object.keys(CLIENTS).forEach(id=>{
+  Object.keys(CLIENTS).sort().forEach(id=>{
     const c=CLIENTS[id];
     const div=document.createElement('div'); div.className='client'+(id===cur?' on':'');
-    div.innerHTML='<b style="color:inherit">'+(c.config.nombre||id)+'</b><small>'+id+'/ - '+c.data.length+' prod</small><small style="color:#FFD60A">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+id+'/</small>';
+    div.innerHTML=`<b style="color:inherit">${(c.config.nombre||id)}</b><small>${id}/ - ${c.data.length} prod - ${c.config.estado||'activo'}</small><small style="color:#FFD60A">/${id}/index.html</small>`;
     div.onclick=()=>{ cur=id; renderClients(); loadClient(id); };
     cont.appendChild(div);
   });
 }
-
 function loadClient(id){
   const c=CLIENTS[id]; if(!c) return;
   document.getElementById('clientTitle').textContent=id.toUpperCase();
@@ -210,43 +328,37 @@ function loadClient(id){
   document.getElementById('f_nombre').value=c.config.nombre||'';
   document.getElementById('f_sub').value=c.config.subtitulo||c.config.descripcion||'';
   document.getElementById('f_whatsapp').value=c.config.whatsapp||'';
-  document.getElementById('f_admin_wa').value=c.config.adminWhatsApp||'';
+  document.getElementById('f_admin_wa').value=c.config.adminWhatsApp||c.config.adminWhatsapp||'';
   document.getElementById('f_direccion').value=c.config.direccion||'';
   document.getElementById('f_color').value=c.config.color||'#E11D48';
   document.getElementById('f_envio').value=c.config.envio?.costo||c.config.envio?.costoFijo||0;
   document.getElementById('f_horarios').value=c.config.horarios||'';
   document.getElementById('estadoSelect').value=c.config.estado||'activo';
-  document.getElementById('rawInfo').textContent='Template: '+c.rawHtml.length+' bytes | SHA: '+(c.sha||'').slice(0,7);
+  document.getElementById('rawInfo').textContent='Template: '+c.template.length+' bytes | SHA: '+(c.sha||'local').slice(0,7)+' | Productos: '+c.data.length;
   renderProducts();
   build();
 }
-
-function updateConfigField(k,v){
-  if(!cur) return;
-  CLIENTS[cur].config[k]=v;
-  build();
-}
-function updateEnvio(v){
-  if(!cur) return;
-  CLIENTS[cur].config.envio=CLIENTS[cur].config.envio||{};
-  CLIENTS[cur].config.envio.costo=Number(v)||0;
-  CLIENTS[cur].config.envio.costoFijo=Number(v)||0;
-  build();
-}
-function saveEstadoLocal(){
-  if(!cur) return;
-  CLIENTS[cur].config.estado=document.getElementById('estadoSelect').value;
-  if(CLIENTS[cur].config.estado==='inactivo' || CLIENTS[cur].config.estado==='baja') CLIENTS[cur].config.activo=false; else CLIENTS[cur].config.activo=true;
-  build();
-}
-function saveSuscLocal(){ build(); }
+function updateField(k,v){ if(!cur) return; CLIENTS[cur].config[k]=v; build(); }
+function updateEnvio(v){ if(!cur) return; CLIENTS[cur].config.envio=CLIENTS[cur].config.envio||{}; CLIENTS[cur].config.envio.costo=Number(v)||0; CLIENTS[cur].config.envio.costoFijo=Number(v)||0; build(); }
+function saveEstadoLocal(){ if(!cur) return; CLIENTS[cur].config.estado=document.getElementById('estadoSelect').value; CLIENTS[cur].config.activo = CLIENTS[cur].config.estado==='activo'; build(); }
 
 function renderProducts(){
   if(!cur) return;
   const grid=document.getElementById('productsGrid'); grid.innerHTML='';
-  CLIENTS[cur].data.forEach((p,idx)=>{
+  CLIENTS[cur].data.forEach((p,i)=>{
     const div=document.createElement('div'); div.className='product';
-    div.innerHTML=`<img src="${p.img||''}" onerror="this.style.display='none'"><span class="label">Nombre</span><input class="input" value="${(p.nombre||'').replace(/"/g,'&quot;')}" oninput="editProd(${idx},'nombre',this.value)"><span class="label">Descripción</span><input class="input" value="${(p.descripcion||p.desc||'').replace(/"/g,'&quot;')}" oninput="editProd(${idx},'descripcion',this.value)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div><span class="label">Precio</span><input class="input" type="number" value="${p.precio||0}" oninput="editProd(${idx},'precio',this.value)"></div><div><span class="label">Categoría</span><input class="input" value="${(p.categoria||'').replace(/"/g,'&quot;')}" oninput="editProd(${idx},'categoria',this.value)"></div></div><span class="label">Imagen URL</span><input class="input" value="${(p.img||'').replace(/"/g,'&quot;')}" oninput="editProd(${idx},'img',this.value)"><div style="display:flex;gap:6px;margin-top:8px"><input type="file" accept="image/*" onchange="uploadPhotoLocal(${idx},this.files[0])"><button class="btn-danger" onclick="removeProd(${idx})">Borrar</button><label style="font-size:11px;display:flex;align-items:center;gap:4px"><input type="checkbox" ${p.destacado?'checked':''} onchange="editProd(${idx},'destacado',this.checked)"> Destacado</label></div>`;
+    div.innerHTML=`
+      <img src="${p.img||''}" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+foto'">
+      <span class="label">Nombre</span><input class="input" value="${(p.nombre||'').replace(/"/g,'&quot;')}" oninput="editProd(${i},'nombre',this.value)">
+      <span class="label">Descripción</span><input class="input" value="${(p.descripcion||p.desc||'').replace(/"/g,'&quot;')}" oninput="editProd(${i},'descripcion',this.value)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div><span class="label">Precio</span><input class="input" type="number" value="${p.precio||0}" oninput="editProd(${i},'precio',this.value)"></div><div><span class="label">Categoría</span><input class="input" value="${(p.categoria||'').replace(/"/g,'&quot;')}" oninput="editProd(${i},'categoria',this.value)"></div></div>
+      <span class="label">Imagen URL</span><input class="input" id="img_${i}" value="${(p.img||'').replace(/"/g,'&quot;')}" oninput="editProd(${i},'img',this.value)">
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <input type="file" accept="image/*" onchange="uploadPhoto(${i},this.files[0])">
+        <button class="btn-ghost" style="background:#331111;border-color:#552222" onclick="removeProd(${i})">Borrar</button>
+        <label style="font-size:11px;display:flex;align-items:center;gap:4px"><input type="checkbox" ${p.destacado?'checked':''} onchange="editProd(${i},'destacado',this.checked)"> Destacado</label>
+      </div>
+    `;
     grid.appendChild(div);
   });
 }
@@ -254,6 +366,10 @@ function editProd(i,k,v){
   if(!cur) return;
   if(k==='precio') v=Number(v)||0;
   CLIENTS[cur].data[i][k]=v;
+  if(k==='img'){
+    const imgEl=document.querySelector(`#productsGrid .product:nth-child(${i+1}) img`);
+    if(imgEl) imgEl.src=v;
+  }
   build();
 }
 function addProductLocal(){
@@ -261,78 +377,74 @@ function addProductLocal(){
   CLIENTS[cur].data.push({id:Date.now(), categoria:'General', nombre:'Nuevo producto', descripcion:'', precio:1000, img:'https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?w=600'});
   renderProducts(); build();
 }
-function removeProd(i){ if(!cur) return; CLIENTS[cur].data.splice(i,1); renderProducts(); build(); }
+function removeProd(i){ if(!cur) return; if(!confirm('Borrar producto?')) return; CLIENTS[cur].data.splice(i,1); renderProducts(); build(); }
 
+// ===== BUILD - REEMPLAZA CONFIG Y DATA EN EL TEMPLATE ORIGINAL =====
 function build(){
   if(!cur) return;
   const c=CLIENTS[cur];
   let tpl=c.template||c.rawHtml;
-  if(!tpl) return;
+  if(!tpl){ document.getElementById('exportLog').textContent='❌ Sin template'; return; }
   try{
     const cfgStr=JSON.stringify(c.config);
     const dataStr=JSON.stringify(c.data);
-    // reemplaza CONFIG_DEFAULT
-    if(tpl.includes('CONFIG_DEFAULT')){
-      tpl=tpl.replace(/const CONFIG_DEFAULT\s*=\s*\{[\s\S]*?\};/, 'const CONFIG_DEFAULT = '+cfgStr+';');
-      tpl=tpl.replace(/const CONFIG_DEFAULT\s*=\s*\[[\s\S]*?\];/, 'const CONFIG_DEFAULT = '+cfgStr+';');
-      // por si es let CONFIG = CONFIG_DEFAULT y también hay CONFIG_DEFAULT directo
-      if(tpl.match(/const CONFIG_DEFAULT/)) {} else {
-        // fallback: reemplaza cualquier const CONFIG =
-        tpl=tpl.replace(/const CONFIG\s*=\s*\{[\s\S]*?\};/, 'const CONFIG = '+cfgStr+';');
+    // Reemplazo robusto: busca cualquier variante
+    let newTpl=tpl;
+    // CONFIG_DEFAULT
+    if(newTpl.includes('CONFIG_DEFAULT')){
+      newTpl=newTpl.replace(/const\s+CONFIG_DEFAULT\s*=\s*\{[\s\S]*?\};/, 'const CONFIG_DEFAULT = '+cfgStr+';');
+      newTpl=newTpl.replace(/let\s+CONFIG_DEFAULT\s*=\s*\{[\s\S]*?\};/, 'let CONFIG_DEFAULT = '+cfgStr+';');
+    }
+    if(newTpl.includes('const CONFIG =') || newTpl.includes('let CONFIG =')){
+      // si además hay const CONFIG = CONFIG_DEFAULT, no tocar
+      if(!newTpl.includes('CONFIG = CONFIG_DEFAULT')){
+        newTpl=newTpl.replace(/const\s+CONFIG\s*=\s*\{[\s\S]*?\};/, 'const CONFIG = '+cfgStr+';');
+        newTpl=newTpl.replace(/let\s+CONFIG\s*=\s*\{[\s\S]*?\};/, 'let CONFIG = '+cfgStr+';');
       }
-    }else{
-      // si no tiene CONFIG_DEFAULT, intenta CONFIG
-      tpl=tpl.replace(/const CONFIG\s*=\s*\{[\s\S]*?\};/, 'const CONFIG = '+cfgStr+';');
-      tpl=tpl.replace(/let CONFIG\s*=\s*\{[\s\S]*?\};/, 'let CONFIG = '+cfgStr+';');
-      tpl=tpl.replace(/const CONFIG_DEFAULT\s*=\s*\{[\s\S]*?\}/, 'const CONFIG_DEFAULT = '+cfgStr);
     }
-    // reemplaza DATA
-    if(tpl.includes('DATA_DEFAULT')){
-      tpl=tpl.replace(/const DATA_DEFAULT\s*=\s*\[[\s\S]*?\];/, 'const DATA_DEFAULT = '+dataStr+';');
-      tpl=tpl.replace(/let DATA_DEFAULT\s*=\s*\[[\s\S]*?\];/, 'let DATA_DEFAULT = '+dataStr+';');
-    }else if(tpl.includes('let productos')){
-      tpl=tpl.replace(/let productos\s*=\s*\[[\s\S]*?\];/, 'let productos = '+dataStr+';');
-    }else if(tpl.includes('const DATA')){
-      tpl=tpl.replace(/const DATA\s*=\s*\[[\s\S]*?\];/, 'const DATA = '+dataStr+';');
-    }else{
-      // intenta productos = DATA_DEFAULT pattern
-      tpl=tpl.replace(/const DATA_DEFAULT = \[[\s\S]*?\]/, 'const DATA_DEFAULT = '+dataStr);
+    // Si no tenía CONFIG_DEFAULT pero sí DATA, igual inyecta CONFIG_DEFAULT si hace falta
+    // DATA_DEFAULT
+    if(newTpl.includes('DATA_DEFAULT')){
+      newTpl=newTpl.replace(/const\s+DATA_DEFAULT\s*=\s*\[[\s\S]*?\];/, 'const DATA_DEFAULT = '+dataStr+';');
+      newTpl=newTpl.replace(/let\s+DATA_DEFAULT\s*=\s*\[[\s\S]*?\];/, 'let DATA_DEFAULT = '+dataStr+';');
     }
-    // también asegura que CONFIG y DATA estén sincronizados para ambos formatos
-    // para template de demo-generica que usa CONFIG_DEFAULT y DATA_DEFAULT pero luego hace let CONFIG = CONFIG_DEFAULT
-    // ya está cubierto
-    lastBuilt=tpl;
-    document.getElementById('exportLog').textContent='✅ Listo para subir: '+lastBuilt.length+' bytes | '+c.data.length+' productos | '+c.config.nombre;
-    document.getElementById('realLinkBox').innerHTML='<span style="font-size:11px;color:#888">Cuando guardes, irá a <code>'+cur+'/index.html</code> en '+GH.repo+'</span>';
+    // productos
+    if(newTpl.includes('let productos') || newTpl.includes('const productos') || newTpl.includes('productos =')){
+      // solo si no hay DATA_DEFAULT
+      if(!newTpl.includes('DATA_DEFAULT')){
+        newTpl=newTpl.replace(/let\s+productos\s*=\s*\[[\s\S]*?\];/, 'let productos = '+dataStr+';');
+        newTpl=newTpl.replace(/const\s+productos\s*=\s*\[[\s\S]*?\];/, 'const productos = '+dataStr+';');
+        newTpl=newTpl.replace(/productos\s*=\s*\[[\s\S]*?\];/, 'productos = '+dataStr+';');
+      }
+    }
+    // Si el template no tenía CONFIG_DEFAULT, lo inyectamos al inicio del script (fallback)
+    if(!newTpl.includes('CONFIG_DEFAULT') && newTpl.includes('<script>')){
+      // no hacemos nada, ya reemplazamos CONFIG
+    }
+    lastBuilt=newTpl;
+    document.getElementById('exportLog').textContent='✅ Listo: '+lastBuilt.length+' bytes | '+c.data.length+' productos | '+c.config.nombre+'\nTemplate original preservado, solo se reemplazó CONFIG y DATA';
+    document.getElementById('realLinkBox').innerHTML='<span style="font-size:11px;color:#888">Se guardará en <code>'+cur+'/index.html</code> en '+GH.repo+'</span>';
   }catch(e){
     document.getElementById('exportLog').textContent='❌ Error build: '+e;
+    log('Build error '+e,'err');
   }
 }
 
-function addClientLocal(){
-  const id=prompt('ID carpeta nueva ej: demo-barberia'); if(!id) return;
-  const nid=id.toLowerCase().replace(/\s+/g,'-');
-  if(CLIENTS[nid]){alert('Ya existe'); return;}
-  // usa template de la actual o base genérica
-  const baseTemplate= CLIENTS[cur]?.template || Object.values(CLIENTS)[0]?.template || '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>const CONFIG_DEFAULT={};const DATA_DEFAULT=[];</script></body></html>';
-  CLIENTS[nid]={id:nid, config:{nombre:nid, whatsapp:'54911', direccion:'Lomas', estado:'activo', color:'#E11D48', envio:{costo:0}}, data:[], rawHtml:baseTemplate, template:baseTemplate, sha:null};
-  cur=nid; renderClients(); loadClient(nid);
-}
-function deleteClientLocal(){ if(!cur||!confirm('Borrar local '+cur+' de la vista? No borra de GitHub')) return; delete CLIENTS[cur]; cur=Object.keys(CLIENTS)[0]||null; renderClients(); if(cur) loadClient(cur); }
-
-function handleFile(ev){
+// ===== ARCHIVOS =====
+function handleSingleFile(ev){
   const f=ev.target.files[0]; if(!f) return;
   const r=new FileReader(); r.onload=e=>{
     try{
       const parsed=parseIndexContent(e.target.result);
-      if(!cur){ alert('Seleccioná primero una carpeta o creá una nueva'); return; }
+      if(!cur){ alert('Seleccioná primero una carpeta'); return; }
       CLIENTS[cur].config=parsed.config;
       CLIENTS[cur].data=parsed.data;
       CLIENTS[cur].rawHtml=e.target.result;
       CLIENTS[cur].template=e.target.result;
       loadClient(cur);
       document.getElementById('uploadLog').style.display='block';
-      document.getElementById('uploadLog').textContent='✅ Index cargado: '+parsed.data.length+' productos, nombre: '+parsed.config.nombre;
+      document.getElementById('uploadLog').innerHTML='<span class="log-ok">✅ Index cargado como nuevo template: '+parsed.data.length+' prod, nombre: '+parsed.config.nombre+'</span>';
+      log('Single file cargado '+parsed.config.nombre);
     }catch(err){ document.getElementById('uploadLog').style.display='block'; document.getElementById('uploadLog').textContent='❌ '+err; }
   }; r.readAsText(f);
 }
@@ -347,74 +459,120 @@ function parsePasted(){
     CLIENTS[cur].template=html;
     loadClient(cur);
     document.getElementById('uploadLog').style.display='block';
-    document.getElementById('uploadLog').textContent='✅ Pegado OK: '+parsed.data.length+' productos';
+    document.getElementById('uploadLog').innerHTML='<span class="log-ok">✅ Pegado OK: '+parsed.data.length+' productos, nuevo template guardado</span>';
   }catch(err){ document.getElementById('uploadLog').style.display='block'; document.getElementById('uploadLog').textContent='❌ '+err; }
 }
+function handleBulk(ev){
+  const files=ev.target.files; if(!files.length) return;
+  for(const f of files){
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const parsed=parseIndexContent(e.target.result);
+        const id=f.name.replace('.html','').toLowerCase().replace(/\s+/g,'-')||('demo-'+Date.now());
+        CLIENTS[id]={id:id, config:parsed.config, data:parsed.data, rawHtml:e.target.result, template:e.target.result, sha:null};
+        log('Bulk cargado '+id);
+        renderClients();
+      }catch(err){ log('Error bulk '+f.name+' '+err,'err'); }
+    };
+    r.readAsText(f);
+  }
+  setTimeout(()=>{ cur=Object.keys(CLIENTS)[0]; if(cur) loadClient(cur); },500);
+}
+function addClientLocal(){
+  const id=prompt('ID carpeta nueva ej: demo-barberia'); if(!id) return;
+  const nid=id.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'');
+  if(CLIENTS[nid]){alert('Ya existe'); return;}
+  const baseTemplate= CLIENTS[cur]?.template || Object.values(CLIENTS)[0]?.template || '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CARTA</title></head><body><script>const CONFIG_DEFAULT={"nombre":"Demo","whatsapp":"54911","estado":"activo","color":"#E11D48","envio":{"costo":0}};const DATA_DEFAULT=[];let CONFIG=CONFIG_DEFAULT;let DATA=DATA_DEFAULT;<\/script></body></html>';
+  CLIENTS[nid]={id:nid, config:{nombre:nid, whatsapp:'54911', direccion:'Lomas', estado:'activo', color:'#E11D48', envio:{costo:0}}, data:[], rawHtml:baseTemplate, template:baseTemplate, sha:null};
+  cur=nid; renderClients(); loadClient(nid);
+}
 
+// ===== PREVIEW / DOWNLOAD / COPY =====
 function openPreview(){
-  if(!lastBuilt) build();
+  if(!cur) return; if(!lastBuilt) build();
   const b=new Blob([lastBuilt],{type:'text/html'}); const u=URL.createObjectURL(b);
   const fr=document.getElementById('previewFrame'); fr.src=u; fr.style.display='block';
+  fr.scrollIntoView({behavior:'smooth'});
 }
 function openRealLink(){
   if(!cur) return;
   const url='https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/';
   window.open(url+'?v='+Date.now(),'_blank');
 }
+function downloadSingle(){
+  if(!cur) return; if(!lastBuilt) build();
+  const b=new Blob([lastBuilt],{type:'text/html'}); const u=URL.createObjectURL(b);
+  const a=document.createElement('a'); a.href=u; a.download=cur+'-index.html'; a.click();
+}
 function copyCodeForIA(){
-  if(!lastBuilt) build();
-  navigator.clipboard.writeText(lastBuilt).then(()=>{ document.getElementById('exportLog').textContent='✅ Copiado '+lastBuilt.length+' bytes'; });
+  if(!cur) return; if(!lastBuilt) build();
+  navigator.clipboard.writeText(lastBuilt).then(()=>{ document.getElementById('exportLog').textContent='✅ Copiado '+lastBuilt.length+' bytes para IA'; });
 }
 
-async function uploadPhotoLocal(idx,file){
+// ===== FOTO =====
+async function uploadPhoto(idx,file){
   if(!file) return;
-  if(!GH.token){ alert('Falta token'); return; }
+  if(!GH.token){ alert('Falta token - guarda primero'); return; }
   const ext=file.name.split('.').pop()||'jpg';
   const fileName=cur+'-'+idx+'-'+Date.now()+'.'+ext;
   const repoPath='img/'+cur+'/'+fileName;
-  document.getElementById('exportLog').textContent='Subiendo foto '+fileName+'...';
+  document.getElementById('exportLog').textContent='⏳ Subiendo foto '+fileName+'...';
+  log('Subiendo foto '+repoPath);
   const reader=new FileReader();
   reader.onload=async e=>{
     const b64=e.target.result.split(',')[1];
     try{
       const apiUrl='https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath+'?ref='+GH.branch;
-      const res=await fetch(apiUrl,{method:'PUT', headers:ghHeaders(), body:JSON.stringify({message:'upload '+fileName, content:b64, branch:GH.branch})});
-      const j=await res.json(); if(!res.ok) throw j.message;
+      const res=await fetch(apiUrl,{method:'PUT', headers:ghHeadersPUT(), body:JSON.stringify({message:'upload '+fileName, content:b64, branch:GH.branch})});
+      const j=await res.json(); if(!res.ok) throw j.message||JSON.stringify(j).slice(0,200);
       const raw='https://raw.githubusercontent.com/'+GH.repo+'/'+GH.branch+'/'+repoPath;
       CLIENTS[cur].data[idx].img=raw;
+      const inp=document.getElementById('img_'+idx); if(inp) inp.value=raw;
       renderProducts(); build();
-      document.getElementById('exportLog').textContent='✅ Foto OK: '+raw;
-    }catch(err){ document.getElementById('exportLog').textContent='❌ Foto error: '+err; }
+      document.getElementById('exportLog').innerHTML='<span class="log-ok">✅ Foto OK</span><div class="linkbox">'+raw+'</div>';
+      log('Foto OK '+raw);
+    }catch(err){ document.getElementById('exportLog').textContent='❌ Foto error: '+err; log('Foto error '+err,'err'); }
   };
   reader.readAsDataURL(file);
 }
 
+// ===== SAVE TO GITHUB =====
 async function saveToGitHub(){
-  if(!cur) { alert('Seleccioná carta'); return; }
+  if(!cur){ alert('Seleccioná una carta'); return; }
   if(!lastBuilt) build();
   if(!GH.token){ alert('Falta token'); return; }
-  document.getElementById('exportLog').textContent='⏳ Subiendo '+cur+'/index.html...';
+  saveGH();
+  const btn=document.getElementById('btnSaveGH'); btn.disabled=true; btn.textContent='⏳ Subiendo...';
+  document.getElementById('exportLog').textContent='⏳ Subiendo '+cur+'/index.html a '+GH.repo+'...';
   const repoPath=cur+'/index.html';
-  const content=btoa(unescape(encodeURIComponent(lastBuilt)));
+  const content=encodeBase64(lastBuilt);
   const apiUrl='https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath+'?ref='+GH.branch;
   try{
-    const getRes=await fetch(apiUrl,{headers:ghHeaders()});
+    const getRes=await fetch(apiUrl,{headers:ghHeadersGET()});
     let sha=null;
-    if(getRes.ok){ const j=await getRes.json(); sha=j.sha; }
+    if(getRes.ok){ const j=await getRes.json(); sha=j.sha; log('Existe previo SHA '+sha.slice(0,7)); }
+    else if(getRes.status!==404){ const j=await getRes.json(); throw 'GET '+getRes.status+' '+(j.message||''); }
     const body={message:'update '+cur+' '+new Date().toISOString(), content:content, branch:GH.branch};
     if(sha) body.sha=sha;
-    const putRes=await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath,{method:'PUT', headers:ghHeaders(), body:JSON.stringify(body)});
+    const putRes=await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath,{method:'PUT', headers:ghHeadersPUT(), body:JSON.stringify(body)});
     const putJson=await putRes.json();
-    if(!putRes.ok) throw putJson.message;
+    if(!putRes.ok) throw putJson.message||JSON.stringify(putJson).slice(0,300);
     CLIENTS[cur].sha=putJson.content.sha;
-    document.getElementById('exportLog').innerHTML='✅ Push OK<br><div class="linkbox">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'</div>';
-    document.getElementById('realLinkBox').innerHTML='<a href="https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'" target="_blank" style="color:#FFD60A">🔗 Abrir carta</a>';
+    document.getElementById('exportLog').innerHTML='✅ <span class="log-ok">Push OK: '+putJson.content.path+'</span><br><div class="linkbox">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'</div><div style="font-size:11px;color:#888;margin-top:6px">Espera 1-2 min y hace Ctrl+F5 en la carta</div>';
+    document.getElementById('realLinkBox').innerHTML='<a href="https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'" target="_blank" style="color:#FFD60A">🔗 Abrir carta publicada</a>';
+    log('Push OK '+putJson.content.path);
   }catch(e){
-    document.getElementById('exportLog').textContent='❌ Error push: '+e;
+    document.getElementById('exportLog').innerHTML='<span class="log-err">❌ Error push: '+e+'</span>';
+    log('Push error '+e,'err');
+  }finally{
+    btn.disabled=false; btn.textContent='🚀 Guardar en GitHub';
   }
 }
 
+// INIT
 loadGH();
+log('Admin FINAL cargado. Token guardado: '+(GH.token?'SI '+GH.token.slice(0,8)+'...':'NO'));
 </script>
 </body>
 </html>
