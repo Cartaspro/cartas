@@ -54,8 +54,50 @@ let cur = localStorage.getItem('cp_cur') || Object.keys(CLIENTS)[0];
 let last = null;
 let GH = JSON.parse(localStorage.getItem('cp_gh')||'{"repo":"Cartaspro/cartas","branch":"main"}');
 function save(){localStorage.setItem('cp_v4', JSON.stringify(CLIENTS)); localStorage.setItem('cp_cur', cur);}
-function saveGH(){GH.token=document.getElementById('gh_token').value.trim(); GH.repo=document.getElementById('gh_repo').value.trim(); GH.branch=document.getElementById('gh_branch').value.trim()||'main'; localStorage.setItem('cp_gh', JSON.stringify(GH)); document.getElementById('gh_status').textContent='Token guardado';}
-function loadGH(){document.getElementById('gh_token').value=GH.token||''; document.getElementById('gh_repo').value=GH.repo||'Cartaspro/cartas'; document.getElementById('gh_branch').value=GH.branch||'main';}
+function saveGH(){
+  const tokEl=document.getElementById('gh_token');
+  const repoEl=document.getElementById('gh_repo');
+  const branchEl=document.getElementById('gh_branch');
+  GH.token=tokEl.value.trim();
+  GH.repo=repoEl.value.trim()||'Cartaspro/cartas';
+  GH.branch=branchEl.value.trim()||'main';
+  try{
+    localStorage.setItem('cp_gh', JSON.stringify(GH));
+    // also save each separately for robustness
+    localStorage.setItem('gh_token', GH.token);
+    localStorage.setItem('gh_repo', GH.repo);
+    localStorage.setItem('gh_branch', GH.branch);
+    document.getElementById('gh_status').textContent='✅ Token guardado: '+(GH.token?GH.token.slice(0,10)+'... ('+GH.token.length+' chars)':'vacio')+'\nRepo: '+GH.repo+'\nBranch: '+GH.branch;
+    console.log('GH saved', GH);
+  }catch(e){
+    document.getElementById('gh_status').textContent='❌ Error guardando token: '+e+'\nSi abriste el archivo como file://, usa un servidor local o GitHub Pages';
+  }
+}
+function loadGH(){
+  try{
+    // try cp_gh first
+    let saved = null;
+    try{ saved = JSON.parse(localStorage.getItem('cp_gh')||'null'); }catch(e){}
+    if(saved && saved.token){ GH = saved; }
+    else {
+      // fallback to separate keys
+      const t = localStorage.getItem('gh_token');
+      const r = localStorage.getItem('gh_repo');
+      const b = localStorage.getItem('gh_branch');
+      if(t) GH.token=t;
+      if(r) GH.repo=r;
+      if(b) GH.branch=b;
+    }
+    document.getElementById('gh_token').value=GH.token||'';
+    document.getElementById('gh_repo').value=GH.repo||'Cartaspro/cartas';
+    document.getElementById('gh_branch').value=GH.branch||'main';
+    if(GH.token){
+      document.getElementById('gh_status').textContent='Token cargado: '+GH.token.slice(0,10)+'...\nRepo: '+GH.repo;
+    }
+  }catch(e){
+    document.getElementById('gh_status').textContent='Error cargando: '+e;
+  }
+}
 function renderClients(){const el=document.getElementById('clientList');el.innerHTML='';Object.values(CLIENTS).forEach(c=>{const d=document.createElement('div');d.className='client'+(c.id===cur?' on':'');d.innerHTML='<b>'+c.nombre+'</b><br><small>'+c.id+' • '+c.config.estado+'</small>';d.onclick=()=>{cur=c.id;save();load();renderClients();};el.appendChild(d);});}
 function load(){
   const c=CLIENTS[cur];if(!c)return;
@@ -189,13 +231,44 @@ function parsePasted(){
 function testToken(){
   const tok=document.getElementById('gh_token').value.trim();
   const repo=document.getElementById('gh_repo').value.trim()||'Cartaspro/cartas';
-  if(!tok){ document.getElementById('gh_status').textContent='Pega el token primero'; return; }
+  const branch=document.getElementById('gh_branch').value.trim()||'main';
+  if(!tok){ document.getElementById('gh_status').textContent='Pega el token primero (ghp_...)'; return; }
   saveGH();
-  document.getElementById('gh_status').textContent='Probando token...';
-  fetch('https://api.github.com/user',{headers:{'Authorization':'token '+tok}}).then(r=>r.json().then(j=>({status:r.status, body:j}))).then(res=>{
-    if(res.status!==200){ document.getElementById('gh_status').textContent='Token invalido: '+res.status; return; }
-    document.getElementById('gh_status').textContent='Token OK como '+res.body.login;
-  }).catch(e=>{ document.getElementById('gh_status').textContent='Error: '+e; });
+  document.getElementById('gh_status').textContent='Probando token...\nToken: '+tok.slice(0,12)+'...\nRepo: '+repo;
+  // Test 1: user
+  fetch('https://api.github.com/user',{headers:{'Authorization':'token '+tok,'Accept':'application/vnd.github.v3+json'}})
+  .then(async r=>{
+    const j=await r.json();
+    if(!r.ok) throw 'User API '+r.status+': '+(j.message||JSON.stringify(j).slice(0,200));
+    return j;
+  })
+  .then(user=>{
+    document.getElementById('gh_status').textContent='✅ Token OK como '+user.login+' ('+user.type+')\nProbando repo '+repo+'...';
+    return fetch('https://api.github.com/repos/'+repo,{headers:{'Authorization':'token '+tok,'Accept':'application/vnd.github.v3+json'}})
+    .then(async r=>{
+      const j=await r.json();
+      if(!r.ok) throw 'Repo API '+r.status+': '+(j.message||JSON.stringify(j).slice(0,300));
+      return {user, repoInfo:j};
+    });
+  })
+  .then(({user, repoInfo})=>{
+    document.getElementById('gh_status').textContent+='\n✅ Repo OK: '+repoInfo.full_name+'\nBranch por defecto: '+repoInfo.default_branch+'\nTenés acceso '+(repoInfo.permissions?.push?'escritura OK':'solo lectura - revisa permisos del token')+'\nAhora probando acceso a '+cur+'/index.html...';
+    return fetch('https://api.github.com/repos/'+repo+'/contents/'+cur+'/index.html?ref='+branch,{headers:{'Authorization':'token '+tok}});
+  })
+  .then(async r=>{
+    const j=await r.json();
+    if(r.status===200){
+      document.getElementById('gh_status').textContent+='\nArchivo existe, SHA '+j.sha.slice(0,7)+'... Listo para push';
+    } else if(r.status===404){
+      document.getElementById('gh_status').textContent+='\nArchivo no existe aun (404) - se creara nuevo al guardar. OK';
+    } else {
+      document.getElementById('gh_status').textContent+='\nContenido error '+r.status+': '+(j.message||'');
+    }
+  })
+  .catch(e=>{
+    console.error(e);
+    document.getElementById('gh_status').textContent+='\n❌ Error: '+e+'\n\nSi dice Failed to fetch, es CORS o token invalido.\nVerifica:\n1. Token empieza con ghp_ y tiene permiso repo\n2. Repo escrito exacto Cartaspro/cartas (con mayusculas)\n3. Abris el admin desde https://...github.io/... no como archivo local file://';
+  });
 }
 function saveRealFiles(){
   if(!last) build();
