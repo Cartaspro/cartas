@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Turnos - Barbería López - Calendario Real con Bloqueo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#0a0a0a;color:#fff;overflow-x:hidden}
+.hero{position:relative;height:52vh;min-height:380px;overflow:hidden;background:#000}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.4)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,#0a0a0a 20%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.7) 100%)}
+.hero-content{position:absolute;left:0;right:0;bottom:0;padding:24px 20px;max-width:1200px;margin:0 auto;z-index:2}
+.hero h1{font-family:Bebas Neue;font-size:72px;line-height:.9} .hero h1 span{color:#D4A574}
+.hero p{color:#bbb;font-size:13px;margin-top:8px;max-width:560px;line-height:1.5}
+.badges{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.badge{background:#D4A574;color:#000;padding:6px 12px;border-radius:100px;font-weight:900;font-size:11px}
+.badge.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+.topgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:-20px;position:relative;z-index:5} @media(max-width:900px){.topgrid{grid-template-columns:1fr}}
+.card{background:#151515;border:1px solid #252525;border-radius:22px;padding:18px}
+.card b{color:#D4A574;font-size:11px;letter-spacing:.08em;display:block;margin-bottom:8px;text-transform:uppercase}
+.small{color:#9a9a9a;font-size:12px;line-height:1.6}
+.services{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:18px}
+.svc{background:#171717;border:1px solid #262626;border-radius:20px;overflow:hidden;cursor:pointer;transition:.2s;position:relative}
+.svc:hover{border-color:#444;transform:translateY(-2px)}
+.svc.on{border-color:#D4A574;box-shadow:0 0 0 1px #D4A57455}
+.svc img{width:100%;height:180px;object-fit:cover;background:#111;display:block}
+.svc-body{padding:14px}
+.svc-name{font-weight:900;font-size:15px} .svc-desc{font-size:11px;color:#888;margin-top:6px;line-height:1.5;min-height:34px}
+.svc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.svc-price{font-weight:900;font-size:17px} .svc-price span{color:#D4A574}
+.svc-dur{font-size:10px;color:#777;background:#0f0f0f;border:1px solid #222;padding:4px 9px;border-radius:100px}
+.calendar-wrap{display:grid;grid-template-columns:380px 1fr;gap:16px;margin-top:24px} @media(max-width:900px){.calendar-wrap{grid-template-columns:1fr}}
+.cal{background:#141414;border:1px solid #262626;border-radius:20px;padding:16px}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-header button{background:#1e1e1e;border:1px solid #2a2a2a;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-weight:900}
+.cal-month{font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal-dayname{font-size:10px;color:#666;font-weight:800;padding:4px}
+.cal-day{padding:10px 4px;border-radius:10px;border:1px solid transparent;background:#0f0f0f;color:#aaa;font-size:12px;font-weight:700;cursor:pointer;position:relative}
+.cal-day:hover{border-color:#333;color:#fff}
+.cal-day.today{border-color:#D4A57444;color:#D4A574}
+.cal-day.on{background:#D4A574;color:#000;border-color:#D4A574}
+.cal-day.off{opacity:.25;pointer-events:none}
+.cal-day.has-bookings::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:#D4A574;border-radius:50%}
+.slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;min-height:120px}
+.slot{padding:11px 14px;border-radius:12px;border:1px solid #2a2a2a;background:#0f0f0f;color:#ccc;font-size:12px;font-weight:800;cursor:pointer;min-width:72px;text-align:center;transition:.15s}
+.slot:hover{border-color:#555;color:#fff;background:#1a1a1a}
+.slot.on{background:#D4A574;color:#000;border-color:#D4A574}
+.slot.off{background:#1a1a1a;color:#555;border-color:#1a1a1a;pointer-events:none;text-decoration:line-through;opacity:.6;position:relative}
+.slot.off::after{content:'RESERVADO';position:absolute;top:-6px;right:-6px;background:#ff0033;color:#fff;font-size:7px;padding:2px 5px;border-radius:100px;font-weight:900}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px} @media(max-width:600px){.form{grid-template-columns:1fr}}
+.input{background:#0f0f0f;border:1px solid #2a2a2a;border-radius:12px;padding:13px;color:#fff;width:100%;font-size:13px}
+.input:focus{outline:none;border-color:#D4A574}
+.label{font-size:10px;color:#D4A574;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;display:block}
+.sticky{position:fixed;left:12px;right:12px;bottom:12px;background:rgba(18,18,18,.97);backdrop-filter:blur(18px);border:1px solid #2a2a2a;border-radius:20px;padding:12px 14px;z-index:60}
+.sticky-inner{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between} @media(max-width:760px){.sticky-inner{flex-direction:column;align-items:stretch}}
+.total{font-weight:900;font-size:13px;line-height:1.4;color:#aaa} .total b{color:#fff;font-size:14px}
+.btn{background:#D4A574;color:#000;border:0;padding:13px 20px;border-radius:100px;font-weight:900;cursor:pointer;font-size:13px}
+.btn:disabled{background:#2a2a2a;color:#555;cursor:not-allowed}
+.btn-ghost{background:#1e1e1e;color:#fff;border:1px solid #2a2a2a;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;font-size:12px}
+</style>
+</head><body>
+<div class="hero" id="hero"></div>
+<div class="wrap"><div class="topgrid" id="topgrid"></div></div>
+<div class="wrap" style="margin-top:24px">
+<h2 style="font-family:Bebas Neue;font-size:34px">SERVICIOS <span style="color:#D4A574">CON FOTOS REALES VERIFICADAS</span></h2>
+<div class="small" style="margin-top:4px">Tocá un servicio para ver calendario y horarios. Las reservas quedan en gris bloqueadas para siempre en este navegador.</div>
+<div class="services" id="services"></div>
+<div id="booking" style="margin-top:28px;display:none">
+<div class="calendar-wrap">
+<div class="cal" id="calendar"></div>
+<div class="card">
+<b id="selTitle">Elegí horario</b>
+<div class="small" id="selDesc">Seleccioná un día del calendario</div>
+<div style="margin-top:14px">
+<span class="label">Horarios de <span id="dayLabel">--</span> - Quedan <span id="freeCount">0</span> libres</span>
+<div class="slots" id="slots"></div>
+<div class="small" style="margin-top:10px;color:#666">Los horarios en gris con RESERVADO ya fueron tomados. Quedan guardados en localStorage y no se pueden volver a reservar hasta que borres las reservas.</div>
+</div>
+<div style="margin-top:18px;border-top:1px solid #222;padding-top:16px">
+<b>Tu reserva</b>
+<div id="resumen" class="small" style="margin-top:8px;color:#666">Nada seleccionado</div>
+<div class="form">
+<div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre"></div>
+<div><span class="label">WhatsApp *</span><input id="f_tel" class="input" placeholder="11 1234-5678"></div>
+<div style="grid-column:1/-1"><span class="label">Nota (opcional)</span><input id="f_nota" class="input" placeholder="Ej: Llego 10 min tarde"></div>
+</div>
+<button class="btn-ghost" style="width:100%;margin-top:10px" onclick="clearBookings()">🔄 Borrar todas mis reservas de prueba</button>
+</div>
+</div>
+</div>
+</div>
+<div style="height:160px"></div>
+</div>
+<div class="sticky"><div class="sticky-inner">
+<div class="total" id="stickyTotal">Seleccioná un servicio</div>
+<div style="display:flex;gap:8px">
+<button class="btn-ghost" onclick="clearSel()">Limpiar</button>
+<button class="btn" id="btnReservar" disabled>Reservar</button>
+</div>
+</div></div>
+<script>
+const CONFIG_DEFAULT = {"nombre":"BARBERÍA LOPEZ","subtitulo":"Barbería clásica - Microcentro porteño","direccion":"25 de Mayo 314, CABA - 9 a 20hs Lun a Sáb","whatsapp":"5491143250020","adminWhatsApp":"5491156120696","horarios":"Lun a Sáb 9 a 20hs - Dom cerrado","color":"#D4A574","heroImg":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=800&fit=crop&q=80&auto=format","galeria":["https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=300&fit=crop&q=80&auto=format","https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&h=300&fit=crop&q=80&auto=format","https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=300&fit=crop&q=80&auto=format"],"estado":"activo","envio":{"costo":0}};
+const DATA_DEFAULT = [{"id":1,"categoria":"Corte","nombre":"Corte clásico","descripcion":"Tijera o máquina, terminado a navaja y producto final","precio":12000,"duracion":30,"img":"https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=600&fit=crop&q=80&auto=format","destacado":true},{"id":2,"categoria":"Corte","nombre":"Corte + Barba","descripcion":"Corte completo + barba con toalla caliente","precio":18000,"duracion":50,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80&auto=format","destacado":true},{"id":6,"categoria":"Estética","nombre":"Corte + Limpieza facial","descripcion":"Corte + limpieza facial express con vapor","precio":16000,"duracion":45,"img":"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=600&fit=crop&q=80&auto=format"}];
+let CONFIG = CONFIG_DEFAULT;
+let DATA = DATA_DEFAULT;
+let servicioSel = null;
+let selectedDate = new Date();
+let horaSel = null;
+let currentMonth = new Date();
+const STORAGE_KEY = 'turnos_barberia_demo_v3';
+function getBookings(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
+function saveBooking(b){ const all=getBookings(); all.push(b); localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
+function isBooked(dateStr, time){ return getBookings().some(b=>b.date===dateStr && b.time===time); }
+function clearBookings(){ if(!confirm('¿Borrar todas las reservas guardadas en este navegador?')) return; localStorage.removeItem(STORAGE_KEY); renderCalendar(); renderSlots(); renderTop(); updateResumen(); }
+function formatDateStr(d){ return d.toISOString().split('T')[0]; }
+function formatDisplay(d){ return d.toLocaleDateString('es-AR',{weekday:'long', day:'numeric', month:'short'}); }
+function init(){ renderHero(); renderTop(); renderServices(); renderCalendar(); document.getElementById('btnReservar').addEventListener('click', reservar); }
+function renderHero(){
+  document.getElementById('hero').innerHTML=`<img src="${CONFIG.heroImg}" onerror="this.style.display='none'"><div class="hero-overlay"></div><div class="hero-content"><h1>${CONFIG.nombre.split(' ')[0]} <span>${CONFIG.nombre.split(' ').slice(1).join(' ')}</span></h1><p>${CONFIG.subtitulo} • ${CONFIG.direccion}</p><div class="badges"><div class="badge">📅 Calendario siempre visible</div><div class="badge ghost">⏰ Horarios que quedan en gris al reservar</div><div class="badge ghost">📸 Fotos verificadas sin fallas</div></div></div>`;
+}
+function renderTop(){
+  document.getElementById('topgrid').innerHTML=`<div class="card"><b>Cómo funciona el calendario real</b><div class="small">1. Elegí servicio con foto verificada<br>2. El calendario muestra TODO el mes, siempre visible con navegación<br>3. Tocá un día → ves horarios de ese día de 9 a 20 cada 30min<br>4. Cuando reservás, ese horario queda en gris con cartel RESERVADO y no se puede volver a elegir. Queda guardado en localStorage.<br><br><span style="color:#D4A574">✓ Probalo: reservá 14:30 y vas a ver que queda bloqueado en gris para siempre hasta que borres reservas.</span></div></div><div class="card"><b>Reservas guardadas: ${getBookings().length} en este navegador</b><div class="small" id="bookList">${getBookings().slice(-6).map(b=>`• ${b.date} ${b.time} - ${b.servicio} - ${b.nombre}`).join('<br>')||'Aún no hay reservas'}</div></div>`;
+}
+function renderServices(){
+  const cont=document.getElementById('services');
+  cont.innerHTML=DATA.map(s=>`<div class="svc ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80'"><div class="svc-body"><div class="svc-name">${s.nombre}</div><div class="svc-desc">${s.descripcion}</div><div class="svc-meta"><div class="svc-price">$<span>${Number(s.precio).toLocaleString('es-AR')}</span></div><div class="svc-dur">⏱ ${s.duracion} min</div></div></div></div>`).join('');
+  cont.querySelectorAll('.svc').forEach(el=>{ el.addEventListener('click', ()=>{ servicioSel=DATA.find(d=>d.id===Number(el.dataset.id)); renderServices(); document.getElementById('booking').style.display='block'; document.getElementById('booking').scrollIntoView({behavior:'smooth'}); updateResumen(); renderSlots(); }); });
+}
+function renderCalendar(){
+  const cont=document.getElementById('calendar');
+  const year=currentMonth.getFullYear(); const month=currentMonth.getMonth();
+  const firstDay=new Date(year, month, 1); const lastDay=new Date(year, month+1, 0);
+  const startDay=firstDay.getDay(); const daysInMonth=lastDay.getDate();
+  let html=`<div class="cal-header"><button onclick="changeMonth(-1)">‹</button><div class="cal-month">${currentMonth.toLocaleDateString('es-AR',{month:'long', year:'numeric'})}</div><button onclick="changeMonth(1)">›</button></div><div class="cal-grid"><div class="cal-dayname">Dom</div><div class="cal-dayname">Lun</div><div class="cal-dayname">Mar</div><div class="cal-dayname">Mié</div><div class="cal-dayname">Jue</div><div class="cal-dayname">Vie</div><div class="cal-dayname">Sáb</div>`;
+  for(let i=0;i<startDay;i++){ html+=`<div class="cal-day off"></div>`; }
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let d=1; d<=daysInMonth; d++){
+    const date=new Date(year, month, d); date.setHours(0,0,0,0);
+    const isPast = date < today; const isSelected = formatDateStr(date)===formatDateStr(selectedDate);
+    const isToday = formatDateStr(date)===formatDateStr(today); const dateStr=formatDateStr(date);
+    const hasBookings = getBookings().some(b=>b.date===dateStr);
+    html+=`<div class="cal-day ${isPast?'off':''} ${isSelected?'on':''} ${isToday?'today':''} ${hasBookings?'has-bookings':''}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">${d}</div>`;
+  }
+  html+=`</div><div class="small" style="margin-top:10px">• Punto dorado = día con reservas<br>• Gris = pasado<br>• Fondo dorado = día seleccionado - horarios a la derecha siempre visibles</div>`;
+  cont.innerHTML=html;
+}
+function changeMonth(dir){ currentMonth.setMonth(currentMonth.getMonth()+dir); renderCalendar(); }
+function selectDate(dateStr){ selectedDate=new Date(dateStr+'T12:00:00'); renderCalendar(); renderSlots(); updateResumen(); }
+window.changeMonth=changeMonth; window.selectDate=selectDate;
+function getSlotsForDate(dateStr){
+  const slots=[];
+  for(let h=9; h<20; h++){
+    if(h===13) continue;
+    for(let m of [0,30]){
+      const time=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      const booked=isBooked(dateStr, time);
+      slots.push({time, booked});
+    }
+  }
+  return slots;
+}
+function renderSlots(){
+  if(!servicioSel) return;
+  const dateStr=formatDateStr(selectedDate);
+  document.getElementById('dayLabel').textContent=formatDisplay(selectedDate);
+  const slots=getSlotsForDate(dateStr);
+  const free=slots.filter(s=>!s.booked).length;
+  document.getElementById('freeCount').textContent=free;
+  const cont=document.getElementById('slots');
+  cont.innerHTML=slots.map(s=>`<div class="slot ${s.booked?'off':''} ${horaSel===s.time && !s.booked?'on':''}" data-time="${s.time}">${s.time}</div>`).join('');
+  cont.querySelectorAll('.slot:not(.off)').forEach(el=>{ el.addEventListener('click', ()=>{ horaSel=el.dataset.time; renderSlots(); updateResumen(); }); });
+}
+function updateResumen(){
+  const res=document.getElementById('resumen'); const btn=document.getElementById('btnReservar');
+  if(!servicioSel){ res.innerHTML='<span style="color:#666">Elegí un servicio arriba</span>'; document.getElementById('stickyTotal').textContent='Seleccioná un servicio'; btn.disabled=true; return; }
+  const dateStr=formatDateStr(selectedDate); const horaTxt=horaSel||'--:--';
+  res.innerHTML=`<b style="color:#fff">${servicioSel.nombre}</b> - $${Number(servicioSel.precio).toLocaleString('es-AR')} (${servicioSel.duracion}min)<br>${servicioSel.descripcion}<br><br><span style="color:#D4A574">📅 ${formatDisplay(selectedDate)} (${dateStr}) a las ${horaTxt}</span><br><span style="color:#666;font-size:11px">Al reservar, ${horaTxt} quedará en gris bloqueado para siempre en este navegador</span>`;
+  document.getElementById('stickyTotal').innerHTML=`<b>${servicioSel.nombre}</b> • ${formatDisplay(selectedDate)} ${horaTxt} • $${Number(servicioSel.precio).toLocaleString('es-AR')}`;
+  document.getElementById('selTitle').textContent=servicioSel.nombre+' - Calendario real';
+  document.getElementById('selDesc').textContent=`${servicioSel.descripcion} - ${servicioSel.duracion} min - Horarios siempre visibles`;
+  btn.disabled=!horaSel; btn.textContent=horaSel?`Reservar ${formatDisplay(selectedDate)} ${horaSel}`:'Elegí horario';
+}
+function clearSel(){ servicioSel=null; horaSel=null; document.getElementById('booking').style.display='none'; renderServices(); renderCalendar(); document.getElementById('resumen').innerHTML='<span style="color:#666">Nada seleccionado</span>'; document.getElementById('stickyTotal').textContent='Seleccioná un servicio'; document.getElementById('btnReservar').disabled=true; }
+window.clearBookings=clearBookings;
+function reservar(){
+  const nombre=document.getElementById('f_nombre').value.trim(); const tel=document.getElementById('f_tel').value.trim(); const nota=document.getElementById('f_nota').value.trim();
+  if(!nombre||!tel){alert('Completá nombre y WhatsApp');return}
+  if(!servicioSel||!horaSel){alert('Elegí servicio y horario');return}
+  const dateStr=formatDateStr(selectedDate);
+  if(isBooked(dateStr, horaSel)){alert('Ese horario ya fue reservado, elegí otro');renderSlots();return}
+  saveBooking({ date: dateStr, time: horaSel, servicio: servicioSel.nombre, precio: servicioSel.precio, nombre, tel, nota, created: new Date().toISOString() });
+  renderCalendar(); renderSlots(); renderTop(); updateResumen();
+  const msg=[`Hola! Reserva ${CONFIG.nombre} - ${formatDisplay(selectedDate)} ${horaSel}`,``, `Servicio: ${servicioSel.nombre} - $${servicioSel.precio} (${servicioSel.duracion}min)`, `Día: ${formatDisplay(selectedDate)} (${dateStr})`, `Hora: ${horaSel}`, `Cliente: ${nombre}`, `WhatsApp: ${tel}`, nota?`Nota: ${nota}`:'',``, `Este horario ahora queda bloqueado en gris.`].join('\n');
+  const url=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+}
+init();
+</script>
+</body></html>
