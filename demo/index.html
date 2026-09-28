@@ -44,26 +44,35 @@ body{background:#0f0f0f;color:#fff;padding-bottom:110px}
 <button class="wa" onclick="enviar()">Pedir por WhatsApp</button>
 </div></div>
 <script>
-let WHATSAPP="5491134890644"; let carrito={}; let catActiva='todos'; let tipo=''; let envioConfig={tipo:'fijo',costo:1500,base:1500,cadaKm:2,precioPorTramo:500}; let productos=[];
-const cliente = location.pathname.split('/').filter(Boolean).pop();
-async function init(){
- const base='../';
- try{
-  let dataRes=await fetch(base+'data/'+cliente+'.json?v='+Date.now());
-  let cfgRes=await fetch(base+'config/'+cliente+'.json?v='+Date.now());
-  if(!dataRes.ok) dataRes=await fetch('./data/'+cliente+'.json?v='+Date.now());
-  if(!cfgRes.ok) cfgRes=await fetch('./config/'+cliente+'.json?v='+Date.now());
-  if(!dataRes.ok) throw new Error('No data');
-  productos=await dataRes.json();
-  const cfg=cfgRes.ok?await cfgRes.json():{};
-  WHATSAPP=cfg.whatsapp||WHATSAPP;
-  if(cfg.color) document.documentElement.style.setProperty('--primary',cfg.color);
-  document.getElementById('hNombre').innerText=cfg.nombre||cliente;
-  document.getElementById('topBar').innerText=cfg.nombre||cliente;
-  document.getElementById('logoTxt').innerText=(cfg.nombre||cliente).slice(0,2).toUpperCase();
-  envioConfig=cfg.envio||envioConfig;
-  renderCats(); render();
- }catch(e){document.getElementById('hNombre').innerText='Carta no encontrada: '+cliente}
+const CONFIG_DEFAULT = {"nombre": "Demo pizzería", "subtitulo": "Sándwiches XL, Pizzas & Empanadas", "whatsapp": "5491134890644", "color": "#E11D48", "direccion": "Lomas de Zamora", "estado": "activo", "adminWhatsApp": "5491134890644", "envio": {"tipo": "fijo", "costo": 1500, "base": 1500}};
+const DATA_DEFAULT = [
+  {"id": 1, "categoria": "Sándwiches XL", "nombre": "Sándwich de Bondiola XL", "descripcion": "Bondiola braseada, cheddar, cebolla caramelizada", "precio": 8900, "img": "https://images.unsplash.com/photo-1521390188846-e2a3a97453a0?w=600"},
+  {"id": 2, "categoria": "Sándwiches XL", "nombre": "Sándwich de Vacío XL", "descripcion": "Vacío desmechado, provoleta, chimichurri", "precio": 9200, "img": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600"},
+  {"id": 3, "categoria": "Hamburguesas", "nombre": "Hamburguesa doble cheddar", "descripcion": "Doble medallón 150g, cheddar x4, bacon crocante, pan brioche", "precio": 8900, "img": "https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?w=800&h=800&fit=crop"},
+  {"id": 4, "categoria": "Pizzas", "nombre": "Muzza Gigante", "descripcion": "Mozzarella premium, orégano", "precio": 6800, "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600"},
+  {"id": 5, "categoria": "Empanadas", "nombre": "Docena de Carne", "descripcion": "Carne cortada a cuchillo", "precio": 8200, "img": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=600"},
+  {"id": 6, "categoria": "Bebidas", "nombre": "Coca Cola 1.5L", "descripcion": "Bien fría", "precio": 2500, "img": "https://images.unsplash.com/photo-1553456558-aff63285bdd1?w=600"}
+];
+
+let CONFIG = CONFIG_DEFAULT;
+let DATA = DATA_DEFAULT;
+let WHATSAPP = CONFIG.whatsapp;
+let carrito={}; let catActiva='todos'; let tipo=''; let envioConfig=CONFIG.envio; let productos=DATA;
+
+function init(){
+  if(CONFIG.activo===false || CONFIG.estado==='baja' || CONFIG.estado==='inactivo'){
+    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f0f0f;padding:20px"><div style="max-width:560px;width:100%;background:#1c1c1c;border:2px solid #ff0033;border-radius:32px;padding:48px 32px;text-align:center"><div style="width:90px;height:90px;background:#ff0033;border-radius:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px">X</div><h1 style="font-size:32px">PAGINA INACTIVA</h1><p style="color:#fff;font-weight:800;margin-top:12px">Si sos el dueño contactá con soporte</p><a href="https://wa.me/'+(CONFIG.adminWhatsApp||CONFIG.whatsapp)+'" style="display:inline-block;margin-top:20px;background:#E11D48;color:#fff;padding:12px 24px;border-radius:12px;font-weight:800;text-decoration:none">Contactar Soporte</a></div></div>';
+    return;
+  }
+  WHATSAPP=CONFIG.whatsapp||WHATSAPP;
+  if(CONFIG.color) document.documentElement.style.setProperty('--primary',CONFIG.color);
+  document.getElementById('hNombre').innerText=CONFIG.nombre;
+  document.getElementById('hDesc').innerText=CONFIG.subtitulo||'';
+  document.getElementById('topBar').innerText=CONFIG.nombre;
+  document.getElementById('logoTxt').innerText=CONFIG.nombre.slice(0,2).toUpperCase();
+  envioConfig=CONFIG.envio||envioConfig;
+  productos=DATA;
+  renderCats(); render(); upd();
 }
 function renderCats(){
  const cats=['todos',...new Set(productos.map(p=>(p.categoria||p.cat||'general').toLowerCase()))];
