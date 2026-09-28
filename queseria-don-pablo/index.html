@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Queseria Don Pablo - Carta</title>
+<title>Queseria Don Pablo - Carta - COMPLETO</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
@@ -16,19 +16,18 @@ body{background:#080808;color:#fff;overflow-x:hidden}
 .item{background:#1e1e1e;border:1px solid #262626;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;position:relative} .item.destacado::before{content:'DESTACADO';position:absolute;top:12px;left:12px;background:#FFD60A;color:#000;padding:5px 10px;border-radius:100px;font-size:10px;font-weight:900;z-index:2}
 .item img{width:100%;height:190px;object-fit:cover} .info{padding:16px;flex:1;display:flex;flex-direction:column} .name{font-weight:900;font-size:16px} .desc{font-size:12px;color:#888;margin-top:6px;flex:1} .priceRow{display:flex;justify-content:space-between;align-items:center;margin-top:12px} .price{font-weight:900;font-size:20px} .price span{color:#FFD60A} .add{background:#fff;color:#000;border:0;padding:12px 18px;border-radius:12px;font-weight:900;cursor:pointer}
 .cart{position:fixed;left:12px;right:12px;bottom:12px;background:rgba(20,20,20,.97);border:1px solid #2a2a2a;border-radius:22px;padding:14px;z-index:50} .cart-inner{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:flex-start} .cart-list{flex:1;font-size:12px;color:#aaa;max-height:110px;overflow:auto} .cart-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #222} .cart-actions button{background:#262626;color:#fff;border:0;width:26px;height:26px;border-radius:6px;cursor:pointer;margin-left:4px} .cart-actions button.del{background:#ff0033} .cart-total{font-weight:900;font-size:18px;text-align:right} .send{background:#FFD60A;color:#000;border:0;padding:14px 22px;border-radius:100px;font-weight:900;cursor:pointer;width:100%;margin-top:8px}
-.form{max-width:1200px;margin:0 auto;padding:0 16px 20px} .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px} @media(max-width:700px){.formGrid{grid-template-columns:1fr}} .input{background:#0f0f0f;border:1px solid #333;border-radius:12px;padding:14px;color:#fff;width:100%} .input.err{border-color:#ff0033} .label{font-size:11px;color:#FFD60A;font-weight:800;margin-bottom:6px;display:block;text-transform:uppercase}
+.form{max-width:1200px;margin:0 auto;padding:0 16px 20px} .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px} @media(max-width:700px){.formGrid{grid-template-columns:1fr}} .input{background:#0f0f0f;border:1px solid #333;border-radius:12px;padding:14px;color:#fff;width:100%} .label{font-size:11px;color:#FFD60A;font-weight:800;margin-bottom:6px;display:block;text-transform:uppercase}
 </style>
 </head><body>
 <div id="hero"></div>
 <div id="topinfo"></div>
 <div class="cats" id="cats"></div>
 <div class="grid" id="grid"></div>
-<div class="form"><div class="card" style="background:#111"><b id="formTitle">Tus datos</b><div id="formFields"></div></div></div>
+<div class="form"><div class="card" style="background:#111"><b>Tus datos</b><div id="formFields"></div></div></div>
 <div style="height:160px"></div>
 <div class="cart"><div class="cart-inner"><div class="cart-list" id="cartList"></div><div style="min-width:160px"><div class="cart-total" id="total"></div><button class="send" id="btnPedir">Pedir por WhatsApp</button></div></div></div>
-
 <script>
-const CONFIG_DEFAULT = {"nombre": "Quesería Don Pablo", "subtitulo": "Quesos artesanales & Picadas Premium", "direccion": "Av. Meeks 1200, Lomas de Zamora", "telefono": "11 4292-8800", "whatsapp": "5491134890644", "horarios": "Lun a Sáb 9 a 20hs | Dom 9 a 13hs", "googleMaps": {"embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3277.2!2d-58.401!3d-34.762!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sAv.+Meeks+1200,+Lomas+de+Zamora!5e0!3m2!1ses!2sar!4v1", "link": "https://maps.google.com/?q=Av.+Meeks+1200,+Lomas+de+Zamora"}, "envio": {"tipo": "fijo", "costoFijo": 1500, "mensaje": "Envío $1500 - Gratis si es 0", "retiro": "Retiro gratis en local"}, "activo": true, "estado": "activo"};
+const CONFIG_DEFAULT = {"nombre": "Quesería Don Pablo", "subtitulo": "Quesos artesanales & Picadas Premium", "direccion": "Av. Meeks 1200, Lomas de Zamora", "telefono": "11 4292-8800", "whatsapp": "5491134890644", "horarios": "Lun a Sáb 9 a 20hs | Dom 9 a 13hs", "googleMaps": {"embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3277.2!2d-58.401!3d-34.762!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sAv.+Meeks+1200,+Lomas+de+Zamora!5e0!3m2!1ses!2sar!4v1", "link": "https://maps.google.com/?q=Av.+Meeks+1200,+Lomas+de+Zamora"}, "envio": {"tipo": "fijo", "costoFijo": 1500, "mensaje": "Envío $1500 - Gratis si es 0", "retiro": "Retiro gratis en local"}, "activo": true, "estado": "activo", "adminWhatsApp": "5491134890644"};
 const DATA_DEFAULT = [{"id": 1, "categoria": "Quesos Duros", "nombre": "Sardo 12 meses 1kg", "descripcion": "Intenso, ideal para rallar", "precio": 14500, "img": "https://images.unsplash.com/photo-1552767059-ce182ead6c1b?w=600", "destacado": true}, {"id": 2, "categoria": "Quesos Blandos", "nombre": "Muzzarella Premium 1kg", "descripcion": "Hilada a mano", "precio": 8900, "img": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600"}, {"id": 3, "categoria": "Picadas", "nombre": "Picada p/2", "descripcion": "Sardo, Fontina, Salame, Olivas", "precio": 18900, "img": "https://images.unsplash.com/photo-1544148103-077ea10c9e28?w=600", "destacado": true}, {"id": 4, "categoria": "Fiambres", "nombre": "Jamón Crudo 500g", "descripcion": "12 meses", "precio": 19500, "img": "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=600"}];
 
 let CONFIG = CONFIG_DEFAULT;
@@ -38,23 +37,11 @@ let catActiva = 'Todos';
 let CARRITO = [];
 let clientData = {nombre:'', telefono:'', direccion:''};
 
-async function init(){
-  try{
-    const slug = location.pathname.split('/').filter(Boolean).pop() || 'queseria-don-pablo';
-    const base='https://raw.githubusercontent.com/Cartaspro/cartas/main/';
-    const [c,d]=await Promise.all([
-      fetch(base+`config/${slug}.json?v=`+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
-      fetch(base+`data/${slug}.json?v=`+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
-    ]);
-    if(c) CONFIG=c;
-    if(d) DATA=d;
-  }catch(e){}
-  
-  if(CONFIG.activo===false || CONFIG.estado==='baja'){
-    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080808;padding:20px"><div style="max-width:560px;width:100%;background:#1c1c1c;border:2px solid #ff0033;border-radius:32px;padding:48px 32px;text-align:center"><div style="width:90px;height:90px;background:#ff0033;border-radius:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px">X</div><h1 style="font-family:Bebas Neue;font-size:44px"><span style="color:#ff0033">PAGINA</span> INACTIVA</h1><p style="color:#fff;font-weight:800;font-size:20px;margin-top:12px">Pagina inactiva, si sos el dueno del local contacta con soporte</p></div></div>';
+function init(){
+  if(CONFIG.activo===false || CONFIG.estado==='baja' || CONFIG.estado==='inactivo'){
+    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080808;padding:20px"><div style="max-width:560px;width:100%;background:#1c1c1c;border:2px solid #ff0033;border-radius:32px;padding:48px 32px;text-align:center"><div style="width:90px;height:90px;background:#ff0033;border-radius:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:44px">X</div><h1 style="font-family:Bebas Neue;font-size:44px"><span style="color:#ff0033">PAGINA</span> INACTIVA</h1><p style="color:#fff;font-weight:800;font-size:20px;margin-top:12px">Pagina inactiva, si sos el dueno del local contacta con soporte</p><a href="https://wa.me/'+(CONFIG.adminWhatsApp||CONFIG.whatsapp)+'" style="display:inline-block;margin-top:20px;background:#FFD60A;color:#000;padding:12px 24px;border-radius:100px;font-weight:900;text-decoration:none">Contactar Soporte</a></div></div>';
     return;
   }
-
   renderHero();
   renderTop();
   renderCats();
@@ -62,28 +49,28 @@ async function init(){
   renderForm();
   upd();
   document.getElementById('btnPedir').addEventListener('click', pedir);
+  document.getElementById('topinfo')?.addEventListener('click', function(e){
+    if(e.target.id==='tabRetiro'){ modo='retiro'; renderTop(); renderForm(); upd(); }
+    if(e.target.id==='tabEnvio'){ modo='envio'; renderTop(); renderForm(); upd(); }
+  });
 }
 
 function renderHero(){
-  document.getElementById('hero').innerHTML='<div class="hero"><img src="https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=1200"><div class="hero-overlay"></div><div class="hero-content"><h1>Queseria <span>Don Pablo</span></h1><p>'+ (CONFIG.subtitulo||'') +' - '+ (CONFIG.horarios||'') +'</p></div></div>';
+  document.getElementById('hero').innerHTML='<div class="hero"><img src="https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=1200"><div class="hero-overlay"></div><div class="hero-content"><h1>'+CONFIG.nombre.split(' ')[0]+' <span>'+CONFIG.nombre.split(' ').slice(1).join(' ')+'</span></h1><p>'+ (CONFIG.subtitulo||'') +' - '+ (CONFIG.horarios||'') +'</p></div></div>';
 }
 function renderTop(){
   const costo=Number(CONFIG.envio?.costoFijo||0);
   const textoEnvio = costo===0 ? 'Envio gratis' : 'Envio $'+costo;
   document.getElementById('topinfo').innerHTML=`
     <div style="max-width:1200px;margin:-18px auto 0;padding:0 16px;display:grid;grid-template-columns:1.2fr .8fr;gap:14px;position:relative;z-index:5">
-      <div class="card"><b>Nuestro local</b><div class="small">${CONFIG.direccion}<br>${CONFIG.horarios||''}</div><div class="mapwrap"><iframe src="${CONFIG.googleMaps?.embed||''}" loading="lazy"></iframe></div></div>
-      <div class="card"><b>Retiro / Envio</b><div class="tabs"><div class="tab ${modo==='retiro'?'on':''}" id="tabRetiro">Retiro gratis</div><div class="tab ${modo==='envio'?'on':''}" id="tabEnvio">Envio - ${textoEnvio}</div></div><div style="margin-top:14px" class="small">${modo==='retiro' ? 'Retira en '+CONFIG.direccion : 'Enviamos desde '+CONFIG.direccion+' - '+textoEnvio}</div></div>
+      <div class="card"><b>Nuestro local</b><div class="small">${CONFIG.direccion}<br>${CONFIG.horarios||''}<br>${CONFIG.telefono||''}</div><div class="mapwrap"><iframe src="${CONFIG.googleMaps?.embed||''}" loading="lazy"></iframe></div><div class="small" style="margin-top:10px"><a href="${CONFIG.googleMaps?.link||''}" target="_blank" style="color:#FFD60A">Ver en Google Maps</a></div></div>
+      <div class="card"><b>Retiro / Envio</b><div class="tabs"><div class="tab ${modo==='retiro'?'on':''}" id="tabRetiro">Retiro gratis</div><div class="tab ${modo==='envio'?'on':''}" id="tabEnvio">Envio - ${textoEnvio}</div></div><div style="margin-top:14px" class="small">${modo==='retiro' ? 'Retira en '+CONFIG.direccion+' - '+ (CONFIG.envio?.retiro||'Retiro gratis') : 'Enviamos desde '+CONFIG.direccion+' - '+textoEnvio}</div></div>
     </div>`;
-  document.getElementById('tabRetiro').addEventListener('click', ()=>{ modo='retiro'; renderTop(); renderForm(); upd(); });
-  document.getElementById('tabEnvio').addEventListener('click', ()=>{ modo='envio'; renderTop(); renderForm(); upd(); });
 }
-
 function getCats(){
   const set = new Set(DATA.map(d=>d.categoria).filter(Boolean));
   return ['Todos', ...set];
 }
-
 function renderCats(){
   const cats = getCats();
   const cont = document.getElementById('cats');
@@ -96,7 +83,6 @@ function renderCats(){
     cont.appendChild(el);
   });
 }
-
 function renderGrid(){
   const grid=document.getElementById('grid');
   const filtrados = catActiva==='Todos' ? DATA : DATA.filter(d=>d.categoria===catActiva);
@@ -111,7 +97,6 @@ function renderGrid(){
     btn.addEventListener('click', ()=>{ add(Number(btn.dataset.id)); });
   });
 }
-
 function renderForm(){
   const ff=document.getElementById('formFields');
   if(!ff) return;
@@ -119,33 +104,27 @@ function renderForm(){
   const prevTel=document.getElementById('f_tel')?.value || clientData.telefono;
   const prevDir=document.getElementById('f_dir')?.value || clientData.direccion;
   clientData.nombre=prevNombre; clientData.telefono=prevTel; clientData.direccion=prevDir;
-
   if(modo==='retiro'){
     ff.innerHTML=`
       <div class="formGrid">
-        <div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre" value="${escapeHtml(clientData.nombre)}"></div>
-        <div><span class="label">Telefono *</span><input id="f_tel" class="input" placeholder="11 1234-5678" value="${escapeHtml(clientData.telefono)}"></div>
+        <div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre" value="${prevNombre.replace(/"/g,'&quot;')}"></div>
+        <div><span class="label">Telefono *</span><input id="f_tel" class="input" placeholder="11 1234-5678" value="${prevTel.replace(/"/g,'&quot;')}"></div>
       </div>
       <div class="small" style="margin-top:10px">Retiro en ${CONFIG.direccion} - No necesitas direccion</div>`;
   } else {
     ff.innerHTML=`
       <div class="formGrid">
-        <div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre" value="${escapeHtml(clientData.nombre)}"></div>
-        <div><span class="label">Telefono *</span><input id="f_tel" class="input" placeholder="11 1234-5678" value="${escapeHtml(clientData.telefono)}"></div>
-        <div style="grid-column:1/-1"><span class="label">Direccion con pin * (solo para envio)</span><input id="f_dir" class="input" placeholder="Av. Alsina 1234, Banfield" value="${escapeHtml(clientData.direccion)}"></div>
+        <div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre" value="${prevNombre.replace(/"/g,'&quot;')}"></div>
+        <div><span class="label">Telefono *</span><input id="f_tel" class="input" placeholder="11 1234-5678" value="${prevTel.replace(/"/g,'&quot;')}"></div>
+        <div style="grid-column:1/-1"><span class="label">Direccion con pin * (solo para envio)</span><input id="f_dir" class="input" placeholder="Av. Alsina 1234, Banfield" value="${prevDir.replace(/"/g,'&quot;')}"></div>
       </div>
-      <div id="mapWrap" class="mapwrap" style="margin-top:12px;display:${clientData.direccion?'block':'none'}"><iframe id="mapClient" loading="lazy"></iframe></div>`;
+      <div id="mapWrap" class="mapwrap" style="margin-top:12px;display:${prevDir?'block':'none'}"><iframe id="mapClient" loading="lazy"></iframe></div>`;
   }
-  const n=document.getElementById('f_nombre'); if(n){ n.addEventListener('input', e=>clientData.nombre=e.target.value); }
-  const t=document.getElementById('f_tel'); if(t){ t.addEventListener('input', e=>clientData.telefono=e.target.value); }
-  const d=document.getElementById('f_dir'); if(d){ 
-    d.addEventListener('input', e=>{ clientData.direccion=e.target.value; updateMap(); });
-    updateMap();
-  }
+  document.getElementById('f_nombre')?.addEventListener('input', e=>clientData.nombre=e.target.value);
+  document.getElementById('f_tel')?.addEventListener('input', e=>clientData.telefono=e.target.value);
+  document.getElementById('f_dir')?.addEventListener('input', e=>{ clientData.direccion=e.target.value; updateMap(); });
+  updateMap();
 }
-
-function escapeHtml(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
 function updateMap(){
   const dir=document.getElementById('f_dir')?.value || clientData.direccion;
   const wrap=document.getElementById('mapWrap');
@@ -154,7 +133,6 @@ function updateMap(){
   if(wrap) wrap.style.display='block';
   if(iframe) iframe.src='https://www.google.com/maps?q='+encodeURIComponent(dir)+'&z=16&output=embed';
 }
-
 function add(id){
   const pr=DATA.find(x=>x.id===id);
   const ex=CARRITO.find(x=>x.id===id);
@@ -169,9 +147,7 @@ function removeOne(id){
 }
 function del(id){ CARRITO=CARRITO.filter(x=>x.id!==id); upd(); }
 window.removeOne=removeOne; window.del=del;
-
 function getEnvioCosto(){ return modo==='retiro' ? 0 : Number(CONFIG.envio?.costoFijo||0); }
-
 function upd(){
   const list=document.getElementById('cartList'); const tot=document.getElementById('total');
   if(!list) return;
@@ -183,21 +159,16 @@ function upd(){
   const total=t+env;
   if(tot) tot.innerHTML=`Subtotal $${t.toLocaleString('es-AR')}<br>${modo==='retiro'?'Retiro gratis':env===0?'Envio gratis':'Envio $'+env}<br><b>Total $${total.toLocaleString('es-AR')}</b>`;
 }
-
 function pedir(){
   const nombre=(document.getElementById('f_nombre')?.value||'').trim();
   const tel=(document.getElementById('f_tel')?.value||'').trim();
   const dir=(document.getElementById('f_dir')?.value||'').trim();
-
   let faltan=[];
   if(!nombre) faltan.push('Nombre');
   if(!tel) faltan.push('Telefono');
   if(modo==='envio' && !dir) faltan.push('Direccion');
   if(!CARRITO.length) faltan.push('Productos');
   if(faltan.length){ alert('Faltan: '+faltan.join(', ')); return; }
-
-  // Mensaje sin emojis raros que rompen, solo texto seguro, luego encode
-  const sep='\n';
   let msg=[];
   msg.push('Nuevo pedido - '+CONFIG.nombre);
   msg.push('');
@@ -217,12 +188,11 @@ function pedir(){
   msg.push('Modo: '+(modo==='retiro' ? 'Retiro gratis' : (env===0 ? 'Envio gratis' : 'Envio $'+env)));
   const total=CARRITO.reduce((s,c)=>s+c.precio*c.cant,0)+env;
   msg.push('TOTAL: $'+total.toLocaleString('es-AR'));
-
-  const texto=msg.join(sep);
+  const texto=msg.join('\n');
   const url='https://wa.me/'+CONFIG.whatsapp+'?text='+encodeURIComponent(texto);
   window.open(url,'_blank');
 }
-
 init();
+
 </script>
 </body></html>
