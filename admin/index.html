@@ -193,7 +193,7 @@ function renderProducts(){
     g.appendChild(d);
   });
 }
-function up(id,f,v){const p=CLIENTS[cur].data.find(x=>x.id===id); if(!p) return; p[f]=v; saveClients(); build();}
+function up(id,f,v){const p=CLIENTS[cur].data.find(x=>x.id===id); if(!p) return; p[f]=v; saveClients(); build(); console.log('Updated product',id,f,v,'new price',p.precio);}
 function tog(id){const p=CLIENTS[cur].data.find(x=>x.id===id); if(!p) return; p.destacado=!p.destacado; saveClients(); renderProducts(); build();}
 function delP(id){if(!confirm('Borrar producto '+id+'?'))return; CLIENTS[cur].data=CLIENTS[cur].data.filter(x=>x.id!==id); saveClients(); renderProducts(); build();}
 function addProduct(){const nid=Math.max(0,...CLIENTS[cur].data.map(x=>x.id),0)+1; CLIENTS[cur].data.push({id:nid,categoria:'General',nombre:'Nuevo producto',descripcion:'Descripcion',precio:1000,img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=600'}); saveClients(); renderProducts(); build();}
@@ -217,13 +217,21 @@ function build(){
   const c=CLIENTS[cur]; if(!c) return;
   let tpl = ORIG_TEMPLATE;
   try{
+    // Inject version timestamp to bust cache
+    c.config._version = Date.now();
     const cfgStr = JSON.stringify(c.config);
     const datStr = JSON.stringify(c.data);
+    // Use more robust replacement
     tpl = tpl.replace(/const CONFIG_DEFAULT = \{[\s\S]*?\};/, 'const CONFIG_DEFAULT = '+cfgStr+';');
     tpl = tpl.replace(/const DATA_DEFAULT = \[[\s\S]*?\];/, 'const DATA_DEFAULT = '+datStr+';');
+    // Remove version from config object after (keep in file only)
+    delete c.config._version;
   }catch(e){ console.error('build error',e); document.getElementById('exportLog').textContent='Error build: '+e; }
   last = tpl;
-  document.getElementById('exportLog').textContent='✅ Index listo: '+last.length+' bytes | '+c.data.length+' productos | Cliente: '+cur;
+  const firstPrice = c.data[0]?.precio || '-';
+  document.getElementById('exportLog').textContent='✅ Index listo: '+last.length+' bytes | '+c.data.length+' productos | Primer precio $'+firstPrice+' | Cliente: '+cur;
+  // Also update preview link box with timestamp
+  document.getElementById('realLinkBox').innerHTML='<span style="font-size:10px;color:#666">Listo para publicar. Primer precio detectado: $'+firstPrice+'</span>';
 }
 
 // --- PARSE INDEX ---
@@ -297,22 +305,26 @@ function testToken(){
 
 function saveRealFiles(){
   if(!last) build();
+  // Force rebuild to ensure price change is in last
+  build();
   if(!GH.token){document.getElementById('exportLog').textContent='❌ Carga tu token primero'; document.getElementById('exportLog').className='linkbox status-err'; return;}
   if(!GH.repo){document.getElementById('exportLog').textContent='❌ Falta repo'; return;}
-  document.getElementById('exportLog').textContent='⏳ Preparando push de '+cur+'/index.html ('+last.length+' bytes)...';
+  // Show what will be pushed
+  const previewPrice = CLIENTS[cur].data[0]?.precio;
+  document.getElementById('exportLog').textContent='⏳ Preparando push de '+cur+'/index.html ('+last.length+' bytes) - Primer producto $'+previewPrice+'...';
   document.getElementById('exportLog').className='linkbox status-warn';
   const repoPath=cur+'/index.html';
   const content=btoa(unescape(encodeURIComponent(last)));
   const apiUrl='https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath+'?ref='+GH.branch;
-  fetch(apiUrl,{headers:ghHeaders()}).then(r=>{if(r.status===404) return null; if(!r.ok) throw 'GET '+r.status; return r.json();}).then(existing=>{
+  fetch(apiUrl,{headers:ghHeaders()}).then(r=>{if(r.status===404) return null; if(!r.ok) throw 'GET '+r.status+' - verifica branch '+GH.branch; return r.json();}).then(existing=>{
     const sha=existing?.sha||null;
-    const body={message:'update '+cur+' - '+new Date().toISOString(), content:content, branch:GH.branch};
+    const body={message:'update '+cur+' precio - '+new Date().toISOString(), content:content, branch:GH.branch};
     if(sha) body.sha=sha;
     return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+repoPath,{method:'PUT', headers:ghHeaders(), body:JSON.stringify(body)});
-  }).then(async r=>{const j=await r.json(); if(!r.ok) throw (j.message||'Error '+r.status); return j;}).then(j=>{
-    document.getElementById('exportLog').innerHTML='✅ Push OK: '+j.content.path+'<br><div class="linkbox">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/</div><span style="font-size:11px;color:#888">Espera 1-2 min y recarga con Ctrl+F5 en la carta</span>';
+  }).then(async r=>{const j=await r.json(); if(!r.ok) throw (j.message||'Error '+r.status+' - revisa que el token tenga permiso repo'); return j;}).then(j=>{
+    document.getElementById('exportLog').innerHTML='✅ Push OK: '+j.content.path+' ('+j.content.sha.slice(0,7)+')<br><div class="linkbox">https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'</div><span style="font-size:11px;color:#888">⚠️ GitHub Pages tarda 1-3 min. No es instantaneo.<br>1. Abri el link de abajo con Ctrl+F5 (recarga forzada)<br>2. Si aun ves precio viejo, abri el link RAW para verificar que GitHub si lo guardo:<br><a href="https://raw.githubusercontent.com/'+GH.repo+'/'+GH.branch+'/'+cur+'/index.html?v='+Date.now()+'" target="_blank" style="color:#FFD60A">Ver archivo RAW en GitHub (sin cache)</a></span>';
     document.getElementById('exportLog').className='linkbox status-ok';
-    document.getElementById('realLinkBox').innerHTML='<a href="https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/" target="_blank" style="color:#FFD60A">🔗 Abrir carta publicada</a>';
+    document.getElementById('realLinkBox').innerHTML='<a href="https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?v='+Date.now()+'" target="_blank" style="color:#FFD60A">🔗 Abrir carta con anti-cache (Ctrl+F5)</a> | <a href="https://raw.githubusercontent.com/'+GH.repo+'/'+GH.branch+'/'+cur+'/index.html?v='+Date.now()+'" target="_blank" style="color:#888">Ver RAW</a>';
   }).catch(e=>{
     document.getElementById('exportLog').textContent='❌ GitHub error: '+e;
     document.getElementById('exportLog').className='linkbox status-err';
@@ -355,7 +367,14 @@ function openPreview(){
   const url=URL.createObjectURL(blob);
   const fr=document.getElementById('previewFrame'); fr.src=url; fr.style.display='block';
 }
-function openRealLink(){const base='https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/'; window.open(base,'_blank');}
+function openRealLink(){
+  const base='https://'+GH.repo.split('/')[0].toLowerCase()+'.github.io/'+GH.repo.split('/')[1]+'/'+cur+'/?t='+Date.now();
+  window.open(base,'_blank');
+}
+function openRawGitHub(){
+  const rawUrl='https://raw.githubusercontent.com/'+GH.repo+'/'+GH.branch+'/'+cur+'/index.html?t='+Date.now();
+  window.open(rawUrl,'_blank');
+}
 function downloadSingle(){if(!last)build(); const b=new Blob([last],{type:'text/html'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=cur+'-index.html'; a.click();}
 function copyCodeForIA(){
   if(!last) build();
