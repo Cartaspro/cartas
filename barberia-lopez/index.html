@@ -63,8 +63,7 @@ body{background:#0a0a0a;color:#fff;overflow-x:hidden}
 <div class="hero" id="hero"></div>
 <div class="wrap"><div class="topgrid" id="topgrid"></div></div>
 <div class="wrap" style="margin-top:24px">
-<h2 style="font-family:Bebas Neue;font-size:34px">SERVICIOS <span style="color:#D4A574">CON FOTOS REALES VERIFICADAS</span></h2>
-<div class="small" style="margin-top:4px">Tocá un servicio para ver calendario y horarios. Las reservas quedan en gris bloqueadas para siempre en este navegador.</div>
+<h2 style="font-family:Bebas Neue;font-size:34px">SERVICIOS</h2>
 <div class="services" id="services"></div>
 <div id="booking" style="margin-top:28px;display:none">
 <div class="calendar-wrap">
@@ -117,14 +116,22 @@ function formatDateStr(d){ return d.toISOString().split('T')[0]; }
 function formatDisplay(d){ return d.toLocaleDateString('es-AR',{weekday:'long', day:'numeric', month:'short'}); }
 function init(){ renderHero(); renderTop(); renderServices(); renderCalendar(); document.getElementById('btnReservar').addEventListener('click', reservar); }
 function renderHero(){
-  document.getElementById('hero').innerHTML=`<img src="${CONFIG.heroImg}" onerror="this.style.display='none'"><div class="hero-overlay"></div><div class="hero-content"><h1>${CONFIG.nombre.split(' ')[0]} <span>${CONFIG.nombre.split(' ').slice(1).join(' ')}</span></h1><p>${CONFIG.subtitulo} • ${CONFIG.direccion}</p><div class="badges"><div class="badge">📅 Calendario siempre visible</div><div class="badge ghost">⏰ Horarios que quedan en gris al reservar</div><div class="badge ghost">📸 Fotos verificadas sin fallas</div></div></div>`;
+  document.getElementById('hero').innerHTML=`<img src="${CONFIG.heroImg}" onerror="this.style.display='none'"><div class="hero-overlay"></div><div class="hero-content"><h1>${CONFIG.nombre.split(' ')[0]} <span>${CONFIG.nombre.split(' ').slice(1).join(' ')}</span></h1><p>${CONFIG.subtitulo} • ${CONFIG.direccion}</p><div class="badges"><div class="badge">${CONFIG.direccion}</div><div class="badge ghost">${CONFIG.horarios}</div></div></div>`;
 }
 function renderTop(){
-  document.getElementById('topgrid').innerHTML=`<div class="card"><b>Cómo funciona el calendario real</b><div class="small">1. Elegí servicio con foto verificada<br>2. El calendario muestra TODO el mes, siempre visible con navegación<br>3. Tocá un día → ves horarios de ese día de 9 a 20 cada 30min<br>4. Cuando reservás, ese horario queda en gris con cartel RESERVADO y no se puede volver a elegir. Queda guardado en localStorage.<br><br><span style="color:#D4A574">✓ Probalo: reservá 14:30 y vas a ver que queda bloqueado en gris para siempre hasta que borres reservas.</span></div></div><div class="card"><b>Reservas guardadas: ${getBookings().length} en este navegador</b><div class="small" id="bookList">${getBookings().slice(-6).map(b=>`• ${b.date} ${b.time} - ${b.servicio} - ${b.nombre}`).join('<br>')||'Aún no hay reservas'}</div></div>`;
+  // Sin instructivo - el topgrid queda oculto, solo se usa si hay reservas para debug interno sin mostrar texto explicativo
+  const bookings=getBookings();
+  if(bookings.length>0){
+    document.getElementById('topgrid').innerHTML=`<div class="card" style="display:none"><b>${bookings.length} reservas</b></div>`;
+    document.getElementById('topgrid').style.display='none';
+  }else{
+    document.getElementById('topgrid').innerHTML='';
+    document.getElementById('topgrid').style.display='none';
+  }
 }
 function renderServices(){
   const cont=document.getElementById('services');
-  cont.innerHTML=DATA.map(s=>`<div class="svc ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80'"><div class="svc-body"><div class="svc-name">${s.nombre}</div><div class="svc-desc">${s.descripcion}</div><div class="svc-meta"><div class="svc-price">$<span>${Number(s.precio).toLocaleString('es-AR')}</span></div><div class="svc-dur">⏱ ${s.duracion} min</div></div></div></div>`).join('');
+  cont.innerHTML=DATA.map(s=>`<div class="svc ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80&auto=format'"><div class="svc-body"><div class="svc-name">${s.nombre}</div><div class="svc-desc">${s.descripcion}</div><div class="svc-meta"><div class="svc-price">$<span>${Number(s.precio).toLocaleString('es-AR')}</span></div><div class="svc-dur">⏱ ${s.duracion} min</div></div></div></div>`).join('');
   cont.querySelectorAll('.svc').forEach(el=>{ el.addEventListener('click', ()=>{ servicioSel=DATA.find(d=>d.id===Number(el.dataset.id)); renderServices(); document.getElementById('booking').style.display='block'; document.getElementById('booking').scrollIntoView({behavior:'smooth'}); updateResumen(); renderSlots(); }); });
 }
 function renderCalendar(){
@@ -142,10 +149,10 @@ function renderCalendar(){
     const hasBookings = getBookings().some(b=>b.date===dateStr);
     html+=`<div class="cal-day ${isPast?'off':''} ${isSelected?'on':''} ${isToday?'today':''} ${hasBookings?'has-bookings':''}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">${d}</div>`;
   }
-  html+=`</div><div class="small" style="margin-top:10px">• Punto dorado = día con reservas<br>• Gris = pasado<br>• Fondo dorado = día seleccionado - horarios a la derecha siempre visibles</div>`;
+  html+=`</div><div class="small" style="margin-top:10px;opacity:.2"></div>`;
   cont.innerHTML=html;
 }
-function changeMonth(dir){ currentMonth.setMonth(currentMonth.getMonth()+dir); renderCalendar(); }
+function changeMonth(dir){ currentMonth.setMonth(currentMonth.getMonth()+dir); renderCalendar(); } // ilimitado para siempre: setMonth avanza años automáticamente sin límite
 function selectDate(dateStr){ selectedDate=new Date(dateStr+'T12:00:00'); renderCalendar(); renderSlots(); updateResumen(); }
 window.changeMonth=changeMonth; window.selectDate=selectDate;
 function getSlotsForDate(dateStr){
