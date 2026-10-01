@@ -55,7 +55,8 @@ body{background:#0a0a0a;color:#fff}
 <div><div class="card summary" id="summary"></div></div>
 </div>
 <script>
-const CONFIG_DEFAULT = {"nombre":"Barbería López","direccion":"Lomas de Zamora","whatsapp":"5491134890644","email":"turnos@barberialopez.com","envio":{"costo":0}};
+const CONFIG_DEFAULT = {"nombre":"Barbería López","direccion":"Lomas de Zamora","whatsapp":"5491134890644","email":"turnos@barberialopez.com","sheetUrl":"","envio":{"costo":0}}; // <-- PEGÁ ACÁ TU URL DE APPS SCRIPT /exec
+const SHEET_URL = CONFIG_DEFAULT.sheetUrl || ""; // si lo dejás vacío funciona solo local
 const BARBEROS_DEFAULT=[
 {id:"m1",nombre:"Mati",especialidad:"Fade & Clásico",img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"},
 {id:"m2",nombre:"Nico",especialidad:"Barba & Tijera",img:"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop"},
@@ -66,15 +67,52 @@ let CONFIG=CONFIG_DEFAULT,DATA=DATA_DEFAULT,BARBEROS=BARBEROS_DEFAULT;
 let servicioSel=null,barberoSel=BARBEROS[0],selectedDate=new Date(),horaSel=null,currentMonth=new Date();
 let clientData={nombre:'',tel:'',email:'',nota:''};
 const LS_KEY='barberia_lopez_vfinal';
-function getBookings(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch(e){return []}}
-function saveBooking(b){const a=getBookings();a.push(b);localStorage.setItem(LS_KEY,JSON.stringify(a))}
-function isBooked(d,t,prof){return getBookings().some(b=>b.date===d&&b.time===t&&(b.profId===prof||b.profId==='any'||prof==='any'))}
+let REMOTE_BOOKINGS = [];
+let remoteLoaded = false;
+function getBookings(){ // local fallback
+  try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch(e){return []}
+}
+function getAllBookings(){
+  // Combina local + remoto para bloquear horarios
+  if(SHEET_URL && remoteLoaded) return [...getBookings(), ...REMOTE_BOOKINGS];
+  return getBookings();
+}
+function isBooked(d,t,prof){
+  return getAllBookings().some(b=>b.date===d&&b.time===t&&(b.profId===prof||b.barbero_id===prof||b.profId==='any'||prof==='any'));
+}
+async function loadRemoteBookings(){
+  if(!SHEET_URL) return;
+  try{
+    const r = await fetch(SHEET_URL + '?action=bookings');
+    const data = await r.json();
+    // Normaliza
+    REMOTE_BOOKINGS = data.map(x=>({
+      date: x.fecha || x.date,
+      time: x.hora || x.time,
+      profId: x.barbero_id || x.barberoId || x.profId,
+      profNombre: x.barbero_nombre || x.profNombre,
+      servicio: x.servicio,
+      nombre: x.cliente || x.nombre
+    })).filter(x=>x.date && x.time);
+    remoteLoaded = true;
+    renderStep3(); renderSummary();
+  }catch(e){ console.log('No se pudo cargar Sheet, queda local', e); }
+}
+function saveBooking(b){
+  // guarda local siempre
+  const a=getBookings(); a.push(b); localStorage.setItem(LS_KEY,JSON.stringify(a));
+  // intenta guardar en Sheet
+  if(SHEET_URL){
+    fetch(SHEET_URL, {method:'POST', mode:'no-cors', body: JSON.stringify(b)}).catch(()=>{});
+    // Con no-cors no podemos leer respuesta pero guarda igual
+  }
+}
 function fmt(d){return d.toISOString().split('T')[0]}
 function fmt2(d){return d.toLocaleDateString('es-AR',{weekday:'short',day:'2-digit',month:'short'})}
 function renderSteps(){const s=[{n:1,l:'Servicio',d:!!servicioSel},{n:2,l:'Barbero',d:!!barberoSel},{n:3,l:'Fecha y hora',d:!!horaSel},{n:4,l:'Datos',d:!!(clientData.nombre&&clientData.tel)}];document.getElementById('steps').innerHTML=s.map((p,i)=>`<div class="step ${p.d?'done':''} ${i===0&&!servicioSel?'on':''} ${i===1&&servicioSel&&!horaSel?'on':''} ${i===2&&horaSel&&!clientData.nombre?'on':''}"><div class="num">${p.d?'✓':p.n}</div>${p.l}${i<3?'<div class="line"></div>':''}</div>`).join('')}
 function renderStep1(){const c=document.getElementById('step1');const cats=[...new Set(DATA.map(d=>d.categoria))];c.innerHTML=`<b>1. Servicio</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${cats.map(x=>`<div style="padding:5px 10px;border-radius:100px;border:1px solid #222;font-size:10px;cursor:pointer" onclick="filt('${x}')">${x}</div>`).join('')}<div style="padding:5px 10px;border-radius:100px;background:#fff;color:#000;font-size:10px;cursor:pointer" onclick="filt('todos')">Todos</div></div><div class="list" id="listS"></div>`;renderServ('todos')}
 window.filt=(cat)=>renderServ(cat);
-function renderServ(cat){const l=document.getElementById('listS');if(!l)return;const f=cat==='todos'?DATA:DATA.filter(d=>d.categoria===cat);l.innerHTML=f.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}"><div><div class="name">${s.nombre}<span class="dur">${s.duracion}min</span></div><div class="desc">${s.descripcion}</div><div class="price">$<span>${s.precio.toLocaleString('es-AR')}</span></div></div></div>`).join('');l.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id===Number(e.dataset.id));renderStep1();renderStep2();renderStep3();renderSummary();renderSteps();document.getElementById('step2').scrollIntoView({behavior:'smooth'})}))}
+function renderServ(cat){const l=document.getElementById('listS');if(!l)return;const f=cat==='todos'?DATA:DATA.filter(d=>d.categoria===cat);l.innerHTML=f.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}"><div><div class="name">${s.nombre}<span class="dur">${s.duracion}min</span></div><div class="desc">${s.descripcion}</div><div class="price">$<span>${s.precio.toLocaleString('es-AR')}</span></div></div></div>`).join('');l.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id===Number(e.dataset.id));renderStep1();renderStep2();renderStep3();renderSummary();renderSteps(); loadRemoteBookings();document.getElementById('step2').scrollIntoView({behavior:'smooth'})}))}
 function renderStep2(){const c=document.getElementById('step2');if(!servicioSel){c.innerHTML=`<b>2. Barbero</b>`;return}c.innerHTML=`<b>2. Barbero</b><div class="list">${BARBEROS.map(b=>`<div class="pro ${barberoSel?.id===b.id?'on':''}" data-id="${b.id}"><img src="${b.img}"><div><div style="font-weight:800;font-size:12px">${b.nombre}</div><div style="font-size:10px;color:#777">${b.especialidad}</div></div></div>`).join('')}</div>`;c.querySelectorAll('.pro').forEach(e=>e.addEventListener('click',()=>{barberoSel=BARBEROS.find(x=>x.id===e.dataset.id);renderStep2();renderStep3();renderSummary();renderSteps();document.getElementById('step3').scrollIntoView({behavior:'smooth'})}))}
 function renderStep3(){const c=document.getElementById('step3');if(!servicioSel||!barberoSel){c.innerHTML=`<b>3. Fecha y hora</b>`;return}c.innerHTML=`<b>3. Fecha y hora - ${barberoSel.nombre}</b><div class="cal-head"><button onclick="chgM(-1)">‹</button><div style="font-weight:700;font-size:12px;text-transform:capitalize">${currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})}</div><button onclick="chgM(1)">›</button></div><div class="cal-grid"><div class="dayname">D</div><div class="dayname">L</div><div class="dayname">M</div><div class="dayname">X</div><div class="dayname">J</div><div class="dayname">V</div><div class="dayname">S</div></div><div class="cal-grid" id="days"></div><div style="margin-top:12px"><span class="label">${fmt2(selectedDate)}</span><div class="slots" id="slots"></div></div><div style="margin-top:12px"><span class="label">Nombre *</span><input id="f_nombre" class="input" value="${clientData.nombre}"><span class="label">WhatsApp *</span><input id="f_tel" class="input" value="${clientData.tel}"><span class="label">Email</span><input id="f_email" class="input" value="${clientData.email}"><span class="label">Nota</span><input id="f_nota" class="input" value="${clientData.nota}"></div>`;renderDays();renderSlots();['f_nombre','f_tel','f_email','f_nota'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',e=>{clientData[id.replace('f_','')]=e.target.value;renderSummary();renderSteps()})})}
 function renderDays(){const d=document.getElementById('days');if(!d)return;const y=currentMonth.getFullYear(),m=currentMonth.getMonth();const first=new Date(y,m,1),start=first.getDay(),last=new Date(y,m+1,0).getDate();let h='';for(let i=0;i<start;i++)h+=`<div class="day off"></div>`;const today=new Date();today.setHours(0,0,0,0);for(let i=1;i<=last;i++){const date=new Date(y,m,i);date.setHours(0,0,0,0);const past=date<today;const cur=fmt(date);const sel=fmt(selectedDate);const isT=fmt(today)===cur;h+=`<div class="day ${past?'off':''} ${sel===cur?'on':''} ${isT?'today':''}" data-date="${cur}">${i}</div>`}d.innerHTML=h;d.querySelectorAll('.day:not(.off)').forEach(e=>e.addEventListener('click',()=>{selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderStep3();renderSummary();renderSteps()}))}
@@ -83,6 +121,6 @@ function getSlots(){const s=[];for(let h=9;h<20;h++){if(h===13)continue;for(let 
 function renderSlots(){const c=document.getElementById('slots');if(!c)return;const s=getSlots();c.innerHTML=s.map(x=>`<div class="slot ${x.booked?'off':''} ${horaSel===x.time?'on':''}" data-time="${x.time}">${x.time}</div>`).join('');c.querySelectorAll('.slot:not(.off)').forEach(e=>e.addEventListener('click',()=>{horaSel=e.dataset.time;renderStep3();renderSummary();renderSteps()}))}
 function renderSummary(){const c=document.getElementById('summary');const can=servicioSel&&barberoSel&&horaSel&&clientData.nombre&&clientData.tel;c.innerHTML=`<b>Resumen</b><div class="line-item"><span>Servicio</span><span>${servicioSel?servicioSel.nombre:'--'}</span></div><div class="line-item"><span>Barbero</span><span>${barberoSel?barberoSel.nombre:'--'}</span></div><div class="line-item"><span>Fecha</span><span>${selectedDate?fmt2(selectedDate):'--'}</span></div><div class="line-item"><span>Hora</span><span>${horaSel||'--:--'}</span></div><div class="total"><span>Total</span><span>$${servicioSel?servicioSel.precio.toLocaleString('es-AR'):0}</span></div><button class="btn" ${can?'':'disabled'} id="btnB">${can?'Confirmar turno':'Completá datos'}</button>`;document.getElementById('btnB')?.addEventListener('click',reservar)}
 function reservar(){const date=fmt(selectedDate);if(isBooked(date,horaSel,barberoSel.id))return;saveBooking({date,time:horaSel,profId:barberoSel.id,profNombre:barberoSel.nombre,servicio:servicioSel.nombre,precio:servicioSel.precio,nombre:clientData.nombre,tel:clientData.tel,email:clientData.email,nota:clientData.nota});const msg=`Nuevo turno - ${CONFIG.nombre}%0AServicio: ${servicioSel.nombre} - $${servicioSel.precio}%0ABarbero: ${barberoSel.nombre}%0AFecha: ${date} ${fmt2(selectedDate)}%0AHora: ${horaSel}%0ACliente: ${clientData.nombre}%0ATel: ${clientData.tel}%0AEmail: ${clientData.email}`;window.open(`https://wa.me/${CONFIG.whatsapp}?text=${msg}`,'_blank');document.getElementById('step3').innerHTML=`<b>Turno confirmado</b><div style="margin-top:10px;font-size:12px;line-height:1.6">${servicioSel.nombre} con ${barberoSel.nombre}<br>${fmt2(selectedDate)} ${horaSel}</div><button class="btn" onclick="location.reload()">Nuevo turno</button>`}
-renderStep1();renderStep2();renderStep3();renderSummary();renderSteps();
+renderStep1();renderStep2();renderStep3();renderSummary();renderSteps(); loadRemoteBookings();
 </script>
 </body></html>
