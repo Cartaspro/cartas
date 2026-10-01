@@ -1,207 +1,88 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Turnos - Barbería López - Calendario Real con Bloqueo</title>
+<title>Barbería López - Turnos</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
-body{background:#0a0a0a;color:#fff;overflow-x:hidden}
-.hero{position:relative;height:52vh;min-height:380px;overflow:hidden;background:#000}
-.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.4)}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,#0a0a0a 20%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.7) 100%)}
-.hero-content{position:absolute;left:0;right:0;bottom:0;padding:24px 20px;max-width:1200px;margin:0 auto;z-index:2}
-.hero h1{font-family:Bebas Neue;font-size:72px;line-height:.9} .hero h1 span{color:#D4A574}
-.hero p{color:#bbb;font-size:13px;margin-top:8px;max-width:560px;line-height:1.5}
-.badges{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.badge{background:#D4A574;color:#000;padding:6px 12px;border-radius:100px;font-weight:900;font-size:11px}
-.badge.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
-.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
-.topgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:-20px;position:relative;z-index:5} @media(max-width:900px){.topgrid{grid-template-columns:1fr}}
-.card{background:#151515;border:1px solid #252525;border-radius:22px;padding:18px}
-.card b{color:#D4A574;font-size:11px;letter-spacing:.08em;display:block;margin-bottom:8px;text-transform:uppercase}
-.small{color:#9a9a9a;font-size:12px;line-height:1.6}
-.services{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:18px}
-.svc{background:#171717;border:1px solid #262626;border-radius:20px;overflow:hidden;cursor:pointer;transition:.2s;position:relative}
-.svc:hover{border-color:#444;transform:translateY(-2px)}
-.svc.on{border-color:#D4A574;box-shadow:0 0 0 1px #D4A57455}
-.svc img{width:100%;height:180px;object-fit:cover;background:#111;display:block}
-.svc-body{padding:14px}
-.svc-name{font-weight:900;font-size:15px} .svc-desc{font-size:11px;color:#888;margin-top:6px;line-height:1.5;min-height:34px}
-.svc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.svc-price{font-weight:900;font-size:17px} .svc-price span{color:#D4A574}
-.svc-dur{font-size:10px;color:#777;background:#0f0f0f;border:1px solid #222;padding:4px 9px;border-radius:100px}
-.calendar-wrap{display:grid;grid-template-columns:380px 1fr;gap:16px;margin-top:24px} @media(max-width:900px){.calendar-wrap{grid-template-columns:1fr}}
-.cal{background:#141414;border:1px solid #262626;border-radius:20px;padding:16px}
-.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.cal-header button{background:#1e1e1e;border:1px solid #2a2a2a;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-weight:900}
-.cal-month{font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
-.cal-dayname{font-size:10px;color:#666;font-weight:800;padding:4px}
-.cal-day{padding:10px 4px;border-radius:10px;border:1px solid transparent;background:#0f0f0f;color:#aaa;font-size:12px;font-weight:700;cursor:pointer;position:relative}
-.cal-day:hover{border-color:#333;color:#fff}
-.cal-day.today{border-color:#D4A57444;color:#D4A574}
-.cal-day.on{background:#D4A574;color:#000;border-color:#D4A574}
-.cal-day.off{opacity:.25;pointer-events:none}
-.cal-day.has-bookings::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:#D4A574;border-radius:50%}
-.slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;min-height:120px}
-.slot{padding:11px 14px;border-radius:12px;border:1px solid #2a2a2a;background:#0f0f0f;color:#ccc;font-size:12px;font-weight:800;cursor:pointer;min-width:72px;text-align:center;transition:.15s}
-.slot:hover{border-color:#555;color:#fff;background:#1a1a1a}
+body{background:#0a0a0a;color:#fff}
+.header{position:sticky;top:0;z-index:20;background:#0a0a0a;border-bottom:1px solid #1f1f1f;height:56px;display:flex;align-items:center;padding:0 16px}
+.header b{font-family:Bebas Neue;font-size:26px} .header b span{color:#D4A574}
+.steps{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;overflow:auto}
+.step{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#555;white-space:nowrap}
+.step.on{color:#fff} .step.done{color:#D4A574}
+.step .num{width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#141414;display:flex;align-items:center;justify-content:center;font-size:10px}
+.step.on .num{background:#fff;color:#000;border-color:#fff} .step.done .num{background:#D4A574;color:#000;border-color:#D4A574}
+.step .line{width:20px;height:1px;background:#222}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px 120px;display:grid;grid-template-columns:1.2fr .8fr;gap:16px} @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.card{background:#151515;border:1px solid #222;border-radius:18px;padding:16px}
+.card b{color:#D4A574;font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:10px}
+.list{display:grid;gap:8px}
+.item{display:flex;gap:12px;padding:12px;border:1px solid #222;border-radius:14px;background:#171717;cursor:pointer}
+.item.on{border-color:#D4A574}
+.item img{width:58px;height:58px;border-radius:10px;object-fit:cover;background:#111}
+.name{font-weight:800;font-size:13px} .desc{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
+.price{font-weight:800;font-size:13px;margin-top:6px} .price span{color:#D4A574} .dur{font-size:10px;color:#777;background:#0f0f0f;border:1px solid #222;padding:2px 6px;border-radius:100px;margin-left:6px}
+.pro{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #222;border-radius:14px;background:#171717;cursor:pointer}
+.pro.on{border-color:#D4A574}
+.pro img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#111}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-head button{width:30px;height:30px;border-radius:8px;border:1px solid #262626;background:#1e1e1e;color:#fff;cursor:pointer}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.dayname{font-size:9px;color:#555;font-weight:700;padding:4px}
+.day{padding:9px 2px;border-radius:8px;border:1px solid #1a1a1a;background:#0f0f0f;color:#aaa;font-size:11px;font-weight:700;cursor:pointer}
+.day.off{opacity:.25;pointer-events:none} .day.today{border-color:#D4A57455;color:#D4A574} .day.on{background:#D4A574;color:#000;border-color:#D4A574}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.slot{padding:10px 12px;border-radius:10px;border:1px solid #262626;background:#0f0f0f;color:#ccc;font-size:11px;font-weight:700;cursor:pointer;min-width:68px;text-align:center}
 .slot.on{background:#D4A574;color:#000;border-color:#D4A574}
-.slot.off{background:#1a1a1a;color:#555;border-color:#1a1a1a;pointer-events:none;text-decoration:line-through;opacity:.6;position:relative}
-.slot.off::after{content:'RESERVADO';position:absolute;top:-6px;right:-6px;background:#ff0033;color:#fff;font-size:7px;padding:2px 5px;border-radius:100px;font-weight:900}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px} @media(max-width:600px){.form{grid-template-columns:1fr}}
-.input{background:#0f0f0f;border:1px solid #2a2a2a;border-radius:12px;padding:13px;color:#fff;width:100%;font-size:13px}
-.input:focus{outline:none;border-color:#D4A574}
-.label{font-size:10px;color:#D4A574;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;display:block}
-.sticky{position:fixed;left:12px;right:12px;bottom:12px;background:rgba(18,18,18,.97);backdrop-filter:blur(18px);border:1px solid #2a2a2a;border-radius:20px;padding:12px 14px;z-index:60}
-.sticky-inner{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between} @media(max-width:760px){.sticky-inner{flex-direction:column;align-items:stretch}}
-.total{font-weight:900;font-size:13px;line-height:1.4;color:#aaa} .total b{color:#fff;font-size:14px}
-.btn{background:#D4A574;color:#000;border:0;padding:13px 20px;border-radius:100px;font-weight:900;cursor:pointer;font-size:13px}
-.btn:disabled{background:#2a2a2a;color:#555;cursor:not-allowed}
-.btn-ghost{background:#1e1e1e;color:#fff;border:1px solid #2a2a2a;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;font-size:12px}
+.slot.off{background:#111;color:#444;border-color:#151515;pointer-events:none;text-decoration:line-through}
+.input{background:#0f0f0f;border:1px solid #262626;border-radius:10px;padding:12px;color:#fff;width:100%;font-size:12px;margin-top:6px}
+.label{font-size:9px;color:#D4A574;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-top:8px;display:block}
+.summary{position:sticky;top:72px}
+.line-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e1e1e;font-size:11px;color:#aaa}
+.total{display:flex;justify-content:space-between;margin-top:12px;font-size:18px;font-weight:900}
+.btn{width:100%;padding:13px;border-radius:12px;border:0;background:#D4A574;color:#000;font-weight:900;cursor:pointer;margin-top:12px;font-size:12px}
+.btn:disabled{background:#222;color:#555}
 </style>
 </head><body>
-<div class="hero" id="hero"></div>
-<div class="wrap"><div class="topgrid" id="topgrid"></div></div>
-<div class="wrap" style="margin-top:24px">
-<h2 style="font-family:Bebas Neue;font-size:34px">SERVICIOS</h2>
-<div class="services" id="services"></div>
-<div id="booking" style="margin-top:28px;display:none">
-<div class="calendar-wrap">
-<div class="cal" id="calendar"></div>
-<div class="card">
-<b id="selTitle">Elegí horario</b>
-<div class="small" id="selDesc">Seleccioná un día del calendario</div>
-<div style="margin-top:14px">
-<span class="label">Horarios de <span id="dayLabel">--</span> - Quedan <span id="freeCount">0</span> libres</span>
-<div class="slots" id="slots"></div>
-<div class="small" style="margin-top:10px;color:#666">Los horarios en gris con RESERVADO ya fueron tomados. Quedan guardados en localStorage y no se pueden volver a reservar hasta que borres las reservas.</div>
+<div class="header"><b>BARBERÍA <span>LÓPEZ</span></b></div>
+<div class="steps" id="steps"></div>
+<div class="wrap">
+<div>
+<div class="card" id="step1"></div>
+<div class="card" id="step2" style="margin-top:14px"></div>
+<div class="card" id="step3" style="margin-top:14px"></div>
 </div>
-<div style="margin-top:18px;border-top:1px solid #222;padding-top:16px">
-<b>Tu reserva</b>
-<div id="resumen" class="small" style="margin-top:8px;color:#666">Nada seleccionado</div>
-<div class="form">
-<div><span class="label">Nombre *</span><input id="f_nombre" class="input" placeholder="Tu nombre"></div>
-<div><span class="label">WhatsApp *</span><input id="f_tel" class="input" placeholder="11 1234-5678"></div>
-<div style="grid-column:1/-1"><span class="label">Nota (opcional)</span><input id="f_nota" class="input" placeholder="Ej: Llego 10 min tarde"></div>
+<div><div class="card summary" id="summary"></div></div>
 </div>
-<button class="btn-ghost" style="width:100%;margin-top:10px" onclick="clearBookings()">🔄 Borrar todas mis reservas de prueba</button>
-</div>
-</div>
-</div>
-</div>
-<div style="height:160px"></div>
-</div>
-<div class="sticky"><div class="sticky-inner">
-<div class="total" id="stickyTotal">Seleccioná un servicio</div>
-<div style="display:flex;gap:8px">
-<button class="btn-ghost" onclick="clearSel()">Limpiar</button>
-<button class="btn" id="btnReservar" disabled>Reservar</button>
-</div>
-</div></div>
 <script>
-const CONFIG_DEFAULT = {"nombre":"BARBERÍA LOPEZ","subtitulo":"Barbería clásica - Microcentro porteño","direccion":"25 de Mayo 314, CABA - 9 a 20hs Lun a Sáb","whatsapp":"5491143250020","adminWhatsApp":"5491156120696","horarios":"Lun a Sáb 9 a 20hs - Dom cerrado","color":"#D4A574","heroImg":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=800&fit=crop&q=80&auto=format","galeria":["https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=300&fit=crop&q=80&auto=format","https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&h=300&fit=crop&q=80&auto=format","https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=300&fit=crop&q=80&auto=format"],"estado":"activo","envio":{"costo":0}};
-const DATA_DEFAULT = [{"id":1,"categoria":"Corte","nombre":"Corte clásico","descripcion":"Tijera o máquina, terminado a navaja y producto final","precio":12000,"duracion":30,"img":"https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=600&fit=crop&q=80&auto=format","destacado":true},{"id":2,"categoria":"Corte","nombre":"Corte + Barba","descripcion":"Corte completo + barba con toalla caliente","precio":18000,"duracion":50,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80&auto=format","destacado":true},{"id":6,"categoria":"Estética","nombre":"Corte + Limpieza facial","descripcion":"Corte + limpieza facial express con vapor","precio":16000,"duracion":45,"img":"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=600&fit=crop&q=80&auto=format"}];
-let CONFIG = CONFIG_DEFAULT;
-let DATA = DATA_DEFAULT;
-let servicioSel = null;
-let selectedDate = new Date();
-let horaSel = null;
-let currentMonth = new Date();
-const STORAGE_KEY = 'turnos_barberia_demo_v3';
-function getBookings(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
-function saveBooking(b){ const all=getBookings(); all.push(b); localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
-function isBooked(dateStr, time){ return getBookings().some(b=>b.date===dateStr && b.time===time); }
-function clearBookings(){ if(!confirm('¿Borrar todas las reservas guardadas en este navegador?')) return; localStorage.removeItem(STORAGE_KEY); renderCalendar(); renderSlots(); renderTop(); updateResumen(); }
-function formatDateStr(d){ return d.toISOString().split('T')[0]; }
-function formatDisplay(d){ return d.toLocaleDateString('es-AR',{weekday:'long', day:'numeric', month:'short'}); }
-function init(){ renderHero(); renderTop(); renderServices(); renderCalendar(); document.getElementById('btnReservar').addEventListener('click', reservar); }
-function renderHero(){
-  document.getElementById('hero').innerHTML=`<img src="${CONFIG.heroImg}" onerror="this.style.display='none'"><div class="hero-overlay"></div><div class="hero-content"><h1>${CONFIG.nombre.split(' ')[0]} <span>${CONFIG.nombre.split(' ').slice(1).join(' ')}</span></h1><p>${CONFIG.subtitulo} • ${CONFIG.direccion}</p><div class="badges"><div class="badge">${CONFIG.direccion}</div><div class="badge ghost">${CONFIG.horarios}</div></div></div>`;
-}
-function renderTop(){
-  // Sin instructivo - el topgrid queda oculto, solo se usa si hay reservas para debug interno sin mostrar texto explicativo
-  const bookings=getBookings();
-  if(bookings.length>0){
-    document.getElementById('topgrid').innerHTML=`<div class="card" style="display:none"><b>${bookings.length} reservas</b></div>`;
-    document.getElementById('topgrid').style.display='none';
-  }else{
-    document.getElementById('topgrid').innerHTML='';
-    document.getElementById('topgrid').style.display='none';
-  }
-}
-function renderServices(){
-  const cont=document.getElementById('services');
-  cont.innerHTML=DATA.map(s=>`<div class="svc ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop&q=80&auto=format'"><div class="svc-body"><div class="svc-name">${s.nombre}</div><div class="svc-desc">${s.descripcion}</div><div class="svc-meta"><div class="svc-price">$<span>${Number(s.precio).toLocaleString('es-AR')}</span></div><div class="svc-dur">⏱ ${s.duracion} min</div></div></div></div>`).join('');
-  cont.querySelectorAll('.svc').forEach(el=>{ el.addEventListener('click', ()=>{ servicioSel=DATA.find(d=>d.id===Number(el.dataset.id)); renderServices(); document.getElementById('booking').style.display='block'; document.getElementById('booking').scrollIntoView({behavior:'smooth'}); updateResumen(); renderSlots(); }); });
-}
-function renderCalendar(){
-  const cont=document.getElementById('calendar');
-  const year=currentMonth.getFullYear(); const month=currentMonth.getMonth();
-  const firstDay=new Date(year, month, 1); const lastDay=new Date(year, month+1, 0);
-  const startDay=firstDay.getDay(); const daysInMonth=lastDay.getDate();
-  let html=`<div class="cal-header"><button onclick="changeMonth(-1)">‹</button><div class="cal-month">${currentMonth.toLocaleDateString('es-AR',{month:'long', year:'numeric'})}</div><button onclick="changeMonth(1)">›</button></div><div class="cal-grid"><div class="cal-dayname">Dom</div><div class="cal-dayname">Lun</div><div class="cal-dayname">Mar</div><div class="cal-dayname">Mié</div><div class="cal-dayname">Jue</div><div class="cal-dayname">Vie</div><div class="cal-dayname">Sáb</div>`;
-  for(let i=0;i<startDay;i++){ html+=`<div class="cal-day off"></div>`; }
-  const today=new Date(); today.setHours(0,0,0,0);
-  for(let d=1; d<=daysInMonth; d++){
-    const date=new Date(year, month, d); date.setHours(0,0,0,0);
-    const isPast = date < today; const isSelected = formatDateStr(date)===formatDateStr(selectedDate);
-    const isToday = formatDateStr(date)===formatDateStr(today); const dateStr=formatDateStr(date);
-    const hasBookings = getBookings().some(b=>b.date===dateStr);
-    html+=`<div class="cal-day ${isPast?'off':''} ${isSelected?'on':''} ${isToday?'today':''} ${hasBookings?'has-bookings':''}" data-date="${dateStr}" onclick="selectDate('${dateStr}')">${d}</div>`;
-  }
-  html+=`</div><div class="small" style="margin-top:10px;opacity:.2"></div>`;
-  cont.innerHTML=html;
-}
-function changeMonth(dir){ currentMonth.setMonth(currentMonth.getMonth()+dir); renderCalendar(); } // ilimitado para siempre: setMonth avanza años automáticamente sin límite
-function selectDate(dateStr){ selectedDate=new Date(dateStr+'T12:00:00'); renderCalendar(); renderSlots(); updateResumen(); }
-window.changeMonth=changeMonth; window.selectDate=selectDate;
-function getSlotsForDate(dateStr){
-  const slots=[];
-  for(let h=9; h<20; h++){
-    if(h===13) continue;
-    for(let m of [0,30]){
-      const time=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-      const booked=isBooked(dateStr, time);
-      slots.push({time, booked});
-    }
-  }
-  return slots;
-}
-function renderSlots(){
-  if(!servicioSel) return;
-  const dateStr=formatDateStr(selectedDate);
-  document.getElementById('dayLabel').textContent=formatDisplay(selectedDate);
-  const slots=getSlotsForDate(dateStr);
-  const free=slots.filter(s=>!s.booked).length;
-  document.getElementById('freeCount').textContent=free;
-  const cont=document.getElementById('slots');
-  cont.innerHTML=slots.map(s=>`<div class="slot ${s.booked?'off':''} ${horaSel===s.time && !s.booked?'on':''}" data-time="${s.time}">${s.time}</div>`).join('');
-  cont.querySelectorAll('.slot:not(.off)').forEach(el=>{ el.addEventListener('click', ()=>{ horaSel=el.dataset.time; renderSlots(); updateResumen(); }); });
-}
-function updateResumen(){
-  const res=document.getElementById('resumen'); const btn=document.getElementById('btnReservar');
-  if(!servicioSel){ res.innerHTML='<span style="color:#666">Elegí un servicio arriba</span>'; document.getElementById('stickyTotal').textContent='Seleccioná un servicio'; btn.disabled=true; return; }
-  const dateStr=formatDateStr(selectedDate); const horaTxt=horaSel||'--:--';
-  res.innerHTML=`<b style="color:#fff">${servicioSel.nombre}</b> - $${Number(servicioSel.precio).toLocaleString('es-AR')} (${servicioSel.duracion}min)<br>${servicioSel.descripcion}<br><br><span style="color:#D4A574">📅 ${formatDisplay(selectedDate)} (${dateStr}) a las ${horaTxt}</span><br><span style="color:#666;font-size:11px">Al reservar, ${horaTxt} quedará en gris bloqueado para siempre en este navegador</span>`;
-  document.getElementById('stickyTotal').innerHTML=`<b>${servicioSel.nombre}</b> • ${formatDisplay(selectedDate)} ${horaTxt} • $${Number(servicioSel.precio).toLocaleString('es-AR')}`;
-  document.getElementById('selTitle').textContent=servicioSel.nombre+' - Calendario real';
-  document.getElementById('selDesc').textContent=`${servicioSel.descripcion} - ${servicioSel.duracion} min - Horarios siempre visibles`;
-  btn.disabled=!horaSel; btn.textContent=horaSel?`Reservar ${formatDisplay(selectedDate)} ${horaSel}`:'Elegí horario';
-}
-function clearSel(){ servicioSel=null; horaSel=null; document.getElementById('booking').style.display='none'; renderServices(); renderCalendar(); document.getElementById('resumen').innerHTML='<span style="color:#666">Nada seleccionado</span>'; document.getElementById('stickyTotal').textContent='Seleccioná un servicio'; document.getElementById('btnReservar').disabled=true; }
-window.clearBookings=clearBookings;
-function reservar(){
-  const nombre=document.getElementById('f_nombre').value.trim(); const tel=document.getElementById('f_tel').value.trim(); const nota=document.getElementById('f_nota').value.trim();
-  if(!nombre||!tel){alert('Completá nombre y WhatsApp');return}
-  if(!servicioSel||!horaSel){alert('Elegí servicio y horario');return}
-  const dateStr=formatDateStr(selectedDate);
-  if(isBooked(dateStr, horaSel)){alert('Ese horario ya fue reservado, elegí otro');renderSlots();return}
-  saveBooking({ date: dateStr, time: horaSel, servicio: servicioSel.nombre, precio: servicioSel.precio, nombre, tel, nota, created: new Date().toISOString() });
-  renderCalendar(); renderSlots(); renderTop(); updateResumen();
-  const msg=[`Hola! Reserva ${CONFIG.nombre} - ${formatDisplay(selectedDate)} ${horaSel}`,``, `Servicio: ${servicioSel.nombre} - $${servicioSel.precio} (${servicioSel.duracion}min)`, `Día: ${formatDisplay(selectedDate)} (${dateStr})`, `Hora: ${horaSel}`, `Cliente: ${nombre}`, `WhatsApp: ${tel}`, nota?`Nota: ${nota}`:'',``, `Este horario ahora queda bloqueado en gris.`].join('\n');
-  const url=`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-  window.open(url,'_blank');
-}
-init();
+const CONFIG_DEFAULT = {"nombre":"Barbería López","direccion":"Lomas de Zamora","whatsapp":"5491134890644","email":"turnos@barberialopez.com","envio":{"costo":0}};
+const BARBEROS_DEFAULT=[
+{id:"m1",nombre:"Mati",especialidad:"Fade & Clásico",img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"},
+{id:"m2",nombre:"Nico",especialidad:"Barba & Tijera",img:"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop"},
+{id:"m3",nombre:"Santi",especialidad:"Color & Diseño",img:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"}
+];
+const DATA_DEFAULT = [{"id":1,"categoria":"Cortes","nombre":"Corte clásico","descripcion":"Máquina + tijera + navaja","precio":9000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"},{"id":2,"categoria":"Cortes","nombre":"Corte + Barba","descripcion":"Corte completo + barba toalla caliente","precio":14000,"duracion":60,"img":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},{"id":3,"categoria":"Cortes","nombre":"Corte + Barba + Cejas","descripcion":"Pack completo","precio":16000,"duracion":75,"img":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},{"id":4,"categoria":"Barba","nombre":"Arreglo de barba","descripcion":"Perfilado + toalla caliente","precio":6000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"},{"id":5,"categoria":"Color","nombre":"Color + Corte","descripcion":"Color + corte incluido","precio":18000,"duracion":90,"img":"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&h=400&fit=crop"},{"id":6,"categoria":"Promo","nombre":"Promo Jubilados","descripcion":"Lun a Mié","precio":7000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"}];
+let CONFIG=CONFIG_DEFAULT,DATA=DATA_DEFAULT,BARBEROS=BARBEROS_DEFAULT;
+let servicioSel=null,barberoSel=BARBEROS[0],selectedDate=new Date(),horaSel=null,currentMonth=new Date();
+let clientData={nombre:'',tel:'',email:'',nota:''};
+const LS_KEY='barberia_lopez_vfinal';
+function getBookings(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch(e){return []}}
+function saveBooking(b){const a=getBookings();a.push(b);localStorage.setItem(LS_KEY,JSON.stringify(a))}
+function isBooked(d,t,prof){return getBookings().some(b=>b.date===d&&b.time===t&&(b.profId===prof||b.profId==='any'||prof==='any'))}
+function fmt(d){return d.toISOString().split('T')[0]}
+function fmt2(d){return d.toLocaleDateString('es-AR',{weekday:'short',day:'2-digit',month:'short'})}
+function renderSteps(){const s=[{n:1,l:'Servicio',d:!!servicioSel},{n:2,l:'Barbero',d:!!barberoSel},{n:3,l:'Fecha y hora',d:!!horaSel},{n:4,l:'Datos',d:!!(clientData.nombre&&clientData.tel)}];document.getElementById('steps').innerHTML=s.map((p,i)=>`<div class="step ${p.d?'done':''} ${i===0&&!servicioSel?'on':''} ${i===1&&servicioSel&&!horaSel?'on':''} ${i===2&&horaSel&&!clientData.nombre?'on':''}"><div class="num">${p.d?'✓':p.n}</div>${p.l}${i<3?'<div class="line"></div>':''}</div>`).join('')}
+function renderStep1(){const c=document.getElementById('step1');const cats=[...new Set(DATA.map(d=>d.categoria))];c.innerHTML=`<b>1. Servicio</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${cats.map(x=>`<div style="padding:5px 10px;border-radius:100px;border:1px solid #222;font-size:10px;cursor:pointer" onclick="filt('${x}')">${x}</div>`).join('')}<div style="padding:5px 10px;border-radius:100px;background:#fff;color:#000;font-size:10px;cursor:pointer" onclick="filt('todos')">Todos</div></div><div class="list" id="listS"></div>`;renderServ('todos')}
+window.filt=(cat)=>renderServ(cat);
+function renderServ(cat){const l=document.getElementById('listS');if(!l)return;const f=cat==='todos'?DATA:DATA.filter(d=>d.categoria===cat);l.innerHTML=f.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}"><div><div class="name">${s.nombre}<span class="dur">${s.duracion}min</span></div><div class="desc">${s.descripcion}</div><div class="price">$<span>${s.precio.toLocaleString('es-AR')}</span></div></div></div>`).join('');l.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id===Number(e.dataset.id));renderStep1();renderStep2();renderStep3();renderSummary();renderSteps();document.getElementById('step2').scrollIntoView({behavior:'smooth'})}))}
+function renderStep2(){const c=document.getElementById('step2');if(!servicioSel){c.innerHTML=`<b>2. Barbero</b>`;return}c.innerHTML=`<b>2. Barbero</b><div class="list">${BARBEROS.map(b=>`<div class="pro ${barberoSel?.id===b.id?'on':''}" data-id="${b.id}"><img src="${b.img}"><div><div style="font-weight:800;font-size:12px">${b.nombre}</div><div style="font-size:10px;color:#777">${b.especialidad}</div></div></div>`).join('')}</div>`;c.querySelectorAll('.pro').forEach(e=>e.addEventListener('click',()=>{barberoSel=BARBEROS.find(x=>x.id===e.dataset.id);renderStep2();renderStep3();renderSummary();renderSteps();document.getElementById('step3').scrollIntoView({behavior:'smooth'})}))}
+function renderStep3(){const c=document.getElementById('step3');if(!servicioSel||!barberoSel){c.innerHTML=`<b>3. Fecha y hora</b>`;return}c.innerHTML=`<b>3. Fecha y hora - ${barberoSel.nombre}</b><div class="cal-head"><button onclick="chgM(-1)">‹</button><div style="font-weight:700;font-size:12px;text-transform:capitalize">${currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})}</div><button onclick="chgM(1)">›</button></div><div class="cal-grid"><div class="dayname">D</div><div class="dayname">L</div><div class="dayname">M</div><div class="dayname">X</div><div class="dayname">J</div><div class="dayname">V</div><div class="dayname">S</div></div><div class="cal-grid" id="days"></div><div style="margin-top:12px"><span class="label">${fmt2(selectedDate)}</span><div class="slots" id="slots"></div></div><div style="margin-top:12px"><span class="label">Nombre *</span><input id="f_nombre" class="input" value="${clientData.nombre}"><span class="label">WhatsApp *</span><input id="f_tel" class="input" value="${clientData.tel}"><span class="label">Email</span><input id="f_email" class="input" value="${clientData.email}"><span class="label">Nota</span><input id="f_nota" class="input" value="${clientData.nota}"></div>`;renderDays();renderSlots();['f_nombre','f_tel','f_email','f_nota'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',e=>{clientData[id.replace('f_','')]=e.target.value;renderSummary();renderSteps()})})}
+function renderDays(){const d=document.getElementById('days');if(!d)return;const y=currentMonth.getFullYear(),m=currentMonth.getMonth();const first=new Date(y,m,1),start=first.getDay(),last=new Date(y,m+1,0).getDate();let h='';for(let i=0;i<start;i++)h+=`<div class="day off"></div>`;const today=new Date();today.setHours(0,0,0,0);for(let i=1;i<=last;i++){const date=new Date(y,m,i);date.setHours(0,0,0,0);const past=date<today;const cur=fmt(date);const sel=fmt(selectedDate);const isT=fmt(today)===cur;h+=`<div class="day ${past?'off':''} ${sel===cur?'on':''} ${isT?'today':''}" data-date="${cur}">${i}</div>`}d.innerHTML=h;d.querySelectorAll('.day:not(.off)').forEach(e=>e.addEventListener('click',()=>{selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderStep3();renderSummary();renderSteps()}))}
+window.chgM=(dir)=>{currentMonth.setMonth(currentMonth.getMonth()+dir);renderStep3()}
+function getSlots(){const s=[];for(let h=9;h<20;h++){if(h===13)continue;for(let mm of[0,30]){const t=`${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;s.push({time:t,booked:isBooked(fmt(selectedDate),t,barberoSel.id)})}}return s}
+function renderSlots(){const c=document.getElementById('slots');if(!c)return;const s=getSlots();c.innerHTML=s.map(x=>`<div class="slot ${x.booked?'off':''} ${horaSel===x.time?'on':''}" data-time="${x.time}">${x.time}</div>`).join('');c.querySelectorAll('.slot:not(.off)').forEach(e=>e.addEventListener('click',()=>{horaSel=e.dataset.time;renderStep3();renderSummary();renderSteps()}))}
+function renderSummary(){const c=document.getElementById('summary');const can=servicioSel&&barberoSel&&horaSel&&clientData.nombre&&clientData.tel;c.innerHTML=`<b>Resumen</b><div class="line-item"><span>Servicio</span><span>${servicioSel?servicioSel.nombre:'--'}</span></div><div class="line-item"><span>Barbero</span><span>${barberoSel?barberoSel.nombre:'--'}</span></div><div class="line-item"><span>Fecha</span><span>${selectedDate?fmt2(selectedDate):'--'}</span></div><div class="line-item"><span>Hora</span><span>${horaSel||'--:--'}</span></div><div class="total"><span>Total</span><span>$${servicioSel?servicioSel.precio.toLocaleString('es-AR'):0}</span></div><button class="btn" ${can?'':'disabled'} id="btnB">${can?'Confirmar turno':'Completá datos'}</button>`;document.getElementById('btnB')?.addEventListener('click',reservar)}
+function reservar(){const date=fmt(selectedDate);if(isBooked(date,horaSel,barberoSel.id))return;saveBooking({date,time:horaSel,profId:barberoSel.id,profNombre:barberoSel.nombre,servicio:servicioSel.nombre,precio:servicioSel.precio,nombre:clientData.nombre,tel:clientData.tel,email:clientData.email,nota:clientData.nota});const msg=`Nuevo turno - ${CONFIG.nombre}%0AServicio: ${servicioSel.nombre} - $${servicioSel.precio}%0ABarbero: ${barberoSel.nombre}%0AFecha: ${date} ${fmt2(selectedDate)}%0AHora: ${horaSel}%0ACliente: ${clientData.nombre}%0ATel: ${clientData.tel}%0AEmail: ${clientData.email}`;window.open(`https://wa.me/${CONFIG.whatsapp}?text=${msg}`,'_blank');document.getElementById('step3').innerHTML=`<b>Turno confirmado</b><div style="margin-top:10px;font-size:12px;line-height:1.6">${servicioSel.nombre} con ${barberoSel.nombre}<br>${fmt2(selectedDate)} ${horaSel}</div><button class="btn" onclick="location.reload()">Nuevo turno</button>`}
+renderStep1();renderStep2();renderStep3();renderSummary();renderSteps();
 </script>
 </body></html>
