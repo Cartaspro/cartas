@@ -1,157 +1,132 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Barbería López - Turnos Reales</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<title>Barbería López</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
 body{background:#0a0a0a;color:#fff}
-.header{background:#0a0a0a;border-bottom:1px solid #222;padding:12px 16px;position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center}
-.header b{font-family:Bebas Neue;font-size:26px}.header b span{color:#D4A574}
-.badge{padding:5px 12px;border-radius:100px;font-size:10px;font-weight:900}
-.badge.ok{background:#44ff88;color:#000}.badge.err{background:#ff0033;color:#fff}.badge.wait{background:#333;color:#aaa}
 .wrap{max-width:1200px;margin:0 auto;padding:14px;display:grid;grid-template-columns:1.2fr.8fr;gap:14px} @media(max-width:900px){.wrap{grid-template-columns:1fr}}
 .card{background:#151515;border:1px solid #222;border-radius:18px;padding:14px}
-.card b{color:#D4A574;font-size:11px;text-transform:uppercase;display:block;margin-bottom:10px;letter-spacing:.08em}
+.card b{color:#D4A574;font-size:11px;text-transform:uppercase;display:block;margin-bottom:10px;letter-spacing:.06em}
 .item,.pro{padding:12px;border:1px solid #222;border-radius:14px;background:#171717;cursor:pointer;margin-bottom:8px}
 .item.on,.pro.on{border-color:#D4A574}
 .slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.slot{padding:10px 12px;border-radius:10px;border:1px solid #262626;background:#0f0f0f;color:#ccc;font-size:11px;font-weight:700;cursor:pointer;min-width:68px;text-align:center;position:relative}
+.slot{padding:11px 12px;border-radius:12px;border:1px solid #262626;background:#0f0f0f;color:#ccc;font-size:11px;font-weight:800;cursor:pointer;min-width:68px;text-align:center;position:relative}
 .slot.on{background:#D4A574;color:#000;border-color:#D4A574}
-.slot.off{background:#1a0a0a;color:#ff5555;border-color:#441111;pointer-events:none;text-decoration:line-through}
-.slot.off::after{content:'OCUPADO';position:absolute;top:-7px;right:-6px;background:#ff0033;color:#fff;font-size:7px;padding:2px 5px;border-radius:100px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;margin-top:8px}
-.day{padding:9px 2px;border-radius:8px;border:1px solid #1a1a1a;background:#0f0f0f;color:#aaa;font-size:11px;font-weight:700;cursor:pointer}
-.day.off{opacity:.25;pointer-events:none}.day.on{background:#D4A574;color:#000}
+.slot.off{background:#1a0a0a;color:#555;border-color:#222;pointer-events:none;text-decoration:line-through}
 .input{background:#0f0f0f;border:1px solid #262626;border-radius:10px;padding:12px;color:#fff;width:100%;font-size:12px;margin-top:6px}
 .btn{width:100%;padding:14px;border-radius:12px;border:0;background:#D4A574;color:#000;font-weight:900;cursor:pointer;margin-top:12px}
 .btn:disabled{background:#222;color:#555}
-.small{font-size:11px;color:#888;line-height:1.5}
+.small{font-size:11px;color:#888}
 </style>
 </head><body>
-<div class="header">
-<b>BARBERÍA <span>LÓPEZ</span></b>
-<span class="badge wait" id="connBadge">Conectando...</span>
-</div>
-
 <div class="wrap">
 <div>
-<div class="card"><b>1. Servicio</b><div id="listS"></div></div>
-<div class="card" style="margin-top:12px"><b>2. Barbero</b><div id="listB"></div></div>
-<div class="card" style="margin-top:12px"><b>3. Fecha y hora</b><div id="cal"></div><div id="slots"></div>
-<div style="margin-top:12px"><input id="f_nombre" class="input" placeholder="Tu nombre *"><input id="f_tel" class="input" placeholder="WhatsApp *" style="margin-top:8px"><input id="f_nota" class="input" placeholder="Nota (opcional)" style="margin-top:8px"></div>
+<div class="card"><b>Servicio</b><div id="listS"></div></div>
+<div class="card" style="margin-top:12px"><b>Barbero</b><div id="listB"></div></div>
+<div class="card" style="margin-top:12px"><b>Fecha y hora</b><div id="cal"></div><div id="slots"></div>
+<div style="margin-top:12px"><input id="f_nombre" class="input" placeholder="Nombre"><input id="f_tel" class="input" placeholder="WhatsApp"><input id="f_nota" class="input" placeholder="Nota"></div>
 </div>
 </div>
-
 <div>
-<div class="card"><b>Resumen</b><div id="resumen" class="small">Elegí servicio, barbero y horario</div><button id="btnReservar" class="btn" disabled>Confirmar turno</button><div id="status" class="small" style="margin-top:10px">Iniciando...</div></div>
-<div class="card" style="margin-top:12px"><b>Debug</b><div id="debug" class="small" style="font-family:monospace;font-size:10px;word-break:break-all">Exec: https://script.google.com/macros/s/AKfycbws8_9gvqKhMygqMtbJWrdOSM3rNsKlpv42mLoVRY74423FJXgkTBfOiSNIF3WrGleN/exec</div></div>
+<div class="card"><b>Resumen</b><div id="resumen" class="small"></div><button id="btnReservar" class="btn" disabled>Confirmar</button></div>
 </div>
 </div>
-
 <script>
-// >>> ESTE ES TU EXEC - YA NO TENES QUE CAMBIAR NADA <<<
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbws8_9gvqKhMygqMtbJWrdOSM3rNsKlpv42mLoVRY74423FJXgkTBfOiSNIF3WrGleN/exec";
-
+const SHEET_URL="https://script.google.com/macros/s/AKfycbws8_9gvqKhMygqMtbJWrdOSM3rNsKlpv42mLoVRY74423FJXgkTBfOiSNIF3WrGleN/exec";
 const BARBEROS=[{id:"m1",nombre:"Mati"},{id:"m2",nombre:"Nico"},{id:"m3",nombre:"Santi"}];
-const DATA=[{id:1,categoria:"Cortes",nombre:"Corte clásico",precio:9000,duracion:30},{id:2,categoria:"Corte + Barba",nombre:"Corte + Barba",precio:14000,duracion:60},{id:3,categoria:"Color",nombre:"Decoloración",precio:18000,duracion:90}];
-
-let servicioSel=null, barberoSel=null, horaSel=null, selectedDate=new Date(), currentMonth=new Date(), bookings=[];
-
+const DATA=[{id:1,nombre:"Corte clásico",precio:9000,duracion:30},{id:2,nombre:"Corte + Barba",precio:14000,duracion:60},{id:3,nombre:"Decoloración",precio:18000,duracion:90}];
+let servicioSel=null,barberoSel=null,horaSel=null,selectedDate=new Date(),currentMonth=new Date(),bookings=[];
 function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function fmtLong(d){return d.toLocaleDateString('es-AR',{weekday:'short',day:'2-digit',month:'short'});}
-
-function setBadge(ok,msg){const el=document.getElementById('connBadge');el.textContent=msg;el.className='badge '+(ok?'ok':'err');}
-
-function loadBookings(){
- const cb='cb_'+Date.now();
- window[cb]=function(data){
-  if(Array.isArray(data)){
-   bookings=data;
-   setBadge(true,'✅ Conectado: '+data.length+' reservas');
-   document.getElementById('status').textContent='Conectado. Horarios ocupados aparecen en rojo OCUPADO. Tu prueba 2026-10-01 10:00 m1 debería estar bloqueada.';
-   renderSlots();
-  } else if(data && data.error){
-   setBadge(false,'❌ '+data.error);
-   document.getElementById('status').textContent='Error exec: '+data.error;
-  }
-  delete window[cb]; const s=document.getElementById('script_'+cb); if(s) s.remove();
- };
- const s=document.createElement('script');
- s.id='script_'+cb;
- s.onerror=function(){setBadge(false,'❌ No carga - Revisa deploy en Cualquier persona'); document.getElementById('status').textContent='No carga JSONP. Abrí el exec directo en otra pestaña para ver si pide permiso. Debe estar desplegado como Cualquier persona.';};
- s.src=SHEET_URL+'?callback='+cb+'&v='+Date.now();
- document.body.appendChild(s);
+function toMin(t){const p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
+function loadBookings(){const cb='cb_'+Date.now();window[cb]=function(data){if(Array.isArray(data))bookings=data;renderSlots();delete window[cb];};const s=document.createElement('script');s.src=SHEET_URL+'?callback='+cb+'&v='+Date.now();document.body.appendChild(s);}
+function isOverlapping(aStart,aDur,bStart,bDur){return aStart<bStart+bDur && bStart<aStart+aDur;}
+function isSlotOccupied(date,time,barberoId){
+ const tMin=toMin(time);
+ for(const b of bookings){
+  if(b.fecha!==date)continue;
+  if((b.barbero_id||'').toString()!==barberoId)continue;
+  const bStart=toMin(b.hora);
+  const bDur=parseInt(b.duracion||30);
+  if(tMin>=bStart && tMin<bStart+bDur)return true;
+ }
+ return false;
 }
-
-function isBooked(date,time,profId){
- return bookings.some(b=>{
-  const f=(b.fecha||'').toString().slice(0,10);
-  const h=(b.hora||'').toString().slice(0,5);
-  const p=(b.barbero_id||'').toString();
-  return f===date && h===time && p===profId;
- });
+function canBookAt(date,time,barberoId,newDur){
+ const newStart=toMin(time);
+ const newEnd=newStart+newDur;
+ if(newEnd>20*60)return false;
+ if(newStart>=13*60 && newStart<14*60)return false;
+ if(newStart<13*60 && newEnd>13*60)return false;
+ for(const b of bookings){
+  if(b.fecha!==date)continue;
+  if((b.barbero_id||'').toString()!==barberoId)continue;
+  const bStart=toMin(b.hora);
+  const bDur=parseInt(b.duracion||30);
+  if(isOverlapping(newStart,newDur,bStart,bDur))return false;
+ }
+ return true;
 }
-
 function renderServices(){
  const c=document.getElementById('listS');
- c.innerHTML=DATA.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><div style="font-weight:800;font-size:13px">${s.nombre}</div><div style="font-size:11px;color:#777">${s.duracion}min - $${s.precio.toLocaleString('es-AR')}</div></div>`).join('');
- c.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id==e.dataset.id);renderServices();renderBarberos();update();}));
+ c.innerHTML=DATA.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><div style="font-weight:800;font-size:13px">${s.nombre} - ${s.duracion}min</div><div style="font-size:11px;color:#777">$${s.precio.toLocaleString('es-AR')}</div></div>`).join('');
+ c.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id==e.dataset.id);renderServices();renderBarberos();renderCal();update();}));
 }
 function renderBarberos(){
  const c=document.getElementById('listB');
- if(!servicioSel){c.innerHTML='<span class="small">Elegí servicio primero</span>';return;}
+ if(!servicioSel){c.innerHTML='';return;}
  c.innerHTML=BARBEROS.map(b=>`<div class="pro ${barberoSel?.id===b.id?'on':''}" data-id="${b.id}">${b.nombre}</div>`).join('');
  c.querySelectorAll('.pro').forEach(e=>e.addEventListener('click',()=>{barberoSel=BARBEROS.find(x=>x.id==e.dataset.id);renderBarberos();renderCal();update();}));
 }
 function renderCal(){
  const cont=document.getElementById('cal');
- if(!barberoSel){cont.innerHTML='<span class="small">Elegí barbero</span>';return;}
- const y=currentMonth.getFullYear(), m=currentMonth.getMonth();
- const first=new Date(y,m,1), start=first.getDay(), last=new Date(y,m+1,0).getDate();
- let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><button onclick="chgM(-1)" style="background:#222;color:#fff;border:1px solid #333;padding:4px 10px;border-radius:8px">‹</button><div style="font-size:11px;font-weight:800">${currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})}</div><button onclick="chgM(1)" style="background:#222;color:#fff;border:1px solid #333;padding:4px 10px;border-radius:8px">›</button></div><div class="cal-grid"><div style="font-size:9px;color:#555">D</div><div style="font-size:9px;color:#555">L</div><div style="font-size:9px;color:#555">M</div><div style="font-size:9px;color:#555">X</div><div style="font-size:9px;color:#555">J</div><div style="font-size:9px;color:#555">V</div><div style="font-size:9px;color:#555">S</div></div><div class="cal-grid" id="days" style="margin-top:4px">`;
- for(let i=0;i<start;i++) h+=`<div class="day off"></div>`;
- const today=new Date(); today.setHours(0,0,0,0);
- for(let i=1;i<=last;i++){const d=new Date(y,m,i);d.setHours(0,0,0,0);const past=d<today;const cur=fmt(d);const sel=fmt(selectedDate);h+=`<div class="day ${past?'off':''} ${sel===cur?'on':''}" data-date="${cur}">${i}</div>`;}
- h+=`</div><div style="margin-top:10px" id="slots"></div>`;
+ if(!barberoSel){cont.innerHTML='';return;}
+ const y=currentMonth.getFullYear(),m=currentMonth.getMonth();
+ const first=new Date(y,m,1),start=first.getDay(),last=new Date(y,m+1,0).getDate();
+ let h=`<div style="display:flex;justify-content:space-between;margin-bottom:8px"><button onclick="chgM(-1)" style="background:#222;color:#fff;border:1px solid #333;padding:4px 10px;border-radius:8px">‹</button><div style="font-size:11px">${currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})}</div><button onclick="chgM(1)" style="background:#222;color:#fff;border:1px solid #333;padding:4px 10px;border-radius:8px">›</button></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center">`;
+ for(let i=0;i<start;i++)h+=`<div></div>`;
+ const today=new Date();today.setHours(0,0,0,0);
+ for(let i=1;i<=last;i++){const d=new Date(y,m,i);d.setHours(0,0,0,0);const past=d<today;const cur=fmt(d);const sel=fmt(selectedDate);h+=`<div data-date="${cur}" style="padding:9px 2px;border-radius:8px;border:1px solid #1a1a1a;background:${sel===cur?'#D4A574':'#0f0f0f'};color:${sel===cur?'#000':past?'#555':'#aaa'};font-size:11px;font-weight:700;cursor:${past?'default':'pointer'};opacity:${past?'0.3':1}">${i}</div>`;}
+ h+=`</div><div id="slots" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>`;
  cont.innerHTML=h;
- cont.querySelectorAll('.day:not(.off)').forEach(e=>e.addEventListener('click',()=>{selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderCal();renderSlots();update();}));
+ cont.querySelectorAll('[data-date]').forEach(e=>{if(e.style.opacity==='0.3')return;e.addEventListener('click',()=>{selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderCal();renderSlots();update();});});
  renderSlots();
 }
-window.chgM=(d)=>{currentMonth.setMonth(currentMonth.getMonth()+d);renderCal();}
-
+window.chgM=d=>{currentMonth.setMonth(currentMonth.getMonth()+d);renderCal();}
 function renderSlots(){
  const c=document.getElementById('slots');
- if(!c||!barberoSel) return;
+ if(!c||!barberoSel||!servicioSel)return;
  const slots=[];
  for(let h=9;h<20;h++){
-  if(h===13) continue;
+  if(h===13)continue;
   for(let mm of [0,30]){
    const t=String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');
-   slots.push({time:t, booked:isBooked(fmt(selectedDate),t,barberoSel.id)});
+   const occupied=isSlotOccupied(fmt(selectedDate),t,barberoSel.id);
+   const can=canBookAt(fmt(selectedDate),t,barberoSel.id,servicioSel.duracion);
+   slots.push({time:t,blocked:occupied||!can});
   }
  }
- c.innerHTML=slots.map(s=>`<div class="slot ${s.booked?'off':''} ${horaSel===s.time?'on':''}" data-time="${s.time}">${s.time}</div>`).join('');
+ c.innerHTML=slots.map(s=>`<div class="slot ${s.blocked?'off':''} ${horaSel===s.time?'on':''}" data-time="${s.time}">${s.time}</div>`).join('');
  c.querySelectorAll('.slot:not(.off)').forEach(e=>e.addEventListener('click',()=>{horaSel=e.dataset.time;renderSlots();update();}));
 }
-
 function update(){
- const nombre=document.getElementById('f_nombre').value.trim();
- const tel=document.getElementById('f_tel').value.trim();
- const can=servicioSel&&barberoSel&&horaSel&&nombre&&tel;
+ const n=document.getElementById('f_nombre').value.trim();
+ const t=document.getElementById('f_tel').value.trim();
+ const can=servicioSel&&barberoSel&&horaSel&&n&&t;
  document.getElementById('btnReservar').disabled=!can;
- document.getElementById('resumen').innerHTML=can?`<b style="color:#fff">${servicioSel.nombre}</b> con ${barberoSel.nombre}<br>${fmtLong(selectedDate)} ${horaSel}<br>Total $${servicioSel.precio.toLocaleString('es-AR')}`:'Completa servicio, barbero, fecha, hora, nombre y tel';
+ document.getElementById('resumen').innerHTML=can?`${servicioSel.nombre} con ${barberoSel.nombre}<br>${fmt(selectedDate)} ${horaSel} - ${servicioSel.duracion}min`:'';
 }
 ['f_nombre','f_tel'].forEach(id=>document.getElementById(id).addEventListener('input',update));
-
 function reservar(){
  const payload={date:fmt(selectedDate),time:horaSel,profId:barberoSel.id,profNombre:barberoSel.nombre,servicio:servicioSel.nombre,precio:servicioSel.precio,duracion:servicioSel.duracion,nombre:document.getElementById('f_nombre').value.trim(),tel:document.getElementById('f_tel').value.trim(),nota:document.getElementById('f_nota').value.trim()};
- document.getElementById('status').textContent='⏳ Guardando en Sheet...';
- fetch(SHEET_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)}).then(()=>{document.getElementById('status').textContent='✅ Guardado! Recargando...'; setTimeout(loadBookings,1500);});
+ bookings.push({fecha:payload.date,hora:payload.time,barbero_id:payload.profId,duracion:payload.duracion});
+ renderSlots();
+ fetch(SHEET_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
  const qs=Object.entries(payload).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
- const s=document.createElement('script'); s.src=SHEET_URL+'?'+qs+'&v='+Date.now(); document.body.appendChild(s);
- window.open(`https://wa.me/5491134890644?text=${encodeURIComponent('Nuevo turno '+payload.servicio+' '+fmt(selectedDate)+' '+horaSel+' '+payload.nombre)}`,'_blank');
+ const s=document.createElement('script');s.src=SHEET_URL+'?'+qs+'&v='+Date.now();document.body.appendChild(s);
+ setTimeout(()=>{window.location.reload();},1200);
 }
 document.getElementById('btnReservar').addEventListener('click',reservar);
-renderServices(); renderBarberos(); renderCal(); loadBookings();
+renderServices();renderBarberos();renderCal();loadBookings();
 </script>
 </body></html>
