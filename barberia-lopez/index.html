@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Barbería López - Turnos V5 FIX SHEET</title>
+<title>Barbería López - Turnos</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
 body{background:#0a0a0a;color:#fff}
 .header{position:sticky;top:0;z-index:20;background:#0a0a0a;border-bottom:1px solid #1f1f1f;height:56px;display:flex;align-items:center;padding:0 16px}
-.header b{font-family:Bebas Neue;font-size:26px} .header b span{color:#D4A574}
-.debug{position:sticky;top:56px;z-index:19;background:#111;border-bottom:1px solid #333;padding:8px 16px;font-size:11px}
-.debug.ok{color:#44ff88} .debug.err{color:#ff4444} .debug.warn{color:#FFD60A}
+.header b{font-family:Bebas Neue;font-size:26px}.header b span{color:#D4A574}
 .steps{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;overflow:auto}
 .step{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#555;white-space:nowrap}
-.step.on{color:#fff} .step.done{color:#D4A574}
-.step .num{width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#141414;display:flex;align-items:center;justify-content:center;font-size:10px}
-.step.on .num{background:#fff;color:#000;border-color:#fff} .step.done .num{background:#D4A574;color:#000;border-color:#D4A574}
-.step .line{width:20px;height:1px;background:#222}
-.wrap{max-width:1200px;margin:0 auto;padding:0 16px 120px;display:grid;grid-template-columns:1.2fr .8fr;gap:16px} @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.step.done{color:#D4A574}
+.step.num{width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#141414;display:flex;align-items:center;justify-content:center;font-size:10px}
+.step.done.num{background:#D4A574;color:#000;border-color:#D4A574}
+.step.line{width:20px;height:1px;background:#222}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px 120px;display:grid;grid-template-columns:1.2fr.8fr;gap:16px} @media(max-width:900px){.wrap{grid-template-columns:1fr}}
 .card{background:#151515;border:1px solid #222;border-radius:18px;padding:16px}
 .card b{color:#D4A574;font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:10px}
 .list{display:grid;gap:8px}
 .item{display:flex;gap:12px;padding:12px;border:1px solid #222;border-radius:14px;background:#171717;cursor:pointer}
 .item.on{border-color:#D4A574}
 .item img{width:58px;height:58px;border-radius:10px;object-fit:cover;background:#111}
-.name{font-weight:800;font-size:13px} .desc{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
-.price{font-weight:800;font-size:13px;margin-top:6px} .price span{color:#D4A574} .dur{font-size:10px;color:#777;background:#0f0f0f;border:1px solid #222;padding:2px 6px;border-radius:100px;margin-left:6px}
+.name{font-weight:800;font-size:13px}.desc{font-size:11px;color:#888;margin-top:3px}
+.price{font-weight:800;font-size:13px;margin-top:6px}.price span{color:#D4A574}.dur{font-size:10px;color:#777;background:#0f0f0f;border:1px solid #222;padding:2px 6px;border-radius:100px;margin-left:6px}
 .pro{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #222;border-radius:14px;background:#171717;cursor:pointer}
 .pro.on{border-color:#D4A574}
 .pro img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#111}
@@ -32,22 +30,21 @@ body{background:#0a0a0a;color:#fff}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
 .dayname{font-size:9px;color:#555;font-weight:700;padding:4px}
 .day{padding:9px 2px;border-radius:8px;border:1px solid #1a1a1a;background:#0f0f0f;color:#aaa;font-size:11px;font-weight:700;cursor:pointer}
-.day.off{opacity:.25;pointer-events:none} .day.today{border-color:#D4A57455;color:#D4A574} .day.on{background:#D4A574;color:#000;border-color:#D4A574}
+.day.off{opacity:.25;pointer-events:none}.day.today{border-color:#D4A57455;color:#D4A574}.day.on{background:#D4A574;color:#000;border-color:#D4A574}
 .slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .slot{padding:10px 12px;border-radius:10px;border:1px solid #262626;background:#0f0f0f;color:#ccc;font-size:11px;font-weight:700;cursor:pointer;min-width:68px;text-align:center}
 .slot.on{background:#D4A574;color:#000;border-color:#D4A574}
 .slot.off{background:#111;color:#444;border-color:#151515;pointer-events:none;text-decoration:line-through}
 .input{background:#0f0f0f;border:1px solid #262626;border-radius:10px;padding:12px;color:#fff;width:100%;font-size:12px;margin-top:6px}
 .label{font-size:9px;color:#D4A574;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-top:8px;display:block}
-.summary{position:sticky;top:102px}
+.summary{position:sticky;top:76px}
 .line-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e1e1e;font-size:11px;color:#aaa}
 .total{display:flex;justify-content:space-between;margin-top:12px;font-size:18px;font-weight:900}
 .btn{width:100%;padding:13px;border-radius:12px;border:0;background:#D4A574;color:#000;font-weight:900;cursor:pointer;margin-top:12px;font-size:12px}
 .btn:disabled{background:#222;color:#555}
 </style>
 </head><body>
-<div class="header"><b>BARBERÍA <span>LÓPEZ</span> - V5 FIX</b></div>
-<div id="debug" class="debug warn">Iniciando... Sheet: conectando</div>
+<div class="header"><b>BARBERÍA <span>LÓPEZ</span></b></div>
 <div class="steps" id="steps"></div>
 <div class="wrap">
 <div>
@@ -55,115 +52,68 @@ body{background:#0a0a0a;color:#fff}
 <div class="card" id="step2" style="margin-top:14px"></div>
 <div class="card" id="step3" style="margin-top:14px"></div>
 </div>
-<div><div class="card summary" id="summary"></div><div class="card" style="margin-top:14px"><b>Estado conexión Sheet</b><div id="sheetStatus" style="font-size:11px;color:#888;margin-top:8px">Probando...</div><button class="btn" style="background:#222;color:#fff;margin-top:10px" onclick="loadRemoteBookings(true)">Recargar turnos del Sheet</button><button class="btn" style="background:#222;color:#fff" onclick="testPost()">Test guardar en Sheet</button></div></div>
+<div><div class="card summary" id="summary"></div></div>
 </div>
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwb5WI5SB4D6BwrUAHsOBBbLMOIzCC9tcEa0no1F071dl-k8boGmw7Vfinss_ZSY1IVOQ/exec";
-const CONFIG_DEFAULT = {"nombre":"Barbería López","direccion":"Lomas de Zamora","whatsapp":"5491134890644","envio":{"costo":0}};
-const BARBEROS_DEFAULT=[
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbw1ktX0hhfNUTBCB-zp3LSpq2mTH0VOIkwTLzEONwhSSUqRu-MFnC-S-xN4dAmQs7552Q/exec";
+var CONFIG_DEFAULT={nombre:"Barbería López",direccion:"Lomas de Zamora",whatsapp:"5491134890644"};
+var BARBEROS_DEFAULT=[
 {id:"m1",nombre:"Mati",especialidad:"Fade & Clásico",img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"},
 {id:"m2",nombre:"Nico",especialidad:"Barba & Tijera",img:"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop"},
 {id:"m3",nombre:"Santi",especialidad:"Color & Diseño",img:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"}
 ];
-const DATA_DEFAULT = [{"id":1,"categoria":"Cortes","nombre":"Corte clásico","descripcion":"Máquina + tijera + navaja","precio":9000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"},{"id":2,"categoria":"Cortes","nombre":"Corte + Barba","descripcion":"Corte completo + barba toalla caliente","precio":14000,"duracion":60,"img":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},{"id":3,"categoria":"Cortes","nombre":"Corte + Barba + Cejas","descripcion":"Pack completo","precio":16000,"duracion":75,"img":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},{"id":4,"categoria":"Barba","nombre":"Arreglo de barba","descripcion":"Perfilado + toalla caliente","precio":6000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"},{"id":5,"categoria":"Color","nombre":"Color + Corte","descripcion":"Color + corte incluido","precio":18000,"duracion":90,"img":"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=400&h=400&fit=crop"},{"id":6,"categoria":"Promo","nombre":"Promo Jubilados","descripcion":"Lun a Mié","precio":7000,"duracion":30,"img":"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"}];
-let DATA=DATA_DEFAULT,BARBEROS=BARBEROS_DEFAULT;
-let servicioSel=null,barberoSel=BARBEROS[0],selectedDate=new Date(),horaSel=null,currentMonth=new Date();
-let clientData={nombre:'',tel:'',email:'',nota:''};
-const LS_KEY='barberia_lopez_v5_fix';
-let REMOTE_BOOKINGS = [];
-let remoteLoaded = false;
-
-function debug(msg, type='warn'){ const d=document.getElementById('debug'); d.textContent=msg; d.className='debug '+type; console.log(msg); }
-function setSheetStatus(html){ document.getElementById('sheetStatus').innerHTML=html; }
-
-function getBookings(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}catch(e){return []} }
-function getAllBookings(){
-  if(remoteLoaded) return [...getBookings(), ...REMOTE_BOOKINGS];
-  return getBookings();
+var DATA_DEFAULT=[
+{id:1,categoria:"Cortes",nombre:"Corte clásico",descripcion:"Máquina + tijera + navaja",precio:9000,duracion:30,img:"https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"},
+{id:2,categoria:"Cortes",nombre:"Corte + Barba",descripcion:"Corte completo + barba toalla caliente",precio:14000,duracion:60,img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"},
+{id:3,categoria:"Color",nombre:"Decoloración",descripcion:"Deco + matiz",precio:18000,duracion:90,img:"https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop"}
+];
+var CONFIG=CONFIG_DEFAULT, BARBEROS=BARBEROS_DEFAULT, DATA=DATA_DEFAULT, bookings=[];
+var servicioSel=null, barberoSel=null, selectedDate=new Date(), horaSel=null, currentMonth=new Date();
+var clientData={nombre:'',tel:'',nota:''};
+function fmt(d){return d.toISOString().slice(0,10)}
+function fmt2(d){return d.toLocaleDateString('es-AR',{weekday:'short',day:'numeric',month:'short'})}
+function loadRemoteBookingsJSONP(){
+  var cbName='cb_'+Date.now();
+  window[cbName]=function(data){
+    if(data &&!data.error && Array.isArray(data)){bookings=data; renderStep3(); renderSummary();}
+    setTimeout(function(){var s=document.getElementById('script_'+cbName); if(s)s.remove(); delete window[cbName];},1000);
+  };
+  var script=document.createElement('script'); script.id='script_'+cbName;
+  script.src=SHEET_URL+'?callback='+cbName+'&v='+Date.now();
+  document.body.appendChild(script);
 }
-function isBooked(d,t,prof){ return getAllBookings().some(b=>b.date===d&&b.time===t&&(b.profId===prof||b.barbero_id===prof)); }
-
-async function loadRemoteBookings(force=false){
-  if(!SHEET_URL){ debug('SHEET_URL vacío - solo local', 'warn'); setSheetStatus('SHEET_URL vacío'); return; }
-  debug('Cargando turnos del Sheet...', 'warn');
-  setSheetStatus('Cargando...');
-  try{
-    const r = await fetch(SHEET_URL, {method:'GET', cache:'no-store'});
-    const txt = await r.text();
-    let data;
-    try{ data = JSON.parse(txt); } catch(e){ throw 'Respuesta no es JSON: '+txt.slice(0,200); }
-    REMOTE_BOOKINGS = data.map(x=>({
-      date: x.fecha || x.date,
-      time: x.hora || x.time,
-      profId: x.barbero_id || x.profId,
-      profNombre: x.barbero_nombre || x.profNombre,
-      servicio: x.servicio,
-      nombre: x.cliente || x.nombre
-    })).filter(x=>x.date && x.time);
-    remoteLoaded = true;
-    debug('✅ Sheet OK - '+REMOTE_BOOKINGS.length+' turnos remotos cargados. Los horarios en gris ya están bloqueados globalmente.', 'ok');
-    setSheetStatus('✅ Conectado - '+REMOTE_BOOKINGS.length+' turnos en Sheet<br><small>'+REMOTE_BOOKINGS.slice(-3).map(b=>b.date+' '+b.time+' '+b.profId).join('<br>')+'</small>');
-    renderStep3(); renderSummary();
-  }catch(e){
-    debug('❌ Error cargando Sheet: '+e+' - Queda solo local', 'err');
-    setSheetStatus('❌ Error GET: '+e+'<br>Revisá: 1) Que pegaste Code_V4_CORREGIDO sin myFunction 2) Deploy en Cualquier persona 3) Nueva versión');
-  }
+function isBooked(date,time,barberoId){
+  return bookings.some(function(b){
+    var f=(b.fecha||b.date||'').toString().slice(0,10);
+    var h=(b.hora||b.time||'').toString().slice(0,5);
+    var bid=(b.barbero_id||b.profId||'').toString();
+    return f===date && h===time && bid===barberoId;
+  });
 }
-
-function saveBooking(b){
-  const a=getBookings(); a.push(b); localStorage.setItem(LS_KEY,JSON.stringify(a));
-  debug('Guardado local OK, ahora enviando al Sheet...', 'warn');
-  setSheetStatus('Guardando en Sheet...');
-  if(SHEET_URL){
-    // Método 1: sendBeacon (más confiable)
-    try{
-      const blob = new Blob([JSON.stringify(b)], {type: 'text/plain;charset=utf-8'});
-      const ok = navigator.sendBeacon(SHEET_URL, blob);
-      console.log('sendBeacon', ok);
-    }catch(e){ console.log('beacon fail', e); }
-    // Método 2: fetch no-cors
-    fetch(SHEET_URL, {method:'POST', mode:'no-cors', body: JSON.stringify(b)}).then(()=>{ console.log('fetch no-cors enviado'); }).catch(e=>console.log('fetch err', e));
-    // Método 3: fetch cors con text/plain para ver error
-    fetch(SHEET_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(b)}).then(r=>r.text()).then(txt=>{
-      debug('Respuesta POST: '+txt.slice(0,300), txt.includes('ok')?'ok':'warn');
-      setSheetStatus('Respuesta POST: '+txt+'<br>Si dice ok, recargá el Sheet');
-      loadRemoteBookings();
-    }).catch(err=>{
-      debug('POST CORS bloqueado (normal en Apps Script) pero el no-cors ya se envió. Revisá el Sheet en 5 seg y Ejecuciones en Apps Script.', 'warn');
-      setTimeout(()=>loadRemoteBookings(), 2000);
-    });
-  }
+function saveBooking(booking){
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(booking)}).catch(function(){});
+  bookings.push({fecha:booking.date,hora:booking.time,barbero_id:booking.profId});
 }
-
-window.testPost = async ()=>{
-  const b = {date: new Date().toISOString().split('T')[0], time: "10:00", profId: "m1", profNombre: "Mati", servicio: "TEST", precio: 9000, duracion: 30, nombre: "TEST BRIAN", tel: "11", nota: "test manual"};
-  saveBooking(b);
-}
-
-function fmt(d){return d.toISOString().split('T')[0]}
-function fmt2(d){return d.toLocaleDateString('es-AR',{weekday:'short',day:'2-digit',month:'short'})}
-function renderSteps(){const s=[{n:1,l:'Servicio',d:!!servicioSel},{n:2,l:'Barbero',d:!!barberoSel},{n:3,l:'Fecha y hora',d:!!horaSel},{n:4,l:'Datos',d:!!(clientData.nombre&&clientData.tel)}];document.getElementById('steps').innerHTML=s.map((p,i)=>`<div class="step ${p.d?'done':''} ${!servicioSel&&i===0?'on':''}"><div class="num">${p.d?'✓':p.n}</div>${p.l}${i<3?'<div class="line"></div>':''}</div>`).join('')}
-function renderStep1(){const c=document.getElementById('step1');const cats=[...new Set(DATA.map(d=>d.categoria))];c.innerHTML=`<b>1. Servicio</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${cats.map(x=>`<div style="padding:5px 10px;border-radius:100px;border:1px solid #222;font-size:10px;cursor:pointer" onclick="filt('${x}')">${x}</div>`).join('')}<div style="padding:5px 10px;border-radius:100px;background:#fff;color:#000;font-size:10px;cursor:pointer" onclick="filt('todos')">Todos</div></div><div class="list" id="listS"></div>`;renderServ('todos')}
-window.filt=(cat)=>renderServ(cat);
-function renderServ(cat){const l=document.getElementById('listS');if(!l)return;const f=cat==='todos'?DATA:DATA.filter(d=>d.categoria===cat);l.innerHTML=f.map(s=>`<div class="item ${servicioSel?.id===s.id?'on':''}" data-id="${s.id}"><img src="${s.img}"><div><div class="name">${s.nombre}<span class="dur">${s.duracion}min</span></div><div class="desc">${s.descripcion}</div><div class="price">$<span>${s.precio.toLocaleString('es-AR')}</span></div></div></div>`).join('');l.querySelectorAll('.item').forEach(e=>e.addEventListener('click',()=>{servicioSel=DATA.find(d=>d.id===Number(e.dataset.id));renderStep1();renderStep2();renderStep3();renderSummary();renderSteps(); document.getElementById('step2').scrollIntoView({behavior:'smooth'})}))}
-function renderStep2(){const c=document.getElementById('step2');if(!servicioSel){c.innerHTML=`<b>2. Barbero</b>`;return}c.innerHTML=`<b>2. Barbero</b><div class="list">${BARBEROS.map(b=>`<div class="pro ${barberoSel?.id===b.id?'on':''}" data-id="${b.id}"><img src="${b.img}"><div><div style="font-weight:800;font-size:12px">${b.nombre}</div><div style="font-size:10px;color:#777">${b.especialidad}</div></div></div>`).join('')}</div>`;c.querySelectorAll('.pro').forEach(e=>e.addEventListener('click',()=>{barberoSel=BARBEROS.find(x=>x.id===e.dataset.id);renderStep2();renderStep3();renderSummary();renderSteps();document.getElementById('step3').scrollIntoView({behavior:'smooth'})}))}
-function renderStep3(){const c=document.getElementById('step3');if(!servicioSel||!barberoSel){c.innerHTML=`<b>3. Fecha y hora</b>`;return}c.innerHTML=`<b>3. Fecha y hora - ${barberoSel.nombre}</b><div class="cal-head"><button onclick="chgM(-1)">‹</button><div style="font-weight:700;font-size:12px;text-transform:capitalize">${currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})}</div><button onclick="chgM(1)">›</button></div><div class="cal-grid"><div class="dayname">D</div><div class="dayname">L</div><div class="dayname">M</div><div class="dayname">X</div><div class="dayname">J</div><div class="dayname">V</div><div class="dayname">S</div></div><div class="cal-grid" id="days"></div><div style="margin-top:12px"><span class="label">${fmt2(selectedDate)}</span><div class="slots" id="slots"></div></div><div style="margin-top:12px"><span class="label">Nombre *</span><input id="f_nombre" class="input" value="${clientData.nombre}"><span class="label">WhatsApp *</span><input id="f_tel" class="input" value="${clientData.tel}"><span class="label">Nota</span><input id="f_nota" class="input" value="${clientData.nota}"></div>`;renderDays();renderSlots();['f_nombre','f_tel','f_nota'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',e=>{clientData[id.replace('f_','')]=e.target.value;renderSummary();renderSteps()})})}
-function renderDays(){const d=document.getElementById('days');if(!d)return;const y=currentMonth.getFullYear(),m=currentMonth.getMonth();const first=new Date(y,m,1),start=first.getDay(),last=new Date(y,m+1,0).getDate();let h='';for(let i=0;i<start;i++)h+=`<div class="day off"></div>`;const today=new Date();today.setHours(0,0,0,0);for(let i=1;i<=last;i++){const date=new Date(y,m,i);date.setHours(0,0,0,0);const past=date<today;const cur=fmt(date);const sel=fmt(selectedDate);const isT=fmt(today)===cur;h+=`<div class="day ${past?'off':''} ${sel===cur?'on':''} ${isT?'today':''}" data-date="${cur}">${i}</div>`}d.innerHTML=h;d.querySelectorAll('.day:not(.off)').forEach(e=>e.addEventListener('click',()=>{selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderStep3();renderSummary();renderSteps()}))}
-window.chgM=(dir)=>{currentMonth.setMonth(currentMonth.getMonth()+dir);renderStep3()}
-function getSlots(){const s=[];for(let h=9;h<20;h++){if(h===13)continue;for(let mm of[0,30]){const t=`${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;s.push({time:t,booked:isBooked(fmt(selectedDate),t,barberoSel.id)})}}return s}
-function renderSlots(){const c=document.getElementById('slots');if(!c)return;const s=getSlots();c.innerHTML=s.map(x=>`<div class="slot ${x.booked?'off':''} ${horaSel===x.time?'on':''}" data-time="${x.time}">${x.time}</div>`).join('');c.querySelectorAll('.slot:not(.off)').forEach(e=>e.addEventListener('click',()=>{horaSel=e.dataset.time;renderStep3();renderSummary();renderSteps()}))}
-function renderSummary(){const c=document.getElementById('summary');const can=servicioSel&&barberoSel&&horaSel&&clientData.nombre&&clientData.tel;c.innerHTML=`<b>Resumen</b><div class="line-item"><span>Servicio</span><span>${servicioSel?servicioSel.nombre:'--'}</span></div><div class="line-item"><span>Barbero</span><span>${barberoSel?barberoSel.nombre:'--'}</span></div><div class="line-item"><span>Fecha</span><span>${selectedDate?fmt2(selectedDate):'--'}</span></div><div class="line-item"><span>Hora</span><span>${horaSel||'--:--'}</span></div><div class="total"><span>Total</span><span>$${servicioSel?servicioSel.precio.toLocaleString('es-AR'):0}</span></div><button class="btn" ${can?'':'disabled'} id="btnB">${can?'Confirmar turno':'Completá datos'}</button><div style="margin-top:10px;font-size:10px;color:#666">Si el Sheet no guarda, revisá Ejecuciones en Apps Script - ahí sale el error real.</div>`;document.getElementById('btnB')?.addEventListener('click',reservar)}
+function renderSteps(){var s=[{n:1,l:'Servicio',d:!!servicioSel},{n:2,l:'Barbero',d:!!barberoSel},{n:3,l:'Fecha y hora',d:!!horaSel},{n:4,l:'Datos',d:!!(clientData.nombre&&clientData.tel)}];document.getElementById('steps').innerHTML=s.map(function(p,i){return '<div class="step '+(p.d?'done':'')+'"><div class="num">'+(p.d?'✓':p.n)+'</div>'+p.l+(i<3?'<div class="line"></div>':'')+'</div>'}).join('')}
+function renderStep1(){var allCats=['todos'].concat(Array.from(new Set(DATA.map(function(d){return d.categoria}))));var c=document.getElementById('step1');c.innerHTML='<b>1. Servicio</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+allCats.map(function(x){return '<div style="padding:5px 10px;border-radius:100px;border:1px solid #222;font-size:10px;cursor:pointer;background:'+(x==='todos'?'#fff;color:#000':'#141414')+'" onclick="filt(\''+x+'\')">'+x+'</div>'}).join('')+'</div><div class="list" id="listS"></div>';renderServ('todos')}
+window.filt=function(cat){renderServ(cat)};
+function renderServ(cat){var l=document.getElementById('listS');if(!l)return;var f=cat==='todos'?DATA:DATA.filter(function(d){return d.categoria===cat});l.innerHTML=f.map(function(s){return '<div class="item '+(servicioSel&&servicioSel.id===s.id?'on':'')+'" data-id="'+s.id+'"><img src="'+s.img+'"><div><div class="name">'+s.nombre+'<span class="dur">'+s.duracion+'min</span></div><div class="desc">'+s.descripcion+'</div><div class="price">$<span>'+s.precio.toLocaleString('es-AR')+'</span></div></div></div>'}).join('');l.querySelectorAll('.item').forEach(function(e){e.addEventListener('click',function(){servicioSel=DATA.find(function(d){return d.id===Number(e.dataset.id)});renderStep1();renderStep2();renderStep3();renderSummary();renderSteps()})})}
+function renderStep2(){var c=document.getElementById('step2');if(!servicioSel){c.innerHTML='<b>2. Barbero</b><div style="font-size:11px;color:#888">Elegí un servicio primero</div>';return}c.innerHTML='<b>2. Barbero</b><div class="list">'+BARBEROS.map(function(b){return '<div class="pro '+(barberoSel&&barberoSel.id===b.id?'on':'')+'" data-id="'+b.id+'"><img src="'+b.img+'"><div><div style="font-weight:800;font-size:12px">'+b.nombre+'</div><div style="font-size:10px;color:#777">'+b.especialidad+'</div></div></div>'}).join('')+'</div>';c.querySelectorAll('.pro').forEach(function(e){e.addEventListener('click',function(){barberoSel=BARBEROS.find(function(x){return x.id===e.dataset.id});renderStep2();renderStep3();renderSummary();renderSteps()})})}
+function renderStep3(){var c=document.getElementById('step3');if(!servicioSel||!barberoSel){c.innerHTML='<b>3. Fecha y hora</b><div style="font-size:11px;color:#888">Elegí servicio y barbero</div>';return}c.innerHTML='<b>3. Fecha y hora - '+barberoSel.nombre+'</b><div class="cal-head"><button onclick="chgM(-1)">‹</button><div style="font-weight:700;font-size:12px;text-transform:capitalize">'+currentMonth.toLocaleDateString('es-AR',{month:'long',year:'numeric'})+'</div><button onclick="chgM(1)">›</button></div><div class="cal-grid"><div class="dayname">D</div><div class="dayname">L</div><div class="dayname">M</div><div class="dayname">X</div><div class="dayname">J</div><div class="dayname">V</div><div class="dayname">S</div></div><div class="cal-grid" id="days"></div><div style="margin-top:12px"><span class="label">'+fmt2(selectedDate)+'</span><div class="slots" id="slots"></div></div><div style="margin-top:12px"><span class="label">Nombre *</span><input id="f_nombre" class="input" value="'+clientData.nombre+'"><span class="label">WhatsApp *</span><input id="f_tel" class="input" value="'+clientData.tel+'"><span class="label">Nota (opcional)</span><input id="f_nota" class="input" placeholder="Ej: con barba" value="'+clientData.nota+'"></div>';renderDays();renderSlots();['f_nombre','f_tel','f_nota'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',function(e){clientData[id.replace('f_','')]=e.target.value;renderSummary();renderSteps()})})}
+function renderDays(){var d=document.getElementById('days');if(!d)return;var y=currentMonth.getFullYear(),m=currentMonth.getMonth();var first=new Date(y,m,1),start=first.getDay(),last=new Date(y,m+1,0).getDate();var h='';for(var i=0;i<start;i++)h+='<div class="day off"></div>';var today=new Date();today.setHours(0,0,0,0);for(var i=1;i<=last;i++){var date=new Date(y,m,i);date.setHours(0,0,0,0);var past=date<today;var cur=fmt(date);var sel=fmt(selectedDate);var isT=fmt(today)===cur;h+='<div class="day '+(past?'off':'')+' '+(sel===cur?'on':'')+' '+(isT?'today':'')+'" data-date="'+cur+'">'+i+'</div>'}d.innerHTML=h;d.querySelectorAll('.day:not(.off)').forEach(function(e){e.addEventListener('click',function(){selectedDate=new Date(e.dataset.date+'T12:00:00');horaSel=null;renderStep3();renderSummary();renderSteps()})})}
+window.chgM=function(dir){currentMonth.setMonth(currentMonth.getMonth()+dir);renderStep3()}
+function getSlots(){var s=[];for(var h=9;h<20;h++){if(h===13)continue;for(var mm of[0,30]){var t=(h<10?'0':'')+h+':'+(mm===0?'00':'30');s.push({time:t,booked:isBooked(fmt(selectedDate),t,barberoSel.id)})}}return s}
+function renderSlots(){var c=document.getElementById('slots');if(!c)return;var s=getSlots();c.innerHTML=s.map(function(x){return '<div class="slot '+(x.booked?'off':'')+' '+(horaSel===x.time?'on':'')+'" data-time="'+x.time+'">'+x.time+'</div>'}).join('');c.querySelectorAll('.slot:not(.off)').forEach(function(e){e.addEventListener('click',function(){horaSel=e.dataset.time;renderStep3();renderSummary();renderSteps()})})}
+function renderSummary(){var c=document.getElementById('summary');var can=servicioSel&&barberoSel&&horaSel&&clientData.nombre&&clientData.tel;c.innerHTML='<b>Resumen</b><div class="line-item"><span>Servicio</span><span>'+(servicioSel?servicioSel.nombre:'--')+'</span></div><div class="line-item"><span>Barbero</span><span>'+(barberoSel?barberoSel.nombre:'--')+'</span></div><div class="line-item"><span>Fecha</span><span>'+(selectedDate?fmt2(selectedDate):'--')+'</span></div><div class="line-item"><span>Hora</span><span>'+(horaSel||'--:--')+'</span></div><div class="total"><span>Total</span><span>$'+(servicioSel?servicioSel.precio.toLocaleString('es-AR'):0)+'</span></div><button class="btn" '+(can?'':'disabled')+' id="btnB">'+(can?'Confirmar turno por WhatsApp':'Completá los datos')+'</button>';var b=document.getElementById('btnB');if(b)b.addEventListener('click',reservar)}
 function reservar(){
-  const date=fmt(selectedDate);
-  if(isBooked(date,horaSel,barberoSel.id)){ alert('Ya reservado'); return; }
-  if(!clientData.nombre||!clientData.tel){ alert('Falta nombre/tel'); return; }
-  const booking={date,time:horaSel,profId:barberoSel.id,profNombre:barberoSel.nombre,servicio:servicioSel.nombre,precio:servicioSel.precio,duracion:servicioSel.duracion,nombre:clientData.nombre,tel:clientData.tel,nota:clientData.nota};
+  var date=fmt(selectedDate);
+  if(isBooked(date,horaSel,barberoSel.id)){ alert('Ese horario ya fue tomado'); return; }
+  var booking={date:date,time:horaSel,profId:barberoSel.id,profNombre:barberoSel.nombre,servicio:servicioSel.nombre,precio:servicioSel.precio,duracion:servicioSel.duracion,nombre:clientData.nombre,tel:clientData.tel,nota:clientData.nota};
   saveBooking(booking);
-  const msg=`Nuevo turno - ${CONFIG_DEFAULT.nombre}%0AServicio: ${servicioSel.nombre}%0ABarbero: ${barberoSel.nombre}%0AFecha: ${date}%0AHora: ${horaSel}%0ACliente: ${clientData.nombre}%0ATel: ${clientData.tel}`;
-  window.open(`https://wa.me/${CONFIG_DEFAULT.whatsapp}?text=${msg}`,'_blank');
-  document.getElementById('step3').innerHTML=`<b>Turno confirmado</b><div style="margin-top:10px;font-size:12px">${servicioSel.nombre} con ${barberoSel.nombre}<br>${fmt2(selectedDate)} ${horaSel}<br><br><span style="color:#44ff88">Guardado local + enviado al Sheet</span><br><small>Si no aparece en Sheet, mirá la barra amarilla arriba y Ejecuciones en Apps Script</small></div><button class="btn" onclick="location.reload()">Nuevo turno</button>`;
-  renderSummary();
+  var msg='Nuevo turno - Barbería López%0AServicio: '+servicioSel.nombre+'%0ABarbero: '+barberoSel.nombre+'%0AFecha: '+date+'%0AHora: '+horaSel+'%0ACliente: '+clientData.nombre+'%0ATel: '+clientData.tel;
+  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+msg,'_blank');
+  document.getElementById('step3').innerHTML='<b>✅ Turno confirmado</b><div style="margin-top:10px;font-size:13px;line-height:1.6">'+servicioSel.nombre+' con '+barberoSel.nombre+'<br>'+fmt2(selectedDate)+' '+horaSel+'</div><button class="btn" onclick="location.reload()">Reservar otro</button>';
 }
-renderStep1();renderStep2();renderStep3();renderSummary();renderSteps(); loadRemoteBookings();
+renderStep1();renderStep2();renderStep3();renderSummary();renderSteps();loadRemoteBookingsJSONP();
 </script>
 </body></html>
